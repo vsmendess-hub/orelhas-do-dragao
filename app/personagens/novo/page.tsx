@@ -31,8 +31,13 @@ function WizardContent() {
         // Se tem sub-raças, precisa selecionar uma. Se não tem, pode avançar
         return hasSubraces ? !!characterData.subrace : true;
       }
-      case 3:
-        return !!characterData.class;
+      case 3: {
+        // Precisa ter classe selecionada
+        if (!characterData.class) return false;
+        // Se for nível 3+, precisa ter arquétipo selecionado
+        if (characterData.level >= 3 && !characterData.archetype) return false;
+        return true;
+      }
       case 4:
         // Validação de Point Buy será implementada
         return true;
