@@ -12,6 +12,7 @@ import {
   Step7Summary,
 } from './components/steps';
 import { getRaceById } from '@/lib/data/races';
+import { getRemainingPoints } from '@/lib/data/point-buy';
 
 /**
  * Componente interno que usa o contexto do Wizard
@@ -38,9 +39,11 @@ function WizardContent() {
         if (characterData.level >= 3 && !characterData.archetype) return false;
         return true;
       }
-      case 4:
-        // Validação de Point Buy será implementada
-        return true;
+      case 4: {
+        // Validar Point Buy: não pode ter pontos negativos
+        const remaining = getRemainingPoints(characterData.abilities);
+        return remaining >= 0;
+      }
       case 5:
         return characterData.skills.length > 0;
       case 6:
