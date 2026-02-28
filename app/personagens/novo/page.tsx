@@ -16,7 +16,31 @@ import {
  * Componente interno que usa o contexto do Wizard
  */
 function WizardContent() {
-  const { currentStep } = useWizard();
+  const { currentStep, characterData } = useWizard();
+
+  // Verificar se pode avançar para o próximo step
+  const canProceed = () => {
+    switch (currentStep) {
+      case 1:
+        return !!characterData.race;
+      case 2:
+        // Se a raça não tem sub-raças, pode avançar
+        return true;
+      case 3:
+        return !!characterData.class;
+      case 4:
+        // Validação de Point Buy será implementada
+        return true;
+      case 5:
+        return characterData.skills.length > 0;
+      case 6:
+        return !!characterData.name && !!characterData.alignment;
+      case 7:
+        return true;
+      default:
+        return true;
+    }
+  };
 
   // Renderizar o step atual
   const renderStep = () => {
@@ -40,7 +64,7 @@ function WizardContent() {
     }
   };
 
-  return <WizardLayout>{renderStep()}</WizardLayout>;
+  return <WizardLayout isNextDisabled={!canProceed()}>{renderStep()}</WizardLayout>;
 }
 
 /**
