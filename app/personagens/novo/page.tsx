@@ -11,6 +11,7 @@ import {
   Step6Identity,
   Step7Summary,
 } from './components/steps';
+import { getRaceById } from '@/lib/data/races';
 
 /**
  * Componente interno que usa o contexto do Wizard
@@ -23,9 +24,13 @@ function WizardContent() {
     switch (currentStep) {
       case 1:
         return !!characterData.race;
-      case 2:
-        // Se a raça não tem sub-raças, pode avançar
-        return true;
+      case 2: {
+        // Se a raça não tem sub-raças, o step será pulado automaticamente
+        const race = characterData.race ? getRaceById(characterData.race) : null;
+        const hasSubraces = race?.subraces && race.subraces.length > 0;
+        // Se tem sub-raças, precisa selecionar uma. Se não tem, pode avançar
+        return hasSubraces ? !!characterData.subrace : true;
+      }
       case 3:
         return !!characterData.class;
       case 4:
