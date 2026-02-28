@@ -1,0 +1,10 @@
+# robots.txt for Orelhas do Dragão
+# https://www.robotstxt.org/
+
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /personagens/
+Disallow: /perfil/
+
+Sitemap: https://orelhas-do-dragao.vercel.app/sitemap.xml
