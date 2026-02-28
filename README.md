@@ -28,12 +28,24 @@ cd orelhas-do-dragao
 
 npm install
 
+# Configurar variáveis de ambiente
+
+cp .env.local.example .env.local
+
+# Edite .env.local com suas credenciais
+
 # Rodar em desenvolvimento
 
 npm run dev
 \`\`\`
 
 Abra [http://localhost:3000](http://localhost:3000) no navegador.
+
+### Configuração Inicial
+
+1. **Supabase**: Veja `supabase/README.md` para instruções de setup do database
+2. **Environment Variables**: Configure `.env.local` com suas credenciais
+3. **Deploy**: Consulte `DEPLOYMENT.md` para instruções completas de deploy na Vercel
 
 ---
 
