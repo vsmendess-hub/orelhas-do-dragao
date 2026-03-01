@@ -12,10 +12,12 @@ import { ClassResourcesManager } from '@/app/components/character/class-resource
 import { DeathSavesManager } from '@/app/components/character/death-saves-manager';
 import { ConditionsManager } from '@/app/components/character/conditions-manager';
 import { CompanionsManager } from '@/app/components/character/companions-manager';
+import { JournalManager } from '@/app/components/character/journal-manager';
 import { generateClassResources, type ClassResource } from '@/lib/data/class-resources';
 import { EMPTY_DEATH_SAVES, type DeathSaves } from '@/lib/data/death-saves';
 import { EMPTY_CONDITIONS, type Condition } from '@/lib/data/conditions';
 import { type Companion } from '@/lib/data/companions';
+import { type JournalEntry } from '@/lib/data/journal';
 
 const ABILITY_NAMES = {
   str: 'Força',
@@ -98,6 +100,9 @@ export default async function CharacterPage({ params }: PageProps) {
 
   // Companions
   const characterCompanions: Companion[] = character.companions || [];
+
+  // Journal
+  const characterJournal: JournalEntry[] = character.journal || [];
 
   return (
     <div className="min-h-screen bg-background">
@@ -261,6 +266,9 @@ export default async function CharacterPage({ params }: PageProps) {
 
             {/* Companions */}
             <CompanionsManager characterId={id} initialCompanions={characterCompanions} />
+
+            {/* Journal */}
+            <JournalManager characterId={id} initialEntries={characterJournal} />
 
             {/* Skills */}
             <Card>
