@@ -8,7 +8,10 @@ import { calculateModifier, formatModifier } from '@/lib/data/point-buy';
 import { HPManager } from '@/app/components/character/hp-manager';
 import { DeleteCharacterDialog } from '@/app/components/character/delete-character-dialog';
 import { InventoryManager } from '@/app/components/character/inventory-manager';
-import type { Currency } from '@/lib/data/items';
+import { ClassResourcesManager } from '@/app/components/character/class-resources-manager';
+import { DeathSavesManager } from '@/app/components/character/death-saves-manager';
+import { generateClassResources, type ClassResource } from '@/lib/data/class-resources';
+import { EMPTY_DEATH_SAVES, type DeathSaves } from '@/lib/data/death-saves';
 
 const ABILITY_NAMES = {
   str: 'Força',
@@ -78,6 +81,13 @@ export default async function CharacterPage({ params }: PageProps) {
     wis: calculateModifier(character.attributes.wis),
     cha: calculateModifier(character.attributes.cha),
   };
+
+  // Gerar recursos de classe se não existirem
+  const classResources: ClassResource[] =
+    character.class_resources || generateClassResources(character.class, character.level);
+
+  // Death saves
+  const deathSaves: DeathSaves = character.death_saves || EMPTY_DEATH_SAVES;
 
   return (
     <div className="min-h-screen bg-background">
@@ -219,6 +229,22 @@ export default async function CharacterPage({ params }: PageProps) {
                 </div>
               </CardContent>
             </Card>
+
+            {/* Death Saves - Only show if HP is 0 */}
+            {character.hit_points.current === 0 && (
+              <DeathSavesManager
+                characterId={id}
+                currentHP={character.hit_points.current}
+                initialDeathSaves={deathSaves}
+                onHPChange={() => {
+                  // Recarregar página para atualizar HP
+                  window.location.reload();
+                }}
+              />
+            )}
+
+            {/* Class Resources */}
+            <ClassResourcesManager characterId={id} initialResources={classResources} />
 
             {/* Skills */}
             <Card>
