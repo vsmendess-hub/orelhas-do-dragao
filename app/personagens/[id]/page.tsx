@@ -7,6 +7,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { calculateModifier, formatModifier } from '@/lib/data/point-buy';
 import { HPManager } from '@/app/components/character/hp-manager';
 import { DeleteCharacterDialog } from '@/app/components/character/delete-character-dialog';
+import { InventoryManager } from '@/app/components/character/inventory-manager';
+import type { Currency } from '@/lib/data/items';
 
 const ABILITY_NAMES = {
   str: 'Força',
@@ -344,6 +346,25 @@ export default async function CharacterPage({ params }: PageProps) {
               </Card>
             )}
           </div>
+        </div>
+
+        {/* Inventário */}
+        <div className="mt-8">
+          <InventoryManager
+            characterId={id}
+            initialItems={character.equipment || []}
+            initialCurrency={
+              character.currency || {
+                copper: 0,
+                silver: 0,
+                electrum: 0,
+                gold: 0,
+                platinum: 0,
+              }
+            }
+            strengthScore={character.attributes.str}
+            dexModifier={modifiers.dex}
+          />
         </div>
       </main>
     </div>
