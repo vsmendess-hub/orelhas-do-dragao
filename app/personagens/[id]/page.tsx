@@ -1,11 +1,12 @@
 import { notFound, redirect } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, Edit, Shield, Zap, Dices, Trash2 } from 'lucide-react';
+import { ArrowLeft, Edit, Shield, Zap, Dices } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { calculateModifier, formatModifier } from '@/lib/data/point-buy';
 import { HPManager } from '@/app/components/character/hp-manager';
+import { DeleteCharacterDialog } from '@/app/components/character/delete-character-dialog';
 
 const ABILITY_NAMES = {
   str: 'Força',
@@ -97,10 +98,7 @@ export default async function CharacterPage({ params }: PageProps) {
                 Editar
               </Link>
             </Button>
-            <Button variant="destructive" size="sm">
-              <Trash2 className="mr-2 h-4 w-4" />
-              Deletar
-            </Button>
+            <DeleteCharacterDialog characterId={id} characterName={character.name} />
           </div>
         </div>
       </header>
