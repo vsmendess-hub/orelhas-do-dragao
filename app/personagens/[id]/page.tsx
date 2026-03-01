@@ -1,6 +1,18 @@
 import { notFound, redirect } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, Edit, Shield, Zap, Dices, Sparkles, Wand2 } from 'lucide-react';
+import {
+  ArrowLeft,
+  Edit,
+  Shield,
+  Zap,
+  Dices,
+  Sparkles,
+  Wand2,
+  Users,
+  BookOpen,
+  AlertCircle,
+  Heart,
+} from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -103,6 +115,11 @@ export default async function CharacterPage({ params }: PageProps) {
 
   // Journal
   const characterJournal: JournalEntry[] = character.journal || [];
+
+  // Count active features
+  const activeConditionsCount = characterConditions.filter((c) => c.active).length;
+  const activeCompanionsCount = characterCompanions.filter((c) => c.active).length;
+  const hasClassResources = classResources.length > 0;
 
   return (
     <div className="min-h-screen bg-background">
@@ -244,31 +261,6 @@ export default async function CharacterPage({ params }: PageProps) {
                 </div>
               </CardContent>
             </Card>
-
-            {/* Death Saves - Only show if HP is 0 */}
-            {character.hit_points.current === 0 && (
-              <DeathSavesManager
-                characterId={id}
-                currentHP={character.hit_points.current}
-                initialDeathSaves={deathSaves}
-                onHPChange={() => {
-                  // Recarregar página para atualizar HP
-                  window.location.reload();
-                }}
-              />
-            )}
-
-            {/* Class Resources */}
-            <ClassResourcesManager characterId={id} initialResources={classResources} />
-
-            {/* Conditions */}
-            <ConditionsManager characterId={id} initialConditions={characterConditions} />
-
-            {/* Companions */}
-            <CompanionsManager characterId={id} initialCompanions={characterCompanions} />
-
-            {/* Journal */}
-            <JournalManager characterId={id} initialEntries={characterJournal} />
 
             {/* Skills */}
             <Card>
@@ -413,6 +405,72 @@ export default async function CharacterPage({ params }: PageProps) {
                 </CardContent>
               </Card>
             )}
+          </div>
+        </div>
+
+        {/* Features Extras Section */}
+        <div className="mt-8">
+          <div className="mb-6 flex items-center justify-between">
+            <h2 className="text-2xl font-bold">Recursos Avançados</h2>
+            {/* Quick Stats */}
+            <div className="flex gap-4 text-sm text-muted-foreground">
+              {hasClassResources && (
+                <div className="flex items-center gap-1">
+                  <Sparkles className="h-4 w-4" />
+                  <span>Recursos</span>
+                </div>
+              )}
+              {activeConditionsCount > 0 && (
+                <div className="flex items-center gap-1">
+                  <AlertCircle className="h-4 w-4 text-amber-600" />
+                  <span>{activeConditionsCount} condições</span>
+                </div>
+              )}
+              {activeCompanionsCount > 0 && (
+                <div className="flex items-center gap-1">
+                  <Users className="h-4 w-4" />
+                  <span>{activeCompanionsCount} ativos</span>
+                </div>
+              )}
+              {characterJournal.length > 0 && (
+                <div className="flex items-center gap-1">
+                  <BookOpen className="h-4 w-4" />
+                  <span>{characterJournal.length} entradas</span>
+                </div>
+              )}
+            </div>
+          </div>
+          <div className="grid gap-6 lg:grid-cols-2">
+            {/* Death Saves - Only show if HP is 0 */}
+            {character.hit_points.current === 0 && (
+              <div className="lg:col-span-2">
+                <DeathSavesManager
+                  characterId={id}
+                  currentHP={character.hit_points.current}
+                  initialDeathSaves={deathSaves}
+                  onHPChange={() => {
+                    // Recarregar página para atualizar HP
+                    window.location.reload();
+                  }}
+                />
+              </div>
+            )}
+
+            {/* Class Resources */}
+            <ClassResourcesManager characterId={id} initialResources={classResources} />
+
+            {/* Conditions */}
+            <ConditionsManager characterId={id} initialConditions={characterConditions} />
+
+            {/* Companions */}
+            <div className="lg:col-span-2">
+              <CompanionsManager characterId={id} initialCompanions={characterCompanions} />
+            </div>
+
+            {/* Journal */}
+            <div className="lg:col-span-2">
+              <JournalManager characterId={id} initialEntries={characterJournal} />
+            </div>
           </div>
         </div>
 
