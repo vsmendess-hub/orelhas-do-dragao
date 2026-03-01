@@ -1,6 +1,7 @@
 'use client';
 
 import { createContext, useContext, useState, ReactNode } from 'react';
+import { getRaceById } from '@/lib/data/races';
 
 /**
  * Estado do personagem sendo criado no Wizard
@@ -81,7 +82,20 @@ export function WizardProvider({ children }: { children: ReactNode }) {
 
   const previousStep = () => {
     if (currentStep > 1) {
-      setCurrentStep(currentStep - 1);
+      let targetStep = currentStep - 1;
+
+      // Se está voltando do Step 3 para o Step 2, verificar se a raça tem sub-raças
+      if (currentStep === 3 && targetStep === 2) {
+        const race = characterData.race ? getRaceById(characterData.race) : null;
+        const hasSubraces = race?.subraces && race.subraces.length > 0;
+
+        // Se não tem sub-raças, pular o Step 2 e ir direto para o Step 1
+        if (!hasSubraces) {
+          targetStep = 1;
+        }
+      }
+
+      setCurrentStep(targetStep);
     }
   };
 
