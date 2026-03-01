@@ -10,8 +10,10 @@ import { DeleteCharacterDialog } from '@/app/components/character/delete-charact
 import { InventoryManager } from '@/app/components/character/inventory-manager';
 import { ClassResourcesManager } from '@/app/components/character/class-resources-manager';
 import { DeathSavesManager } from '@/app/components/character/death-saves-manager';
+import { ConditionsManager } from '@/app/components/character/conditions-manager';
 import { generateClassResources, type ClassResource } from '@/lib/data/class-resources';
 import { EMPTY_DEATH_SAVES, type DeathSaves } from '@/lib/data/death-saves';
+import { EMPTY_CONDITIONS, type Condition } from '@/lib/data/conditions';
 
 const ABILITY_NAMES = {
   str: 'Força',
@@ -88,6 +90,9 @@ export default async function CharacterPage({ params }: PageProps) {
 
   // Death saves
   const deathSaves: DeathSaves = character.death_saves || EMPTY_DEATH_SAVES;
+
+  // Conditions
+  const characterConditions: Condition[] = character.conditions || EMPTY_CONDITIONS;
 
   return (
     <div className="min-h-screen bg-background">
@@ -245,6 +250,9 @@ export default async function CharacterPage({ params }: PageProps) {
 
             {/* Class Resources */}
             <ClassResourcesManager characterId={id} initialResources={classResources} />
+
+            {/* Conditions */}
+            <ConditionsManager characterId={id} initialConditions={characterConditions} />
 
             {/* Skills */}
             <Card>
