@@ -11,9 +11,11 @@ import { InventoryManager } from '@/app/components/character/inventory-manager';
 import { ClassResourcesManager } from '@/app/components/character/class-resources-manager';
 import { DeathSavesManager } from '@/app/components/character/death-saves-manager';
 import { ConditionsManager } from '@/app/components/character/conditions-manager';
+import { CompanionsManager } from '@/app/components/character/companions-manager';
 import { generateClassResources, type ClassResource } from '@/lib/data/class-resources';
 import { EMPTY_DEATH_SAVES, type DeathSaves } from '@/lib/data/death-saves';
 import { EMPTY_CONDITIONS, type Condition } from '@/lib/data/conditions';
+import { type Companion } from '@/lib/data/companions';
 
 const ABILITY_NAMES = {
   str: 'Força',
@@ -93,6 +95,9 @@ export default async function CharacterPage({ params }: PageProps) {
 
   // Conditions
   const characterConditions: Condition[] = character.conditions || EMPTY_CONDITIONS;
+
+  // Companions
+  const characterCompanions: Companion[] = character.companions || [];
 
   return (
     <div className="min-h-screen bg-background">
@@ -253,6 +258,9 @@ export default async function CharacterPage({ params }: PageProps) {
 
             {/* Conditions */}
             <ConditionsManager characterId={id} initialConditions={characterConditions} />
+
+            {/* Companions */}
+            <CompanionsManager characterId={id} initialCompanions={characterCompanions} />
 
             {/* Skills */}
             <Card>
