@@ -1,10 +1,11 @@
 import { notFound, redirect } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, Edit, Heart, Shield, Zap, Dices, Trash2 } from 'lucide-react';
+import { ArrowLeft, Edit, Shield, Zap, Dices, Trash2 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { calculateModifier, formatModifier } from '@/lib/data/point-buy';
+import { HPManager } from '@/app/components/character/hp-manager';
 
 const ABILITY_NAMES = {
   str: 'Força',
@@ -131,25 +132,12 @@ export default async function CharacterPage({ params }: PageProps) {
           <div className="space-y-6 lg:col-span-2">
             {/* Combat Stats */}
             <div className="grid gap-4 md:grid-cols-4">
-              <Card>
-                <CardHeader className="pb-3">
-                  <CardDescription className="flex items-center gap-1 text-xs">
-                    <Heart className="h-4 w-4" />
-                    Pontos de Vida
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-3xl font-bold">
-                    {character.hit_points.current} / {character.hit_points.max}
-                  </p>
-                  {character.hit_points.temporary > 0 && (
-                    <p className="text-xs text-muted-foreground">
-                      +{character.hit_points.temporary} temp
-                    </p>
-                  )}
-                </CardContent>
-              </Card>
+              {/* HP Manager - Ocupa 2 colunas */}
+              <div className="md:col-span-2">
+                <HPManager characterId={id} hitPoints={character.hit_points} />
+              </div>
 
+              {/* Outros stats - 1 coluna cada */}
               <Card>
                 <CardHeader className="pb-3">
                   <CardDescription className="flex items-center gap-1 text-xs">
@@ -173,7 +161,10 @@ export default async function CharacterPage({ params }: PageProps) {
                   <p className="text-3xl font-bold">{formatModifier(character.initiative)}</p>
                 </CardContent>
               </Card>
+            </div>
 
+            {/* Segunda linha com proficiency bonus centralizado */}
+            <div className="grid gap-4">
               <Card>
                 <CardHeader className="pb-3">
                   <CardDescription className="flex items-center gap-1 text-xs">
