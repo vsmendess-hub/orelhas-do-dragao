@@ -95,6 +95,12 @@ export default async function CharacterPage({ params }: PageProps) {
 
           <div className="flex items-center gap-2">
             <Button asChild variant="outline" size="sm">
+              <Link href={`/personagens/${id}/dados`}>
+                <Dices className="mr-2 h-4 w-4" />
+                Dados
+              </Link>
+            </Button>
+            <Button asChild variant="outline" size="sm">
               <Link href={`/personagens/${id}/magias`}>
                 <Wand2 className="mr-2 h-4 w-4" />
                 Magias
