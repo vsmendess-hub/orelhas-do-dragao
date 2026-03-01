@@ -1,6 +1,6 @@
 import { notFound, redirect } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, Edit, Shield, Zap, Dices, Sparkles } from 'lucide-react';
+import { ArrowLeft, Edit, Shield, Zap, Dices, Sparkles, Wand2 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -94,6 +94,12 @@ export default async function CharacterPage({ params }: PageProps) {
           </div>
 
           <div className="flex items-center gap-2">
+            <Button asChild variant="outline" size="sm">
+              <Link href={`/personagens/${id}/magias`}>
+                <Wand2 className="mr-2 h-4 w-4" />
+                Magias
+              </Link>
+            </Button>
             <Button asChild variant="outline" size="sm">
               <Link href={`/personagens/${id}/personalizar`}>
                 <Sparkles className="mr-2 h-4 w-4" />
