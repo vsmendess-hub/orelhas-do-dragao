@@ -423,6 +423,61 @@ export default async function CharacterPage({ params }: PageProps) {
           </div>
         </div>
 
+        {/* Combat Section */}
+        <div className="mt-8">
+          <div className="mb-6">
+            <h2 className="text-2xl font-bold">Combate</h2>
+            <p className="mt-1 text-muted-foreground">Recursos e ferramentas para combate</p>
+          </div>
+          <div className="grid gap-6 lg:grid-cols-2">
+            {/* Combat Quick Links */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Swords className="h-5 w-5 text-red-600" />
+                  Ferramentas de Combate
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <Button asChild className="w-full" size="lg">
+                  <Link href={`/personagens/${id}/combate`}>
+                    <Swords className="mr-2 h-5 w-5" />
+                    Abrir Gerenciador de Combate
+                  </Link>
+                </Button>
+                <div className="grid grid-cols-2 gap-2 text-sm">
+                  <div className="rounded-md border bg-muted/50 p-3 text-center">
+                    <p className="text-xs text-muted-foreground">Iniciativa</p>
+                    <p className="mt-1 text-xl font-bold">{formatModifier(modifiers.dex)}</p>
+                  </div>
+                  <div className="rounded-md border bg-muted/50 p-3 text-center">
+                    <p className="text-xs text-muted-foreground">Velocidade</p>
+                    <p className="mt-1 text-xl font-bold">{character.speed} pés</p>
+                  </div>
+                </div>
+                <div className="rounded-lg border bg-muted/50 p-3 text-xs text-muted-foreground">
+                  <p className="font-medium text-foreground">💡 Recursos de Combate:</p>
+                  <ul className="mt-2 space-y-1">
+                    <li>• Initiative Tracker - Rastreie ordem de turnos</li>
+                    <li>• Quick Actions - Ações rápidas de combate</li>
+                    <li>• HP temporário já integrado no HP Manager</li>
+                    {concentration && <li>• Concentração ativa em magia</li>}
+                  </ul>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Concentration Tracker (if active) */}
+            <ConcentrationTracker
+              characterId={id}
+              concentration={concentration}
+              constitutionModifier={modifiers.con}
+              proficiencyBonus={character.proficiency_bonus}
+              hasConcentrationProficiency={hasConcentrationProficiency}
+            />
+          </div>
+        </div>
+
         {/* Features Extras Section */}
         <div className="mt-8">
           <div className="mb-6 flex items-center justify-between">
@@ -470,15 +525,6 @@ export default async function CharacterPage({ params }: PageProps) {
                 />
               </div>
             )}
-
-            {/* Concentration Tracker */}
-            <ConcentrationTracker
-              characterId={id}
-              concentration={concentration}
-              constitutionModifier={modifiers.con}
-              proficiencyBonus={character.proficiency_bonus}
-              hasConcentrationProficiency={hasConcentrationProficiency}
-            />
 
             {/* Class Resources */}
             <ClassResourcesManager characterId={id} initialResources={classResources} />
