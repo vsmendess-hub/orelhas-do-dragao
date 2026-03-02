@@ -25,11 +25,13 @@ import { DeathSavesManager } from '@/app/components/character/death-saves-manage
 import { ConditionsManager } from '@/app/components/character/conditions-manager';
 import { CompanionsManager } from '@/app/components/character/companions-manager';
 import { JournalManager } from '@/app/components/character/journal-manager';
+import { ConcentrationTracker } from '@/app/components/character/concentration-tracker';
 import { generateClassResources, type ClassResource } from '@/lib/data/class-resources';
 import { EMPTY_DEATH_SAVES, type DeathSaves } from '@/lib/data/death-saves';
 import { EMPTY_CONDITIONS, type Condition } from '@/lib/data/conditions';
 import { type Companion } from '@/lib/data/companions';
 import { type JournalEntry } from '@/lib/data/journal';
+import { type ConcentrationSpell } from '@/lib/data/concentration';
 
 const ABILITY_NAMES = {
   str: 'Força',
@@ -115,6 +117,13 @@ export default async function CharacterPage({ params }: PageProps) {
 
   // Journal
   const characterJournal: JournalEntry[] = character.journal || [];
+
+  // Concentration
+  const concentration: ConcentrationSpell | null = character.concentration || null;
+
+  // Check if character has Constitution save proficiency
+  const hasConcentrationProficiency =
+    character.proficiencies?.savingThrows?.includes('con') || false;
 
   // Count active features
   const activeConditionsCount = characterConditions.filter((c) => c.active).length;
@@ -455,6 +464,15 @@ export default async function CharacterPage({ params }: PageProps) {
                 />
               </div>
             )}
+
+            {/* Concentration Tracker */}
+            <ConcentrationTracker
+              characterId={id}
+              concentration={concentration}
+              constitutionModifier={modifiers.con}
+              proficiencyBonus={character.proficiency_bonus}
+              hasConcentrationProficiency={hasConcentrationProficiency}
+            />
 
             {/* Class Resources */}
             <ClassResourcesManager characterId={id} initialResources={classResources} />
