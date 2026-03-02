@@ -26,6 +26,7 @@ import { ConditionsManager } from '@/app/components/character/conditions-manager
 import { CompanionsManager } from '@/app/components/character/companions-manager';
 import { JournalManager } from '@/app/components/character/journal-manager';
 import { ConcentrationTracker } from '@/app/components/character/concentration-tracker';
+import { XPManager } from '@/app/components/character/xp-manager';
 import { generateClassResources, type ClassResource } from '@/lib/data/class-resources';
 import { EMPTY_DEATH_SAVES, type DeathSaves } from '@/lib/data/death-saves';
 import { EMPTY_CONDITIONS, type Condition } from '@/lib/data/conditions';
@@ -333,16 +334,16 @@ export default async function CharacterPage({ params }: PageProps) {
               </CardContent>
             </Card>
 
-            {/* XP */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Experiência</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-2xl font-bold">{character.experience_points.toLocaleString()}</p>
-                <p className="text-xs text-muted-foreground">pontos de experiência</p>
-              </CardContent>
-            </Card>
+            {/* XP Manager */}
+            <XPManager
+              characterId={id}
+              currentXP={character.experience_points}
+              currentLevel={character.level}
+              onLevelUp={() => {
+                // TODO: Navigate to level up wizard when implemented
+                window.location.reload();
+              }}
+            />
 
             {/* Inspiration */}
             <Card>
