@@ -4,6 +4,7 @@ import { ArrowLeft, Swords } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import { Button } from '@/components/ui/button';
 import { InitiativeTracker } from '@/app/components/combat/initiative-tracker';
+import { QuickActions } from '@/app/components/combat/quick-actions';
 import { calculateModifier } from '@/lib/data/point-buy';
 
 interface PageProps {
@@ -80,6 +81,9 @@ export default async function CombatPage({ params }: PageProps) {
 
           {/* Initiative Tracker */}
           <InitiativeTracker characterName={character.name} characterInitiative={initiative} />
+
+          {/* Quick Actions */}
+          <QuickActions characterClass={character.class} />
 
           {/* Combat Info Card */}
           <div className="rounded-lg border bg-muted/50 p-4 text-sm">
