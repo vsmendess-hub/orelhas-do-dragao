@@ -1,6 +1,8 @@
 import { redirect } from 'next/navigation';
+import Link from 'next/link';
 import { createClient } from '@/lib/supabase/server';
 import { Button } from '@/components/ui/button';
+import { Users } from 'lucide-react';
 import { CharacterList } from './components/character-list';
 
 export default async function Home() {
@@ -37,6 +39,12 @@ export default async function Home() {
           </div>
 
           <div className="flex items-center gap-4">
+            <Button asChild variant="outline" size="sm">
+              <Link href="/party">
+                <Users className="mr-2 h-4 w-4" />
+                Party Dashboard
+              </Link>
+            </Button>
             <span className="text-sm text-muted-foreground">{user.email}</span>
             <form action="/auth/logout" method="POST">
               <Button type="submit" variant="outline" size="sm">
