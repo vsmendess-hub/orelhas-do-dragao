@@ -53,7 +53,6 @@ interface MilestoneManagerProps {
   currentHP: { current: number; max: number };
   currentAttributes: AbilityScores;
   initialMilestones: Milestone[];
-  onLevelUp?: () => void;
 }
 
 export function MilestoneManager({
@@ -64,7 +63,6 @@ export function MilestoneManager({
   currentHP,
   currentAttributes,
   initialMilestones,
-  onLevelUp,
 }: MilestoneManagerProps) {
   const [milestones, setMilestones] = useState<Milestone[]>(initialMilestones);
   const [isSaving, setIsSaving] = useState(false);
@@ -418,7 +416,7 @@ export function MilestoneManager({
         onClose={() => setIsLevelUpWizardOpen(false)}
         onComplete={() => {
           setIsLevelUpWizardOpen(false);
-          if (onLevelUp) onLevelUp();
+          window.location.reload();
         }}
       />
     </div>

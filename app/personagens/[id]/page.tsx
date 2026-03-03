@@ -348,9 +348,6 @@ export default async function CharacterPage({ params }: PageProps) {
               currentLevel={character.level}
               currentHP={character.hit_points}
               currentAttributes={character.attributes}
-              onLevelUp={() => {
-                window.location.reload();
-              }}
             />
 
             {/* Milestone Manager */}
@@ -362,9 +359,6 @@ export default async function CharacterPage({ params }: PageProps) {
               currentHP={character.hit_points}
               currentAttributes={character.attributes}
               initialMilestones={characterMilestones}
-              onLevelUp={() => {
-                window.location.reload();
-              }}
             />
 
             {/* Inspiration */}
@@ -546,9 +540,6 @@ export default async function CharacterPage({ params }: PageProps) {
               spellSlots={character.spell_slots || []}
               classResources={classResources}
               deathSaves={deathSaves}
-              onRestComplete={() => {
-                window.location.reload();
-              }}
             />
 
             {/* Death Saves - Only show if HP is 0 */}
@@ -558,10 +549,6 @@ export default async function CharacterPage({ params }: PageProps) {
                   characterId={id}
                   currentHP={character.hit_points.current}
                   initialDeathSaves={deathSaves}
-                  onHPChange={() => {
-                    // Recarregar página para atualizar HP
-                    window.location.reload();
-                  }}
                 />
               </div>
             )}

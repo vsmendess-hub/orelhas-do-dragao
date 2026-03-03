@@ -35,7 +35,6 @@ interface XPManagerProps {
   currentLevel: number;
   currentHP: { current: number; max: number };
   currentAttributes: AbilityScores;
-  onLevelUp?: () => void;
 }
 
 export function XPManager({
@@ -46,7 +45,6 @@ export function XPManager({
   currentLevel,
   currentHP,
   currentAttributes,
-  onLevelUp,
 }: XPManagerProps) {
   const [currentXP, setCurrentXP] = useState(initialXP);
   const [isSaving, setIsSaving] = useState(false);
@@ -77,8 +75,9 @@ export function XPManager({
 
       // Verificar se subiu de nível
       const result = addExperience(currentXP, newXP - currentXP, currentLevel);
-      if (result.leveledUp && onLevelUp) {
-        onLevelUp();
+      if (result.leveledUp) {
+        // Recarregar página para atualizar nível
+        window.location.reload();
       }
     } catch (err) {
       console.error('Erro ao salvar XP:', err);
@@ -249,7 +248,7 @@ export function XPManager({
         onClose={() => setIsLevelUpWizardOpen(false)}
         onComplete={() => {
           setIsLevelUpWizardOpen(false);
-          if (onLevelUp) onLevelUp();
+          window.location.reload();
         }}
       />
     </Card>

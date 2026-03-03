@@ -20,14 +20,12 @@ interface DeathSavesManagerProps {
   characterId: string;
   currentHP: number;
   initialDeathSaves: DeathSaves;
-  onHPChange?: (newHP: number) => void;
 }
 
 export function DeathSavesManager({
   characterId,
   currentHP,
   initialDeathSaves,
-  onHPChange,
 }: DeathSavesManagerProps) {
   const [deathSaves, setDeathSaves] = useState<DeathSaves>(initialDeathSaves);
   const [isSaving, setIsSaving] = useState(false);
@@ -80,7 +78,8 @@ export function DeathSavesManager({
 
     if (result.recoveredHP > 0) {
       saveDeathSaves(result.deathSaves, result.recoveredHP);
-      onHPChange?.(result.recoveredHP);
+      // Recarregar página se recuperou HP
+      setTimeout(() => window.location.reload(), 2000);
     } else {
       saveDeathSaves(result.deathSaves);
     }

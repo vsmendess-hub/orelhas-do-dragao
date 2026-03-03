@@ -41,7 +41,6 @@ interface RestManagerProps {
   spellSlots: SpellSlotState[];
   classResources: ClassResource[];
   deathSaves: DeathSaves;
-  onRestComplete: () => void;
 }
 
 export function RestManager({
@@ -55,7 +54,6 @@ export function RestManager({
   spellSlots,
   classResources,
   deathSaves,
-  onRestComplete,
 }: RestManagerProps) {
   const [isShortRestOpen, setIsShortRestOpen] = useState(false);
   const [isLongRestOpen, setIsLongRestOpen] = useState(false);
@@ -114,7 +112,7 @@ export function RestManager({
         setIsShortRestOpen(false);
         setRestResult(null);
         setHitDiceToSpend('1');
-        onRestComplete();
+        window.location.reload();
       }, 3000);
     } catch (err) {
       console.error('Erro ao processar short rest:', err);
@@ -167,7 +165,7 @@ export function RestManager({
       setTimeout(() => {
         setIsLongRestOpen(false);
         setRestResult(null);
-        onRestComplete();
+        window.location.reload();
       }, 3000);
     } catch (err) {
       console.error('Erro ao processar long rest:', err);
