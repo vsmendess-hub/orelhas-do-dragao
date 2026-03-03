@@ -1,12 +1,22 @@
 'use client';
 
 import { useState } from 'react';
-import { BookOpen, FileText, Loader2, Save, HelpCircle } from 'lucide-react';
+import { BookOpen, Save, Loader2 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { BACKSTORY_TIPS, type Background } from '@/lib/data/personality';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { type Background, COMMON_BACKGROUNDS } from '@/lib/data/personality';
 
 interface BackstoryEditorProps {
   characterId: string;
@@ -16,172 +26,154 @@ interface BackstoryEditorProps {
 export function BackstoryEditor({ characterId, initialBackground }: BackstoryEditorProps) {
   const [background, setBackground] = useState<Background>(initialBackground);
   const [isSaving, setIsSaving] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [hasChanges, setHasChanges] = useState(false);
-  const [showTips, setShowTips] = useState(false);
+  const [saveMessage, setSaveMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(
+    null
+  );
 
-  // Atualizar campo
-  const updateField = (field: keyof Background, value: string) => {
-    setBackground((prev) => ({ ...prev, [field]: value }));
-    setHasChanges(true);
+  const handleChange = (field: keyof Background, value: string) => {
+    setBackground((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
   };
 
-  // Salvar no Supabase
   const handleSave = async () => {
     try {
       setIsSaving(true);
-      setError(null);
+      setSaveMessage(null);
 
       const supabase = createClient();
-      const { error: updateError } = await supabase
+
+      const { error } = await supabase
         .from('characters')
         .update({ background })
         .eq('id', characterId);
 
-      if (updateError) throw updateError;
+      if (error) throw error;
 
-      setHasChanges(false);
+      setSaveMessage({ type: 'success', text: 'História salva com sucesso!' });
+      setTimeout(() => setSaveMessage(null), 3000);
     } catch (err) {
-      console.error('Erro ao salvar background:', err);
-      setError('Erro ao salvar alterações');
+      console.error('Erro ao salvar história:', err);
+      setSaveMessage({ type: 'error', text: 'Erro ao salvar. Tente novamente.' });
     } finally {
       setIsSaving(false);
     }
   };
 
-  // Contar palavras
-  const countWords = (text: string): number => {
-    return text
-      .trim()
-      .split(/\s+/)
-      .filter((word) => word.length > 0).length;
-  };
-
-  const backstoryWordCount = countWords(background.backstory);
-  const notesWordCount = countWords(background.notes);
-
   return (
-    <div className="space-y-6">
-      {/* História de Fundo */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <BookOpen className="h-5 w-5" />
-            História de Fundo
-          </CardTitle>
-          <CardDescription>
-            Conte a história do seu personagem: origem, motivações e eventos importantes
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {/* Dicas colapsáveis */}
-          <div className="rounded-lg border bg-blue-50 p-4 dark:bg-blue-950/20">
-            <button
-              onClick={() => setShowTips(!showTips)}
-              className="flex w-full items-center justify-between text-left"
-            >
-              <p className="flex items-center gap-2 text-sm font-medium text-blue-900 dark:text-blue-100">
-                <HelpCircle className="h-4 w-4" />
-                Perguntas para Criar sua História
-              </p>
-              <span className="text-xs text-blue-700 dark:text-blue-300">
-                {showTips ? 'Ocultar' : 'Mostrar'}
-              </span>
-            </button>
-            {showTips && (
-              <ul className="mt-3 space-y-2 text-xs text-blue-800 dark:text-blue-200">
-                {BACKSTORY_TIPS.map((tip, index) => (
-                  <li key={index}>• {tip}</li>
-                ))}
-              </ul>
-            )}
-          </div>
-
-          {/* Editor de backstory */}
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <label htmlFor="backstory" className="text-sm font-medium">
-                Sua História
-              </label>
-              <span className="text-xs text-muted-foreground">
-                {backstoryWordCount} {backstoryWordCount === 1 ? 'palavra' : 'palavras'}
-              </span>
-            </div>
-            <Textarea
-              id="backstory"
-              placeholder="Era uma vez, em uma terra distante..."
-              value={background.backstory}
-              onChange={(e) => updateField('backstory', e.target.value)}
-              disabled={isSaving}
-              className="min-h-[300px] resize-y font-serif text-base leading-relaxed"
-            />
-            <p className="text-xs text-muted-foreground">
-              Dica: Uma boa história tem entre 100-300 palavras. Foque em eventos marcantes e
-              motivações.
-            </p>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Notas Gerais */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <FileText className="h-5 w-5" />
-            Notas e Observações
-          </CardTitle>
-          <CardDescription>
-            Anotações gerais, lembretes, objetivos ou informações adicionais
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {/* Editor de notas */}
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <label htmlFor="notes" className="text-sm font-medium">
-                Suas Notas
-              </label>
-              <span className="text-xs text-muted-foreground">
-                {notesWordCount} {notesWordCount === 1 ? 'palavra' : 'palavras'}
-              </span>
-            </div>
-            <Textarea
-              id="notes"
-              placeholder="Anote objetivos, lembretes, informações de sessões anteriores..."
-              value={background.notes}
-              onChange={(e) => updateField('notes', e.target.value)}
-              disabled={isSaving}
-              className="min-h-[200px] resize-y"
-            />
-          </div>
-
-          {/* Exemplos de uso */}
-          <div className="rounded-lg border bg-muted/50 p-3 text-xs text-muted-foreground">
-            <p className="font-medium text-foreground">💡 Ideias para suas notas:</p>
-            <ul className="mt-2 space-y-1">
-              <li>• Objetivos de curto e longo prazo</li>
-              <li>• NPCs importantes e relacionamentos</li>
-              <li>• Itens ou locais que você quer explorar</li>
-              <li>• Anotações de sessões anteriores</li>
-              <li>• Questões em aberto ou mistérios</li>
-            </ul>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Erro */}
-      {error && (
-        <div className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-900 dark:border-red-900 dark:bg-red-950/20 dark:text-red-100">
-          ⚠️ {error}
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <BookOpen className="h-5 w-5" />
+          História e Background
+        </CardTitle>
+        <CardDescription>
+          Conte a história do seu personagem e suas conexões com o mundo
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-6">
+        {/* Background D&D 5e */}
+        <div className="space-y-2">
+          <Label htmlFor="background-name">Background D&D 5e</Label>
+          <Select value={background.name || ''} onValueChange={(value) => handleChange('name', value)}>
+            <SelectTrigger id="background-name">
+              <SelectValue placeholder="Selecione um background..." />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="">Nenhum / Personalizado</SelectItem>
+              {COMMON_BACKGROUNDS.map((bg) => (
+                <SelectItem key={bg} value={bg}>
+                  {bg}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
-      )}
 
-      {/* Botão Salvar */}
-      <div className="flex items-center justify-between">
-        <p className="text-sm text-muted-foreground">
-          {hasChanges ? 'Você tem alterações não salvas' : 'Todas as alterações foram salvas'}
-        </p>
-        <Button onClick={handleSave} disabled={!hasChanges || isSaving}>
+        {/* Descrição do Background */}
+        {background.name && (
+          <div className="space-y-2">
+            <Label htmlFor="background-description">Descrição do Background</Label>
+            <Textarea
+              id="background-description"
+              value={background.description || ''}
+              onChange={(e) => handleChange('description', e.target.value)}
+              placeholder="O que esse background significa para seu personagem?"
+              rows={3}
+            />
+          </div>
+        )}
+
+        {/* Backstory Principal */}
+        <div className="space-y-2">
+          <Label htmlFor="backstory">História de Fundo</Label>
+          <Textarea
+            id="backstory"
+            value={background.backstory || ''}
+            onChange={(e) => handleChange('backstory', e.target.value)}
+            placeholder="Conte a história do seu personagem: de onde veio, o que fez, como chegou até aqui..."
+            rows={10}
+          />
+        </div>
+
+        {/* Aliados */}
+        <div className="space-y-2">
+          <Label htmlFor="allies">Aliados e Contatos</Label>
+          <Textarea
+            id="allies"
+            value={background.allies || ''}
+            onChange={(e) => handleChange('allies', e.target.value)}
+            placeholder="Quem ajuda seu personagem? Amigos, mentores, organizações..."
+            rows={3}
+          />
+        </div>
+
+        {/* Inimigos */}
+        <div className="space-y-2">
+          <Label htmlFor="enemies">Inimigos e Rivais</Label>
+          <Textarea
+            id="enemies"
+            value={background.enemies || ''}
+            onChange={(e) => handleChange('enemies', e.target.value)}
+            placeholder="Quem se opõe ao seu personagem? Rivais, inimigos, antagonistas..."
+            rows={3}
+          />
+        </div>
+
+        {/* Organizações */}
+        <div className="space-y-2">
+          <Label htmlFor="organizations">Organizações</Label>
+          <Textarea
+            id="organizations"
+            value={background.organizations || ''}
+            onChange={(e) => handleChange('organizations', e.target.value)}
+            placeholder="Guildas, facções, ordens que seu personagem pertence ou conhece..."
+            rows={3}
+          />
+        </div>
+
+        {/* Dicas */}
+        <div className="rounded-lg border bg-muted/50 p-3 text-xs text-muted-foreground">
+          <p className="font-medium text-foreground">💡 Dicas para História:</p>
+          <ul className="mt-2 space-y-1">
+            <li>• De onde seu personagem veio?</li>
+            <li>• Por que se tornou um aventureiro?</li>
+            <li>• Qual o maior evento que moldou sua vida?</li>
+            <li>• O que motiva suas ações atualmente?</li>
+            <li>• Quais são seus objetivos a longo prazo?</li>
+          </ul>
+        </div>
+
+        {/* Mensagem de Salvamento */}
+        {saveMessage && (
+          <Alert variant={saveMessage.type === 'error' ? 'destructive' : 'default'}>
+            <AlertDescription>{saveMessage.text}</AlertDescription>
+          </Alert>
+        )}
+
+        {/* Botão Salvar */}
+        <Button onClick={handleSave} disabled={isSaving} className="w-full" size="lg">
           {isSaving ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -190,11 +182,11 @@ export function BackstoryEditor({ characterId, initialBackground }: BackstoryEdi
           ) : (
             <>
               <Save className="mr-2 h-4 w-4" />
-              Salvar Alterações
+              Salvar História
             </>
           )}
         </Button>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 }

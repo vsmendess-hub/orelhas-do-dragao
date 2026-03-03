@@ -80,6 +80,7 @@ export default async function SpellsPage({ params }: PageProps) {
   // Magias do personagem
   const characterSpells = character.spells || [];
   const spellSlots = character.spell_slots || [];
+  const spellFavorites = character.spell_favorites || [];
 
   return (
     <div className="min-h-screen bg-background">
@@ -113,6 +114,7 @@ export default async function SpellsPage({ params }: PageProps) {
           attributes={character.attributes}
           initialSpells={characterSpells}
           initialSpellSlots={spellSlots}
+          initialFavorites={spellFavorites}
         />
       </main>
     </div>

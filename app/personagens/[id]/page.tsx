@@ -29,12 +29,23 @@ import { ConcentrationTracker } from '@/app/components/character/concentration-t
 import { XPManager } from '@/app/components/character/xp-manager';
 import { MilestoneManager } from '@/app/components/character/milestone-manager';
 import { RestManager } from '@/app/components/character/rest-manager';
+import { CharacterPortrait } from '@/app/components/character/character-portrait';
+import { FeatsManager } from '@/app/components/character/feats-manager';
+import { GoalsManager } from '@/app/components/character/goals-manager';
+import { MulticlassManager } from '@/app/components/character/multiclass-manager';
+import { VariantRulesManager } from '@/app/components/character/variant-rules-manager';
+import { OptionalFeaturesManager } from '@/app/components/character/optional-features-manager';
+import { CharacterShareManager } from '@/app/components/character/character-share-manager';
+import { CharacterImportExport } from '@/app/components/character/character-import-export';
 import { generateClassResources, type ClassResource } from '@/lib/data/class-resources';
+import type { ClassLevel } from '@/lib/data/multiclass';
+import { DEFAULT_VARIANT_RULES, type VariantRulesState } from '@/lib/data/variant-rules';
 import { EMPTY_DEATH_SAVES, type DeathSaves } from '@/lib/data/death-saves';
 import { EMPTY_CONDITIONS, type Condition } from '@/lib/data/conditions';
 import { type Companion } from '@/lib/data/companions';
 import { type JournalEntry } from '@/lib/data/journal';
 import { type ConcentrationSpell } from '@/lib/data/concentration';
+import type { CharacterShare } from '@/lib/data/character-sharing';
 
 const ABILITY_NAMES = {
   str: 'Força',
@@ -128,8 +139,33 @@ export default async function CharacterPage({ params }: PageProps) {
   const hasConcentrationProficiency =
     character.proficiencies?.savingThrows?.includes('con') || false;
 
+  // Character Share
+  const characterShare: CharacterShare | null = character.character_share || null;
+
   // Milestones
   const characterMilestones = character.milestones || [];
+
+  // Feats
+  const characterFeats = character.feats || [];
+
+  // Goals
+  const characterGoals = character.goals || [];
+
+  // Multiclass
+  const characterMulticlass: ClassLevel[] = character.multiclass || [
+    {
+      className: character.class,
+      level: character.level,
+      hitDie: 'd8',
+      subclass: character.archetype,
+    },
+  ];
+
+  // Variant Rules
+  const variantRules: VariantRulesState = character.variant_rules || DEFAULT_VARIANT_RULES;
+
+  // Optional Features
+  const optionalFeatures = character.optional_features || [];
 
   // Count active features
   const activeConditionsCount = characterConditions.filter((c) => c.active).length;
@@ -190,8 +226,17 @@ export default async function CharacterPage({ params }: PageProps) {
       <main className="container mx-auto py-8 px-4">
         {/* Character Header */}
         <div className="mb-8">
-          <div className="flex items-start justify-between">
-            <div>
+          <div className="flex items-start gap-6">
+            {/* Character Portrait */}
+            <CharacterPortrait
+              name={character.name}
+              avatarUrl={character.avatar_url}
+              size="xl"
+              className="flex-shrink-0"
+            />
+
+            {/* Character Info */}
+            <div className="flex-1">
               <h1 className="text-4xl font-bold">{character.name}</h1>
               <p className="mt-2 text-lg text-muted-foreground">
                 {character.race}
@@ -556,6 +601,46 @@ export default async function CharacterPage({ params }: PageProps) {
             {/* Class Resources */}
             <ClassResourcesManager characterId={id} initialResources={classResources} />
 
+            {/* Multiclass */}
+            <MulticlassManager
+              characterId={id}
+              initialClasses={characterMulticlass}
+              attributes={character.attributes}
+            />
+
+            {/* Feats */}
+            <FeatsManager
+              characterId={id}
+              characterClass={character.class}
+              currentLevel={character.level}
+              initialFeats={characterFeats}
+            />
+
+            {/* Optional Features */}
+            <OptionalFeaturesManager
+              characterId={id}
+              characterClass={character.class}
+              characterLevel={character.level}
+              initialFeatures={optionalFeatures}
+            />
+
+            {/* Character Sharing */}
+            <CharacterShareManager
+              characterId={id}
+              characterName={character.name}
+              ownerId={user.id}
+              ownerName={user.email || 'Jogador'}
+              initialShare={characterShare}
+            />
+
+            {/* Import/Export */}
+            <CharacterImportExport
+              characterId={id}
+              character={character}
+              userId={user.id}
+              onImportSuccess={() => window.location.reload()}
+            />
+
             {/* Conditions */}
             <ConditionsManager characterId={id} initialConditions={characterConditions} />
 
@@ -567,6 +652,16 @@ export default async function CharacterPage({ params }: PageProps) {
             {/* Journal */}
             <div className="lg:col-span-2">
               <JournalManager characterId={id} initialEntries={characterJournal} />
+            </div>
+
+            {/* Goals */}
+            <div className="lg:col-span-2">
+              <GoalsManager characterId={id} initialGoals={characterGoals} />
+            </div>
+
+            {/* Variant Rules */}
+            <div className="lg:col-span-2">
+              <VariantRulesManager characterId={id} initialRules={variantRules} />
             </div>
           </div>
         </div>

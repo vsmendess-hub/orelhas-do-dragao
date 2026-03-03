@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Wand2, Plus, Sparkles, BookOpen, Zap } from 'lucide-react';
+import { Wand2, Plus, Sparkles, BookOpen, Zap, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -19,6 +19,14 @@ import { getSpellSlots, getCantripsKnown, getSpellsKnown } from '@/lib/data/spel
 import { formatModifier } from '@/lib/data/point-buy';
 import { SpellSlotTracker } from './spell-slot-tracker';
 import { SpellList } from './spell-list';
+import { SpellFavoritesPanel } from './spell-favorites-panel';
+import {
+  type SpellFavorite,
+  addToFavorites,
+  removeFromFavorites,
+  isFavorite,
+} from '@/lib/data/spell-favorites';
+import { createClient } from '@/lib/supabase/client';
 
 interface SpellManagerProps {
   characterId: string;
@@ -37,6 +45,7 @@ interface SpellManagerProps {
   };
   initialSpells: CharacterSpell[];
   initialSpellSlots: SpellSlotState[];
+  initialFavorites?: SpellFavorite[];
 }
 
 const ABILITY_LABELS: Record<string, string> = {
@@ -55,8 +64,10 @@ export function SpellManager({
   attributes,
   initialSpells,
   initialSpellSlots,
+  initialFavorites = [],
 }: SpellManagerProps) {
   const [spells] = useState<CharacterSpell[]>(initialSpells);
+  const [favorites, setFavorites] = useState<SpellFavorite[]>(initialFavorites);
 
   // Calcular stats
   const spellSaveDC = calculateSpellSaveDC(proficiencyBonus, spellcastingModifier);
@@ -95,6 +106,62 @@ export function SpellManager({
   const leveledSpells = Object.entries(groupedSpells)
     .filter(([level]) => parseInt(level) > 0)
     .sort(([a], [b]) => parseInt(a) - parseInt(b));
+
+  // Toggle favorite
+  const handleToggleFavorite = async (spell: CharacterSpell) => {
+    try {
+      const supabase = createClient();
+      let newFavorites: SpellFavorite[];
+
+      if (isFavorite(favorites, spell.spellId)) {
+        newFavorites = removeFromFavorites(favorites, spell.spellId);
+      } else {
+        newFavorites = addToFavorites(favorites, spell);
+      }
+
+      const { error } = await supabase
+        .from('characters')
+        .update({ spell_favorites: newFavorites })
+        .eq('id', characterId);
+
+      if (error) throw error;
+
+      setFavorites(newFavorites);
+    } catch (err) {
+      console.error('Erro ao atualizar favoritos:', err);
+      alert('Erro ao atualizar favoritos. Tente novamente.');
+    }
+  };
+
+  const favoriteIds = favorites.map((f) => f.spellId);
+
+  // Handler para conjurar magia (usa spell slot)
+  const handleCastSpell = async (spellId: string, castAtLevel: number) => {
+    try {
+      const supabase = createClient();
+
+      // Encontrar o slot e usar
+      const updatedSlots = spellSlots.map((slot) => {
+        if (slot.level === castAtLevel && slot.used < slot.total) {
+          return { ...slot, used: slot.used + 1 };
+        }
+        return slot;
+      });
+
+      const { error } = await supabase
+        .from('characters')
+        .update({ spell_slots: updatedSlots })
+        .eq('id', characterId);
+
+      if (error) throw error;
+
+      setSpellSlots(updatedSlots);
+      alert(`${spells.find((s) => s.spellId === spellId)?.spellName} conjurada no ${castAtLevel}º nível!`);
+    } catch (err) {
+      console.error('Erro ao conjurar magia:', err);
+      alert('Erro ao conjurar magia. Tente novamente.');
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -174,6 +241,13 @@ export function SpellManager({
               className="grid w-full grid-cols-auto-fit gap-2"
               style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))' }}
             >
+              <TabsTrigger value="favorites">
+                <Star className="mr-2 h-4 w-4" />
+                Favoritas
+                <Badge variant="secondary" className="ml-2">
+                  {favorites.length}
+                </Badge>
+              </TabsTrigger>
               <TabsTrigger value="cantrips">
                 <Sparkles className="mr-2 h-4 w-4" />
                 Cantrips
@@ -195,10 +269,26 @@ export function SpellManager({
               </TabsTrigger>
             </TabsList>
 
+            {/* Favorites */}
+            <TabsContent value="favorites" className="mt-4">
+              <SpellFavoritesPanel
+                characterId={characterId}
+                favorites={favorites}
+                onUpdate={setFavorites}
+              />
+            </TabsContent>
+
             {/* Cantrips */}
             <TabsContent value="cantrips" className="mt-4">
               {cantrips.length > 0 ? (
-                <SpellList spells={cantrips} showPrepared={false} />
+                <SpellList
+                  spells={cantrips}
+                  showPrepared={false}
+                  favorites={favoriteIds}
+                  onToggleFavorite={handleToggleFavorite}
+                  spellSlots={spellSlots}
+                  onCastSpell={handleCastSpell}
+                />
               ) : (
                 <div className="rounded-lg border border-dashed p-8 text-center">
                   <Sparkles className="mx-auto h-12 w-12 text-muted-foreground" />
@@ -213,7 +303,14 @@ export function SpellManager({
             {/* Leveled Spells */}
             {leveledSpells.map(([level, levelSpells]) => (
               <TabsContent key={level} value={`level-${level}`} className="mt-4">
-                <SpellList spells={levelSpells} showPrepared={preparedLimit !== null} />
+                <SpellList
+                  spells={levelSpells}
+                  showPrepared={preparedLimit !== null}
+                  favorites={favoriteIds}
+                  onToggleFavorite={handleToggleFavorite}
+                  spellSlots={spellSlots}
+                  onCastSpell={handleCastSpell}
+                />
               </TabsContent>
             ))}
 
@@ -228,7 +325,14 @@ export function SpellManager({
                         <Sparkles className="h-5 w-5" />
                         Cantrips
                       </h3>
-                      <SpellList spells={cantrips} showPrepared={false} />
+                      <SpellList
+                        spells={cantrips}
+                        showPrepared={false}
+                        favorites={favoriteIds}
+                        onToggleFavorite={handleToggleFavorite}
+                        spellSlots={spellSlots}
+                        onCastSpell={handleCastSpell}
+                      />
                     </div>
                   )}
 
@@ -239,7 +343,14 @@ export function SpellManager({
                         <Zap className="h-5 w-5" />
                         {level}º Círculo
                       </h3>
-                      <SpellList spells={levelSpells} showPrepared={preparedLimit !== null} />
+                      <SpellList
+                        spells={levelSpells}
+                        showPrepared={preparedLimit !== null}
+                        favorites={favoriteIds}
+                        onToggleFavorite={handleToggleFavorite}
+                        spellSlots={spellSlots}
+                        onCastSpell={handleCastSpell}
+                      />
                     </div>
                   ))}
                 </div>

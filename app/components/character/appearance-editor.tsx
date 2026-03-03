@@ -1,11 +1,14 @@
 'use client';
 
 import { useState } from 'react';
-import { User, Loader2, Save } from 'lucide-react';
+import { User, Save, Loader2 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import type { Appearance } from '@/lib/data/personality';
 
 interface AppearanceEditorProps {
@@ -16,33 +19,36 @@ interface AppearanceEditorProps {
 export function AppearanceEditor({ characterId, initialAppearance }: AppearanceEditorProps) {
   const [appearance, setAppearance] = useState<Appearance>(initialAppearance);
   const [isSaving, setIsSaving] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [hasChanges, setHasChanges] = useState(false);
+  const [saveMessage, setSaveMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(
+    null
+  );
 
-  // Atualizar campo
-  const updateField = (field: keyof Appearance, value: string | number | undefined) => {
-    setAppearance((prev) => ({ ...prev, [field]: value }));
-    setHasChanges(true);
+  const handleChange = (field: keyof Appearance, value: string) => {
+    setAppearance((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
   };
 
-  // Salvar no Supabase
   const handleSave = async () => {
     try {
       setIsSaving(true);
-      setError(null);
+      setSaveMessage(null);
 
       const supabase = createClient();
-      const { error: updateError } = await supabase
+
+      const { error } = await supabase
         .from('characters')
         .update({ appearance })
         .eq('id', characterId);
 
-      if (updateError) throw updateError;
+      if (error) throw error;
 
-      setHasChanges(false);
+      setSaveMessage({ type: 'success', text: 'Aparência salva com sucesso!' });
+      setTimeout(() => setSaveMessage(null), 3000);
     } catch (err) {
       console.error('Erro ao salvar aparência:', err);
-      setError('Erro ao salvar alterações');
+      setSaveMessage({ type: 'error', text: 'Erro ao salvar. Tente novamente.' });
     } finally {
       setIsSaving(false);
     }
@@ -58,133 +64,125 @@ export function AppearanceEditor({ characterId, initialAppearance }: AppearanceE
         <CardDescription>Descreva as características físicas do seu personagem</CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
-        {/* Grid de campos */}
+        {/* Características Básicas */}
         <div className="grid gap-4 md:grid-cols-2">
-          {/* Altura */}
           <div className="space-y-2">
-            <label htmlFor="height" className="text-sm font-medium">
-              Altura
-            </label>
-            <Input
-              id="height"
-              placeholder="Ex: 1,75m ou 5'9&quot;"
-              value={appearance.height || ''}
-              onChange={(e) => updateField('height', e.target.value)}
-              disabled={isSaving}
-            />
-          </div>
-
-          {/* Peso */}
-          <div className="space-y-2">
-            <label htmlFor="weight" className="text-sm font-medium">
-              Peso
-            </label>
-            <Input
-              id="weight"
-              placeholder="Ex: 70kg ou 154 lbs"
-              value={appearance.weight || ''}
-              onChange={(e) => updateField('weight', e.target.value)}
-              disabled={isSaving}
-            />
-          </div>
-
-          {/* Idade */}
-          <div className="space-y-2">
-            <label htmlFor="age" className="text-sm font-medium">
-              Idade
-            </label>
+            <Label htmlFor="age">Idade</Label>
             <Input
               id="age"
-              type="number"
-              min="0"
-              placeholder="Ex: 25"
               value={appearance.age || ''}
-              onChange={(e) => updateField('age', parseInt(e.target.value) || undefined)}
-              disabled={isSaving}
+              onChange={(e) => handleChange('age', e.target.value)}
+              placeholder="Ex: 25 anos"
             />
           </div>
 
-          {/* Olhos */}
           <div className="space-y-2">
-            <label htmlFor="eyes" className="text-sm font-medium">
-              Olhos
-            </label>
+            <Label htmlFor="height">Altura</Label>
+            <Input
+              id="height"
+              value={appearance.height || ''}
+              onChange={(e) => handleChange('height', e.target.value)}
+              placeholder="Ex: 1,80m"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="weight">Peso</Label>
+            <Input
+              id="weight"
+              value={appearance.weight || ''}
+              onChange={(e) => handleChange('weight', e.target.value)}
+              placeholder="Ex: 75kg"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="eyes">Olhos</Label>
             <Input
               id="eyes"
-              placeholder="Ex: Azuis, Castanhos"
               value={appearance.eyes || ''}
-              onChange={(e) => updateField('eyes', e.target.value)}
-              disabled={isSaving}
+              onChange={(e) => handleChange('eyes', e.target.value)}
+              placeholder="Ex: Castanhos"
             />
           </div>
 
-          {/* Pele */}
           <div className="space-y-2">
-            <label htmlFor="skin" className="text-sm font-medium">
-              Pele
-            </label>
+            <Label htmlFor="skin">Pele</Label>
             <Input
               id="skin"
-              placeholder="Ex: Pálida, Morena, Bronzeada"
               value={appearance.skin || ''}
-              onChange={(e) => updateField('skin', e.target.value)}
-              disabled={isSaving}
+              onChange={(e) => handleChange('skin', e.target.value)}
+              placeholder="Ex: Morena clara"
             />
           </div>
 
-          {/* Cabelo */}
           <div className="space-y-2">
-            <label htmlFor="hair" className="text-sm font-medium">
-              Cabelo
-            </label>
+            <Label htmlFor="hair">Cabelo</Label>
             <Input
               id="hair"
-              placeholder="Ex: Preto e curto, Loiro e longo"
               value={appearance.hair || ''}
-              onChange={(e) => updateField('hair', e.target.value)}
-              disabled={isSaving}
+              onChange={(e) => handleChange('hair', e.target.value)}
+              placeholder="Ex: Preto e curto"
             />
           </div>
+        </div>
+
+        {/* Marcas Distinguíveis */}
+        <div className="space-y-2">
+          <Label htmlFor="distinguishing-marks">Marcas Distinguíveis</Label>
+          <Textarea
+            id="distinguishing-marks"
+            value={appearance.distinguishingMarks || ''}
+            onChange={(e) => handleChange('distinguishingMarks', e.target.value)}
+            placeholder="Ex: Cicatriz no rosto, tatuagem de dragão no braço..."
+            rows={3}
+          />
+        </div>
+
+        {/* Descrição Geral */}
+        <div className="space-y-2">
+          <Label htmlFor="description">Descrição Geral</Label>
+          <Textarea
+            id="description"
+            value={appearance.description || ''}
+            onChange={(e) => handleChange('description', e.target.value)}
+            placeholder="Descreva a aparência geral do seu personagem..."
+            rows={5}
+          />
         </div>
 
         {/* Dicas */}
-        <div className="rounded-lg border bg-blue-50 p-4 dark:bg-blue-950/20">
-          <p className="text-sm font-medium text-blue-900 dark:text-blue-100">
-            💡 Dicas de Descrição
-          </p>
-          <ul className="mt-2 space-y-1 text-xs text-blue-800 dark:text-blue-200">
-            <li>• Seja específico: &quot;1,75m&quot; em vez de &quot;alto&quot;</li>
-            <li>• Inclua detalhes marcantes: cicatrizes, tatuagens, etc.</li>
-            <li>• Considere a raça: Elfos são geralmente mais altos e magros</li>
+        <div className="rounded-lg border bg-muted/50 p-3 text-xs text-muted-foreground">
+          <p className="font-medium text-foreground">💡 Dicas para Descrição:</p>
+          <ul className="mt-2 space-y-1">
+            <li>• Como seu personagem se veste normalmente?</li>
+            <li>• Possui alguma cicatriz ou tatuagem com história?</li>
+            <li>• Qual a sua postura e linguagem corporal?</li>
+            <li>• Algum acessório ou item característico?</li>
           </ul>
         </div>
 
-        {/* Erro */}
-        {error && (
-          <div className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-900 dark:border-red-900 dark:bg-red-950/20 dark:text-red-100">
-            ⚠️ {error}
-          </div>
+        {/* Mensagem de Salvamento */}
+        {saveMessage && (
+          <Alert variant={saveMessage.type === 'error' ? 'destructive' : 'default'}>
+            <AlertDescription>{saveMessage.text}</AlertDescription>
+          </Alert>
         )}
 
         {/* Botão Salvar */}
-        <div className="flex items-center justify-between">
-          <p className="text-sm text-muted-foreground">
-            {hasChanges ? 'Você tem alterações não salvas' : 'Todas as alterações foram salvas'}
-          </p>
-          <Button onClick={handleSave} disabled={!hasChanges || isSaving}>
-            {isSaving ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Salvando...
-              </>
-            ) : (
-              <>
-                <Save className="mr-2 h-4 w-4" />
-                Salvar Alterações
-              </>
-            )}
-          </Button>
-        </div>
+        <Button onClick={handleSave} disabled={isSaving} className="w-full" size="lg">
+          {isSaving ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Salvando...
+            </>
+          ) : (
+            <>
+              <Save className="mr-2 h-4 w-4" />
+              Salvar Aparência
+            </>
+          )}
+        </Button>
       </CardContent>
     </Card>
   );

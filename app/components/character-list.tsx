@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { Loader2, Plus, Sword } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { CharacterPortrait } from './character/character-portrait';
 
 interface Character {
   id: string;
@@ -16,6 +17,7 @@ interface Character {
     max: number;
   };
   armor_class: number;
+  avatar_url?: string;
 }
 
 interface CharacterListProps {
@@ -88,15 +90,28 @@ export function CharacterList({ characters, isLoading = false }: CharacterListPr
           <Link key={character.id} href={`/personagens/${character.id}`}>
             <Card className="transition-all hover:shadow-lg hover:border-deep-purple/50 cursor-pointer h-full">
               <CardHeader>
-                <div className="flex items-start justify-between">
+                <div className="flex items-start gap-4">
+                  {/* Character Avatar */}
+                  <CharacterPortrait
+                    name={character.name}
+                    avatarUrl={character.avatar_url}
+                    size="md"
+                    className="flex-shrink-0"
+                  />
+
+                  {/* Character Info */}
                   <div className="flex-1">
-                    <CardTitle className="text-xl">{character.name}</CardTitle>
-                    <CardDescription>
-                      {character.race} • {character.class}
-                    </CardDescription>
-                  </div>
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-deep-purple/10 text-lg font-bold text-deep-purple">
-                    {character.level}
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="min-w-0 flex-1">
+                        <CardTitle className="text-xl truncate">{character.name}</CardTitle>
+                        <CardDescription className="truncate">
+                          {character.race} • {character.class}
+                        </CardDescription>
+                      </div>
+                      <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-deep-purple/10 text-lg font-bold text-deep-purple">
+                        {character.level}
+                      </div>
+                    </div>
                   </div>
                 </div>
               </CardHeader>

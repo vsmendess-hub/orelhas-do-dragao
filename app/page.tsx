@@ -2,7 +2,7 @@ import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/server';
 import { Button } from '@/components/ui/button';
-import { Users } from 'lucide-react';
+import { Users, Library, Wand2 } from 'lucide-react';
 import { CharacterList } from './components/character-list';
 
 export default async function Home() {
@@ -20,7 +20,7 @@ export default async function Home() {
   // Buscar personagens do usuário
   const { data: characters, error } = await supabase
     .from('characters')
-    .select('id, name, race, class, level, hit_points, armor_class')
+    .select('id, name, race, class, level, hit_points, armor_class, avatar_url')
     .eq('user_id', user.id)
     .order('created_at', { ascending: false });
 
@@ -40,9 +40,21 @@ export default async function Home() {
 
           <div className="flex items-center gap-4">
             <Button asChild variant="outline" size="sm">
+              <Link href="/library">
+                <Library className="mr-2 h-4 w-4" />
+                Biblioteca
+              </Link>
+            </Button>
+            <Button asChild variant="outline" size="sm">
               <Link href="/party">
                 <Users className="mr-2 h-4 w-4" />
-                Party Dashboard
+                Party
+              </Link>
+            </Button>
+            <Button asChild variant="outline" size="sm">
+              <Link href="/dm-tools">
+                <Wand2 className="mr-2 h-4 w-4" />
+                DM Tools
               </Link>
             </Button>
             <span className="text-sm text-muted-foreground">{user.email}</span>

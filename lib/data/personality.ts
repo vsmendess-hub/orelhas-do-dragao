@@ -1,48 +1,43 @@
 /**
- * Sistema de Personalização D&D 5e
- * Tipos e interfaces para aparência, personalidade e história
+ * Sistema de Personalização de Personagem D&D 5e
  */
 
-// Aparência física do personagem
 export interface Appearance {
-  height?: string; // Ex: "1,75m" ou "5'9\""
-  weight?: string; // Ex: "70kg" ou "154 lbs"
-  age?: number; // Idade em anos
-  eyes?: string; // Cor dos olhos
-  skin?: string; // Cor da pele
-  hair?: string; // Cor e estilo do cabelo
+  age?: string;
+  height?: string;
+  weight?: string;
+  eyes?: string;
+  skin?: string;
+  hair?: string;
+  distinguishingMarks?: string;
+  description?: string;
 }
 
-// Traços de personalidade (D&D 5e)
 export interface Personality {
-  traits: string[]; // Traços de personalidade (ex: "Sou otimista", "Confio em meus amigos")
-  ideals: string[]; // Ideais (ex: "Liberdade", "Honra")
-  bonds: string[]; // Vínculos (ex: "Protejo minha família", "Busco vingança")
-  flaws: string[]; // Defeitos (ex: "Sou arrogante", "Não confio em estranhos")
+  traits?: string[];
+  ideals?: string[];
+  bonds?: string[];
+  flaws?: string[];
 }
 
-// Informações de background e notas
 export interface Background {
-  backstory: string; // História de fundo completa
-  notes: string; // Notas gerais do jogador
+  name?: string;
+  description?: string;
+  backstory?: string;
+  allies?: string;
+  enemies?: string;
+  organizations?: string;
 }
 
-// Dados completos de personalização
-export interface CharacterPersonalization {
-  appearance: Appearance;
-  personality: Personality;
-  background: Background;
-  avatar_url?: string; // URL da imagem do personagem
-}
-
-// Valores iniciais vazios
 export const EMPTY_APPEARANCE: Appearance = {
+  age: '',
   height: '',
   weight: '',
-  age: undefined,
   eyes: '',
   skin: '',
   hair: '',
+  distinguishingMarks: '',
+  description: '',
 };
 
 export const EMPTY_PERSONALITY: Personality = {
@@ -53,173 +48,121 @@ export const EMPTY_PERSONALITY: Personality = {
 };
 
 export const EMPTY_BACKGROUND: Background = {
+  name: '',
+  description: '',
   backstory: '',
-  notes: '',
+  allies: '',
+  enemies: '',
+  organizations: '',
 };
 
-export const EMPTY_PERSONALIZATION: CharacterPersonalization = {
-  appearance: EMPTY_APPEARANCE,
-  personality: EMPTY_PERSONALITY,
-  background: EMPTY_BACKGROUND,
-  avatar_url: undefined,
+// D&D 5e Backgrounds comuns
+export const COMMON_BACKGROUNDS = [
+  'Acólito',
+  'Artesão de Guilda',
+  'Artista',
+  'Charlatão',
+  'Criminoso',
+  'Eremita',
+  'Forasteiro',
+  'Herói do Povo',
+  'Marinheiro',
+  'Nobre',
+  'Sábio',
+  'Soldado',
+];
+
+// Sugestões de Personality Traits por alinhamento
+export const PERSONALITY_SUGGESTIONS = {
+  good: [
+    'Sempre ajudo quem precisa',
+    'Acredito no melhor das pessoas',
+    'Protejo os fracos e inocentes',
+    'Sigo um código de honra rígido',
+  ],
+  evil: [
+    'Faço o que for necessário para vencer',
+    'Não confio em ninguém além de mim',
+    'O poder é a única coisa que importa',
+    'Os fins justificam os meios',
+  ],
+  lawful: [
+    'Respeito a autoridade e as regras',
+    'Minha palavra é minha honra',
+    'A ordem é essencial para a sociedade',
+    'Tradição e hierarquia devem ser respeitadas',
+  ],
+  chaotic: [
+    'Liberdade acima de tudo',
+    'Regras são feitas para serem quebradas',
+    'Sigo meu próprio caminho',
+    'A espontaneidade é a essência da vida',
+  ],
 };
 
-// Exemplos de traços de personalidade (D&D 5e - PHB)
-export const PERSONALITY_EXAMPLES = {
-  traits: [
-    'Eu idealizo um herói específico e me inspiro nele constantemente.',
-    'Posso encontrar um ponto em comum entre os inimigos mais ferozes.',
-    'Eu nunca passo por uma aposta amigável.',
-    'Eu uso palavras polissilábicas que transmitem a impressão de grande erudição.',
-    'Sou incrivelmente lento para confiar. Aqueles que parecem mais justos frequentemente têm mais a esconder.',
-  ],
-  ideals: [
-    'Respeito. As pessoas merecem ser tratadas com dignidade e respeito. (Bom)',
-    'Justiça. Não deixe que ninguém vivo fique impune por suas ações. (Leal)',
-    'Liberdade. Correntes foram feitas para serem quebradas, assim como aqueles que as forjam. (Caótico)',
-    'Poder. Se eu ficar forte, posso tomar o que quiser - o que mereço. (Mau)',
-    'Aspirações. Eu me esforço para provar que sou digno do favor do meu deus. (Qualquer)',
-  ],
-  bonds: [
-    'Eu faria qualquer coisa para proteger o templo onde servi.',
-    'Eu devo minha vida ao sacerdote que me acolheu quando meus pais morreram.',
-    'Tudo que faço é para as pessoas comuns.',
-    'Vou provar que sou digno de um grande amor que rejeitei.',
-    'Alguém roubou meu tesouro mais precioso, e vou recuperá-lo.',
-  ],
-  flaws: [
-    'Secretamente acredito que tudo seria melhor se eu fosse um tirano governando a terra.',
-    'Eu tenho uma "historia" para cada situação baseada na minha vida passada.',
-    'O tirano que governa minha terra não vai parar até que eu esteja morto.',
-    'Eu sou facilmente distraído pela promessa de informação.',
-    'Uma vez que escolho um objetivo, fico obcecado com ele em detrimento de todo o resto em minha vida.',
-  ],
-};
+// Sugestões de Ideals
+export const IDEAL_SUGGESTIONS = [
+  'Justiça - Farei o que for certo, não importa o custo',
+  'Liberdade - Todos merecem viver livres',
+  'Poder - Busco me tornar mais forte a cada dia',
+  'Conhecimento - O saber é a maior riqueza',
+  'Honra - Minha reputação é tudo',
+  'Família - Farei qualquer coisa pelos meus',
+  'Ambição - Nascemos para grandeza',
+  'Tradição - Os costumes antigos devem ser preservados',
+];
 
-// Dicas para escrever backstory
-export const BACKSTORY_TIPS = [
-  'Onde você nasceu e cresceu?',
-  'Quem são seus pais? Eles ainda estão vivos?',
-  'Como você aprendeu suas habilidades de classe?',
-  'Qual foi o evento que mudou sua vida?',
-  'Por que você se tornou um aventureiro?',
-  'O que você busca em suas aventuras?',
+// Sugestões de Bonds
+export const BOND_SUGGESTIONS = [
+  'Devo proteger minha família a todo custo',
+  'Busco vingança contra quem me prejudicou',
+  'Tenho um mentor que me guia até hoje',
+  'Protejo um objeto de grande valor pessoal',
+  'Devo dinheiro a alguém poderoso',
+  'Meu grupo é minha família agora',
+  'Busco redimir um erro do passado',
+  'Tenho um amor não correspondido',
+];
+
+// Sugestões de Flaws
+export const FLAW_SUGGESTIONS = [
+  'Não consigo resistir a um desafio',
+  'Sou incapaz de mentir de forma convincente',
+  'Tenho um vício que me controla',
+  'Coloco meus interesses acima do grupo',
+  'Sou facilmente distraído',
+  'Guardo rancor por muito tempo',
+  'Confio demais nas pessoas',
+  'Tenho medo de [algo específico]',
 ];
 
 /**
- * Valida se uma URL é uma imagem válida
- */
-export function isValidImageUrl(url: string): boolean {
-  if (!url) return false;
-
-  // Aceitar URLs do Supabase Storage ou URLs externas comuns
-  const validExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp'];
-  const lowerUrl = url.toLowerCase();
-
-  return (
-    validExtensions.some((ext) => lowerUrl.includes(ext)) ||
-    lowerUrl.includes('supabase.co/storage')
-  );
-}
-
-/**
- * Formata altura para exibição
- */
-export function formatHeight(height?: string): string {
-  if (!height) return 'Não informada';
-  return height;
-}
-
-/**
- * Formata peso para exibição
- */
-export function formatWeight(weight?: string): string {
-  if (!weight) return 'Não informado';
-  return weight;
-}
-
-/**
- * Formata idade para exibição
- */
-export function formatAge(age?: number): string {
-  if (!age) return 'Não informada';
-  return `${age} anos`;
-}
-
-/**
- * Verifica se aparência está vazia
- */
-export function isAppearanceEmpty(appearance: Appearance): boolean {
-  return (
-    !appearance.height &&
-    !appearance.weight &&
-    !appearance.age &&
-    !appearance.eyes &&
-    !appearance.skin &&
-    !appearance.hair
-  );
-}
-
-/**
- * Verifica se personalidade está vazia
- */
-export function isPersonalityEmpty(personality: Personality): boolean {
-  return (
-    personality.traits.length === 0 &&
-    personality.ideals.length === 0 &&
-    personality.bonds.length === 0 &&
-    personality.flaws.length === 0
-  );
-}
-
-/**
- * Conta total de traços de personalidade
- */
-export function countPersonalityTraits(personality: Personality): number {
-  return (
-    personality.traits.length +
-    personality.ideals.length +
-    personality.bonds.length +
-    personality.flaws.length
-  );
-}
-
-/**
- * Gera placeholder de avatar baseado no nome
+ * Gera um avatar placeholder baseado na primeira letra do nome
+ * Usado quando o personagem não tem imagem de avatar
  */
 export function generateAvatarPlaceholder(name: string): string {
-  // Pegar primeira letra do nome
-  const initial = name.charAt(0).toUpperCase();
+  const firstLetter = (name || '?').charAt(0).toUpperCase();
 
-  // Cores baseadas na primeira letra (simples hash)
-  const colors = [
-    '#7048E8', // deep-purple
-    '#5F3DC4',
-    '#4C6EF5',
-    '#228BE6',
-    '#15AABF',
-    '#12B886',
-    '#40C057',
-    '#82C91E',
-    '#FAB005',
-    '#FD7E14',
-    '#FA5252',
-    '#E64980',
-  ];
+  // Cores baseadas na primeira letra (hash simples)
+  const colorMap: Record<string, string> = {
+    'bg-red-500': '#ef4444',
+    'bg-blue-500': '#3b82f6',
+    'bg-green-500': '#22c55e',
+    'bg-yellow-500': '#eab308',
+    'bg-purple-500': '#a855f7',
+    'bg-pink-500': '#ec4899',
+    'bg-indigo-500': '#6366f1',
+    'bg-teal-500': '#14b8a6',
+  };
 
-  const colorIndex = name.charCodeAt(0) % colors.length;
-  const color = colors[colorIndex];
+  const colors = Object.keys(colorMap);
+  const colorIndex = firstLetter.charCodeAt(0) % colors.length;
+  const bgColorKey = colors[colorIndex];
+  const bgColorHex = colorMap[bgColorKey];
 
-  // Retornar SVG data URL
-  const svg = `
-    <svg width="200" height="200" xmlns="http://www.w3.org/2000/svg">
-      <rect width="200" height="200" fill="${color}"/>
-      <text x="50%" y="50%" font-size="100" font-weight="bold"
-            fill="white" text-anchor="middle" dominant-baseline="central">
-        ${initial}
-      </text>
-    </svg>
-  `;
+  // Gerar SVG como data URL (sem base64 para compatibilidade cliente/servidor)
+  const svg = `<svg width="200" height="200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="${bgColorHex}"/><text x="50%" y="50%" font-size="100" font-weight="bold" fill="white" text-anchor="middle" dominant-baseline="central" font-family="system-ui,-apple-system,sans-serif">${firstLetter}</text></svg>`;
 
-  return `data:image/svg+xml;base64,${btoa(svg)}`;
+  // URL encode para compatibilidade
+  return `data:image/svg+xml,${encodeURIComponent(svg)}`;
 }

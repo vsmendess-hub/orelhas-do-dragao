@@ -1,117 +1,132 @@
 'use client';
 
 import { useState } from 'react';
-import { Heart, Plus, X, Loader2, Save, Lightbulb } from 'lucide-react';
+import { Heart, Save, Loader2, Plus, X, Lightbulb } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { PERSONALITY_EXAMPLES, type Personality } from '@/lib/data/personality';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Badge } from '@/components/ui/badge';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import {
+  type Personality,
+  PERSONALITY_SUGGESTIONS,
+  IDEAL_SUGGESTIONS,
+  BOND_SUGGESTIONS,
+  FLAW_SUGGESTIONS,
+} from '@/lib/data/personality';
 
 interface PersonalityEditorProps {
   characterId: string;
   initialPersonality: Personality;
 }
 
+type PersonalityField = 'traits' | 'ideals' | 'bonds' | 'flaws';
+
 export function PersonalityEditor({ characterId, initialPersonality }: PersonalityEditorProps) {
   const [personality, setPersonality] = useState<Personality>(initialPersonality);
   const [isSaving, setIsSaving] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [hasChanges, setHasChanges] = useState(false);
-  const [showExamples, setShowExamples] = useState(false);
+  const [saveMessage, setSaveMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(
+    null
+  );
+  const [newInputs, setNewInputs] = useState<Record<PersonalityField, string>>({
+    traits: '',
+    ideals: '',
+    bonds: '',
+    flaws: '',
+  });
 
-  // Inputs temporários para novos itens
-  const [newTrait, setNewTrait] = useState('');
-  const [newIdeal, setNewIdeal] = useState('');
-  const [newBond, setNewBond] = useState('');
-  const [newFlaw, setNewFlaw] = useState('');
-
-  // Adicionar item a uma categoria
-  const addItem = (category: keyof Personality, value: string) => {
-    if (!value.trim()) return;
+  const addItem = (field: PersonalityField) => {
+    const value = newInputs[field].trim();
+    if (!value) return;
 
     setPersonality((prev) => ({
       ...prev,
-      [category]: [...prev[category], value.trim()],
+      [field]: [...(prev[field] || []), value],
     }));
-    setHasChanges(true);
 
-    // Limpar input
-    if (category === 'traits') setNewTrait('');
-    if (category === 'ideals') setNewIdeal('');
-    if (category === 'bonds') setNewBond('');
-    if (category === 'flaws') setNewFlaw('');
+    setNewInputs((prev) => ({ ...prev, [field]: '' }));
   };
 
-  // Remover item de uma categoria
-  const removeItem = (category: keyof Personality, index: number) => {
+  const removeItem = (field: PersonalityField, index: number) => {
     setPersonality((prev) => ({
       ...prev,
-      [category]: prev[category].filter((_, i) => i !== index),
+      [field]: (prev[field] || []).filter((_, i) => i !== index),
     }));
-    setHasChanges(true);
   };
 
-  // Salvar no Supabase
+  const addSuggestion = (field: PersonalityField, suggestion: string) => {
+    if (personality[field]?.includes(suggestion)) return;
+
+    setPersonality((prev) => ({
+      ...prev,
+      [field]: [...(prev[field] || []), suggestion],
+    }));
+  };
+
   const handleSave = async () => {
     try {
       setIsSaving(true);
-      setError(null);
+      setSaveMessage(null);
 
       const supabase = createClient();
-      const { error: updateError } = await supabase
+
+      const { error } = await supabase
         .from('characters')
         .update({ personality })
         .eq('id', characterId);
 
-      if (updateError) throw updateError;
+      if (error) throw error;
 
-      setHasChanges(false);
+      setSaveMessage({ type: 'success', text: 'Personalidade salva com sucesso!' });
+      setTimeout(() => setSaveMessage(null), 3000);
     } catch (err) {
       console.error('Erro ao salvar personalidade:', err);
-      setError('Erro ao salvar alterações');
+      setSaveMessage({ type: 'error', text: 'Erro ao salvar. Tente novamente.' });
     } finally {
       setIsSaving(false);
     }
   };
 
-  // Renderizar seção de categoria
-  const renderCategory = (
+  const renderField = (
+    field: PersonalityField,
     title: string,
     description: string,
-    category: keyof Personality,
-    items: string[],
-    newValue: string,
-    setNewValue: (value: string) => void,
-    icon: React.ReactNode,
-    examples: string[]
-  ) => (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-lg">
-          {icon}
-          {title}
-        </CardTitle>
-        <CardDescription>{description}</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-3">
-        {/* Lista de itens */}
+    suggestions: string[],
+    limit?: number
+  ) => {
+    const items = personality[field] || [];
+    const canAdd = !limit || items.length < limit;
+
+    return (
+      <div className="space-y-3">
+        <div>
+          <Label className="text-base font-semibold">{title}</Label>
+          <p className="text-sm text-muted-foreground">{description}</p>
+          {limit && (
+            <p className="mt-1 text-xs text-muted-foreground">
+              {items.length}/{limit} preenchidos
+            </p>
+          )}
+        </div>
+
+        {/* Items atuais */}
         {items.length > 0 && (
           <div className="space-y-2">
             {items.map((item, index) => (
               <div
                 key={index}
-                className="flex items-start justify-between gap-2 rounded-lg border bg-muted/50 p-3"
+                className="flex items-center gap-2 rounded-md border bg-muted/50 p-2 text-sm"
               >
-                <p className="flex-1 text-sm">{item}</p>
+                <span className="flex-1">{item}</span>
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => removeItem(category, index)}
-                  disabled={isSaving}
-                  className="h-6 w-6 p-0"
+                  onClick={() => removeItem(field, index)}
+                  className="h-6 w-6 p-0 text-destructive hover:text-destructive"
                 >
-                  <X className="h-4 w-4" />
+                  <X className="h-3 w-3" />
                 </Button>
               </div>
             ))}
@@ -119,156 +134,116 @@ export function PersonalityEditor({ characterId, initialPersonality }: Personali
         )}
 
         {/* Input para adicionar novo */}
-        <div className="flex gap-2">
-          <Input
-            placeholder={`Adicionar ${title.toLowerCase()}...`}
-            value={newValue}
-            onChange={(e) => setNewValue(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                e.preventDefault();
-                addItem(category, newValue);
-              }
-            }}
-            disabled={isSaving}
-          />
-          <Button
-            onClick={() => addItem(category, newValue)}
-            disabled={!newValue.trim() || isSaving}
-            size="sm"
-          >
-            <Plus className="h-4 w-4" />
-          </Button>
-        </div>
-
-        {/* Exemplos */}
-        {examples.length > 0 && (
-          <details className="text-xs">
-            <summary className="cursor-pointer text-muted-foreground hover:text-foreground">
-              💡 Ver exemplos do D&amp;D 5e
-            </summary>
-            <ul className="mt-2 space-y-1 text-muted-foreground">
-              {examples.slice(0, 3).map((example, index) => (
-                <li key={index} className="ml-4">
-                  • {example}
-                </li>
-              ))}
-            </ul>
-          </details>
-        )}
-      </CardContent>
-    </Card>
-  );
-
-  return (
-    <div className="space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Heart className="h-5 w-5" />
-            Personalidade
-          </CardTitle>
-          <CardDescription>
-            Defina os traços, ideais, vínculos e defeitos do seu personagem (D&amp;D 5e)
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {/* Toggle para mostrar dicas gerais */}
-          <div className="mb-4 rounded-lg border bg-blue-50 p-4 dark:bg-blue-950/20">
-            <button
-              onClick={() => setShowExamples(!showExamples)}
-              className="flex w-full items-center justify-between text-left"
-            >
-              <p className="flex items-center gap-2 text-sm font-medium text-blue-900 dark:text-blue-100">
-                <Lightbulb className="h-4 w-4" />
-                Dicas de Personalidade D&amp;D 5e
-              </p>
-              <span className="text-xs text-blue-700 dark:text-blue-300">
-                {showExamples ? 'Ocultar' : 'Mostrar'}
-              </span>
-            </button>
-            {showExamples && (
-              <div className="mt-3 space-y-2 text-xs text-blue-800 dark:text-blue-200">
-                <p>
-                  <strong>Traços:</strong> Como você age e se comporta? (Recomendado: 2 traços)
-                </p>
-                <p>
-                  <strong>Ideais:</strong> Em que você acredita? O que te motiva? (Recomendado: 1
-                  ideal)
-                </p>
-                <p>
-                  <strong>Vínculos:</strong> Com quem ou o quê você se importa? (Recomendado: 1
-                  vínculo)
-                </p>
-                <p>
-                  <strong>Defeitos:</strong> Quais são suas fraquezas? (Recomendado: 1 defeito)
-                </p>
-              </div>
-            )}
+        {canAdd && (
+          <div className="flex gap-2">
+            <Input
+              value={newInputs[field]}
+              onChange={(e) => setNewInputs((prev) => ({ ...prev, [field]: e.target.value }))}
+              placeholder={`Adicionar ${title.toLowerCase()}...`}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  addItem(field);
+                }
+              }}
+            />
+            <Button onClick={() => addItem(field)} size="icon" disabled={!newInputs[field].trim()}>
+              <Plus className="h-4 w-4" />
+            </Button>
           </div>
-        </CardContent>
-      </Card>
-
-      {/* Grid de categorias */}
-      <div className="grid gap-6 md:grid-cols-2">
-        {renderCategory(
-          'Traços de Personalidade',
-          'Como você age e se comporta no dia a dia',
-          'traits',
-          personality.traits,
-          newTrait,
-          setNewTrait,
-          <span className="text-lg">😊</span>,
-          PERSONALITY_EXAMPLES.traits
         )}
 
-        {renderCategory(
-          'Ideais',
-          'Seus valores e o que te motiva',
-          'ideals',
-          personality.ideals,
-          newIdeal,
-          setNewIdeal,
-          <span className="text-lg">⭐</span>,
-          PERSONALITY_EXAMPLES.ideals
-        )}
-
-        {renderCategory(
-          'Vínculos',
-          'Pessoas, lugares ou coisas importantes para você',
-          'bonds',
-          personality.bonds,
-          newBond,
-          setNewBond,
-          <span className="text-lg">🔗</span>,
-          PERSONALITY_EXAMPLES.bonds
-        )}
-
-        {renderCategory(
-          'Defeitos',
-          'Suas fraquezas e vulnerabilidades',
-          'flaws',
-          personality.flaws,
-          newFlaw,
-          setNewFlaw,
-          <span className="text-lg">⚠️</span>,
-          PERSONALITY_EXAMPLES.flaws
+        {/* Sugestões */}
+        {suggestions.length > 0 && canAdd && (
+          <div className="space-y-2">
+            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+              <Lightbulb className="h-3 w-3" />
+              <span>Sugestões:</span>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {suggestions.map((suggestion) => (
+                <Badge
+                  key={suggestion}
+                  variant="outline"
+                  className="cursor-pointer hover:bg-muted"
+                  onClick={() => addSuggestion(field, suggestion)}
+                >
+                  + {suggestion}
+                </Badge>
+              ))}
+            </div>
+          </div>
         )}
       </div>
+    );
+  };
 
-      {/* Erro */}
-      {error && (
-        <div className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-900 dark:border-red-900 dark:bg-red-950/20 dark:text-red-100">
-          ⚠️ {error}
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <Heart className="h-5 w-5" />
+          Personalidade
+        </CardTitle>
+        <CardDescription>
+          Defina os traços, ideais, vínculos e defeitos do seu personagem
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-8">
+        {/* D&D 5e recomenda 2 traits, 1 ideal, 1 bond, 1 flaw */}
+
+        {renderField(
+          'traits',
+          'Traços de Personalidade',
+          'Como seu personagem age e se comporta?',
+          [...PERSONALITY_SUGGESTIONS.good, ...PERSONALITY_SUGGESTIONS.lawful],
+          2
+        )}
+
+        {renderField(
+          'ideals',
+          'Ideais',
+          'No que seu personagem acredita?',
+          IDEAL_SUGGESTIONS,
+          1
+        )}
+
+        {renderField(
+          'bonds',
+          'Vínculos',
+          'O que é mais importante para seu personagem?',
+          BOND_SUGGESTIONS,
+          1
+        )}
+
+        {renderField(
+          'flaws',
+          'Defeitos',
+          'Qual a maior fraqueza do seu personagem?',
+          FLAW_SUGGESTIONS,
+          1
+        )}
+
+        {/* Info sobre D&D 5e */}
+        <div className="rounded-lg border bg-muted/50 p-3 text-xs text-muted-foreground">
+          <p className="font-medium text-foreground">📖 Regras D&D 5e:</p>
+          <ul className="mt-2 space-y-1">
+            <li>• Traços: 2 características marcantes do personagem</li>
+            <li>• Ideais: 1 princípio que guia as ações</li>
+            <li>• Vínculos: 1 conexão importante (pessoa, lugar, objeto)</li>
+            <li>• Defeitos: 1 fraqueza ou vício</li>
+          </ul>
         </div>
-      )}
 
-      {/* Botão Salvar */}
-      <div className="flex items-center justify-between">
-        <p className="text-sm text-muted-foreground">
-          {hasChanges ? 'Você tem alterações não salvas' : 'Todas as alterações foram salvas'}
-        </p>
-        <Button onClick={handleSave} disabled={!hasChanges || isSaving}>
+        {/* Mensagem de Salvamento */}
+        {saveMessage && (
+          <Alert variant={saveMessage.type === 'error' ? 'destructive' : 'default'}>
+            <AlertDescription>{saveMessage.text}</AlertDescription>
+          </Alert>
+        )}
+
+        {/* Botão Salvar */}
+        <Button onClick={handleSave} disabled={isSaving} className="w-full" size="lg">
           {isSaving ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -277,11 +252,11 @@ export function PersonalityEditor({ characterId, initialPersonality }: Personali
           ) : (
             <>
               <Save className="mr-2 h-4 w-4" />
-              Salvar Alterações
+              Salvar Personalidade
             </>
           )}
         </Button>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 }
