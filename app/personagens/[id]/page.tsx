@@ -27,6 +27,7 @@ import { CompanionsManager } from '@/app/components/character/companions-manager
 import { JournalManager } from '@/app/components/character/journal-manager';
 import { ConcentrationTracker } from '@/app/components/character/concentration-tracker';
 import { XPManager } from '@/app/components/character/xp-manager';
+import { MilestoneManager } from '@/app/components/character/milestone-manager';
 import { generateClassResources, type ClassResource } from '@/lib/data/class-resources';
 import { EMPTY_DEATH_SAVES, type DeathSaves } from '@/lib/data/death-saves';
 import { EMPTY_CONDITIONS, type Condition } from '@/lib/data/conditions';
@@ -125,6 +126,9 @@ export default async function CharacterPage({ params }: PageProps) {
   // Check if character has Constitution save proficiency
   const hasConcentrationProficiency =
     character.proficiencies?.savingThrows?.includes('con') || false;
+
+  // Milestones
+  const characterMilestones = character.milestones || [];
 
   // Count active features
   const activeConditionsCount = characterConditions.filter((c) => c.active).length;
@@ -343,6 +347,20 @@ export default async function CharacterPage({ params }: PageProps) {
               currentLevel={character.level}
               currentHP={character.hit_points}
               currentAttributes={character.attributes}
+              onLevelUp={() => {
+                window.location.reload();
+              }}
+            />
+
+            {/* Milestone Manager */}
+            <MilestoneManager
+              characterId={id}
+              characterName={character.name}
+              characterClass={character.class}
+              currentLevel={character.level}
+              currentHP={character.hit_points}
+              currentAttributes={character.attributes}
+              initialMilestones={characterMilestones}
               onLevelUp={() => {
                 window.location.reload();
               }}
