@@ -28,6 +28,7 @@ import { JournalManager } from '@/app/components/character/journal-manager';
 import { ConcentrationTracker } from '@/app/components/character/concentration-tracker';
 import { XPManager } from '@/app/components/character/xp-manager';
 import { MilestoneManager } from '@/app/components/character/milestone-manager';
+import { RestManager } from '@/app/components/character/rest-manager';
 import { generateClassResources, type ClassResource } from '@/lib/data/class-resources';
 import { EMPTY_DEATH_SAVES, type DeathSaves } from '@/lib/data/death-saves';
 import { EMPTY_CONDITIONS, type Condition } from '@/lib/data/conditions';
@@ -533,6 +534,23 @@ export default async function CharacterPage({ params }: PageProps) {
             </div>
           </div>
           <div className="grid gap-6 lg:grid-cols-2">
+            {/* Rest Manager */}
+            <RestManager
+              characterId={id}
+              characterClass={character.class}
+              characterLevel={character.level}
+              constitutionModifier={modifiers.con}
+              currentHP={character.hit_points.current}
+              maxHP={character.hit_points.max}
+              hitDiceUsed={character.hit_dice_used || 0}
+              spellSlots={character.spell_slots || []}
+              classResources={classResources}
+              deathSaves={deathSaves}
+              onRestComplete={() => {
+                window.location.reload();
+              }}
+            />
+
             {/* Death Saves - Only show if HP is 0 */}
             {character.hit_points.current === 0 && (
               <div className="lg:col-span-2">
