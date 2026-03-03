@@ -24,24 +24,35 @@ import {
   formatXP,
   addExperience,
 } from '@/lib/data/experience';
+import { LevelUpWizard } from './level-up-wizard';
+import type { AbilityScores } from '@/lib/data/level-up';
 
 interface XPManagerProps {
   characterId: string;
+  characterName: string;
+  characterClass: string;
   currentXP: number;
   currentLevel: number;
+  currentHP: { current: number; max: number };
+  currentAttributes: AbilityScores;
   onLevelUp?: () => void;
 }
 
 export function XPManager({
   characterId,
+  characterName,
+  characterClass,
   currentXP: initialXP,
   currentLevel,
+  currentHP,
+  currentAttributes,
   onLevelUp,
 }: XPManagerProps) {
   const [currentXP, setCurrentXP] = useState(initialXP);
   const [isSaving, setIsSaving] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [xpToAdd, setXpToAdd] = useState('');
+  const [isLevelUpWizardOpen, setIsLevelUpWizardOpen] = useState(false);
 
   const progress = calculateXPProgress(currentXP, currentLevel);
   const canLevel = canLevelUp(currentXP, currentLevel);
@@ -157,10 +168,25 @@ export function XPManager({
           )}
         </div>
 
+        {/* Level Up Button */}
+        {canLevel && (
+          <Button
+            onClick={() => setIsLevelUpWizardOpen(true)}
+            className="w-full bg-amber-600 hover:bg-amber-700"
+          >
+            <Award className="mr-2 h-4 w-4" />
+            Subir de Nível!
+          </Button>
+        )}
+
         {/* Add XP Button */}
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <Button className="w-full" disabled={isSaving}>
+            <Button
+              className="w-full"
+              disabled={isSaving}
+              variant={canLevel ? 'outline' : 'default'}
+            >
               <Plus className="mr-2 h-4 w-4" />
               Adicionar XP
             </Button>
@@ -210,6 +236,22 @@ export function XPManager({
           </DialogContent>
         </Dialog>
       </CardContent>
+
+      {/* Level Up Wizard */}
+      <LevelUpWizard
+        characterId={characterId}
+        characterName={characterName}
+        currentLevel={currentLevel}
+        characterClass={characterClass}
+        currentHP={currentHP}
+        currentAttributes={currentAttributes}
+        open={isLevelUpWizardOpen}
+        onClose={() => setIsLevelUpWizardOpen(false)}
+        onComplete={() => {
+          setIsLevelUpWizardOpen(false);
+          if (onLevelUp) onLevelUp();
+        }}
+      />
     </Card>
   );
 }

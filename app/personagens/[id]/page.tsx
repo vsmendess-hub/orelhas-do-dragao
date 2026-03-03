@@ -337,10 +337,13 @@ export default async function CharacterPage({ params }: PageProps) {
             {/* XP Manager */}
             <XPManager
               characterId={id}
+              characterName={character.name}
+              characterClass={character.class}
               currentXP={character.experience_points}
               currentLevel={character.level}
+              currentHP={character.hit_points}
+              currentAttributes={character.attributes}
               onLevelUp={() => {
-                // TODO: Navigate to level up wizard when implemented
                 window.location.reload();
               }}
             />
