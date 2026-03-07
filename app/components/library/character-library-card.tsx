@@ -1,12 +1,12 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { Eye, User, Shield } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import type { CommunityCharacter } from '@/lib/data/community-library';
-import { generateShareUrl } from '@/lib/data/character-sharing';
 
 interface CharacterLibraryCardProps {
   character: CommunityCharacter;
@@ -19,11 +19,12 @@ export function CharacterLibraryCard({ character }: CharacterLibraryCardProps) {
     <Card className="overflow-hidden hover:shadow-lg transition-shadow">
       {/* Preview Image */}
       {character.previewImage ? (
-        <div className="aspect-video w-full overflow-hidden bg-muted">
-          <img
+        <div className="aspect-video w-full overflow-hidden bg-muted relative">
+          <Image
             src={character.previewImage}
             alt={character.name}
-            className="h-full w-full object-cover"
+            fill
+            className="object-cover"
           />
         </div>
       ) : (

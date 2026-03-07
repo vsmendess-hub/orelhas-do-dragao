@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Settings, Info, ToggleLeft, ToggleRight } from 'lucide-react';
+import { Settings, Info } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -15,7 +15,6 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from '@/components/ui/dialog';
 import {
   type VariantRulesState,
@@ -195,7 +194,7 @@ export function VariantRulesManager({ characterId, initialRules }: VariantRulesM
         <div className="rounded-lg border bg-blue-50 p-3 text-sm text-blue-900 dark:bg-blue-950/20 dark:text-blue-100">
           <p className="font-medium">💡 Sobre Regras Variantes</p>
           <p className="mt-1 text-xs">
-            Estas são regras opcionais sugeridas pelo Dungeon Master's Guide e homebrew populares.
+            Estas são regras opcionais sugeridas pelo Dungeon Master&apos;s Guide e homebrew populares.
             Algumas mudam significativamente o jogo. Sempre consulte seu DM antes de ativar.
           </p>
         </div>

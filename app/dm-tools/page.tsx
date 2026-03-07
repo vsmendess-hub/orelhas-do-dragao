@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { ArrowLeft, Wand2, Users, Coins, Dices, BookOpen, Zap } from 'lucide-react';
+import { ArrowLeft, Wand2, Users, Coins, BookOpen, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { NameGenerator } from '@/app/components/dm-tools/name-generator';

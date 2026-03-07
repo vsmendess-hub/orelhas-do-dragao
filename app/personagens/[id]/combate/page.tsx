@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { ArrowLeft, Swords } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import { Button } from '@/components/ui/button';
+import { ThemeToggle } from '@/app/components/theme-toggle';
 import { InitiativeTracker } from '@/app/components/combat/initiative-tracker';
 import { QuickActions } from '@/app/components/combat/quick-actions';
 import { calculateModifier } from '@/lib/data/point-buy';
@@ -46,22 +47,35 @@ export default async function CombatPage({ params }: PageProps) {
   const initiative = dexModifier;
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen relative">
+      {/* Fantasy Background */}
+      <div className="fantasy-bg" />
+      <div
+        className="fixed inset-0 -z-10 bg-cover bg-center opacity-20"
+        style={{
+          backgroundImage:
+            'url(https://i.pinimg.com/originals/a1/5d/0e/a15d0e8c4f4f8b8c4f4f8b8c4f4f8b8c.jpg)',
+          filter: 'blur(3px)',
+        }}
+      />
+
       {/* Header */}
-      <header className="border-b">
+      <header className="glass-card border-0 rounded-none backdrop-blur-xl">
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
           <div className="flex items-center gap-4">
-            <Button asChild variant="ghost" size="sm">
+            <Button asChild variant="ghost" size="sm" className="text-white hover:bg-white/10">
               <Link href={`/personagens/${id}`}>
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 Voltar
               </Link>
             </Button>
             <div>
-              <h1 className="text-lg font-semibold">{character.name}</h1>
-              <p className="text-xs text-muted-foreground">Sistema de Combate</p>
+              <h1 className="text-lg font-semibold text-white">{character.name}</h1>
+              <p className="text-xs text-gray-400">Sistema de Combate</p>
             </div>
           </div>
+
+          <ThemeToggle />
         </div>
       </header>
 
@@ -70,11 +84,11 @@ export default async function CombatPage({ params }: PageProps) {
         <div className="mx-auto max-w-4xl space-y-6">
           {/* Header de Combate */}
           <div>
-            <h2 className="flex items-center gap-2 text-3xl font-bold">
-              <Swords className="h-8 w-8 text-red-600" />
+            <h2 className="flex items-center gap-2 text-3xl font-bold text-white">
+              <Swords className="h-8 w-8 text-red-400" />
               Gerenciador de Combate
             </h2>
-            <p className="mt-2 text-muted-foreground">
+            <p className="mt-2 text-gray-300">
               Rastreie iniciativa, turnos e status dos combatentes
             </p>
           </div>
@@ -86,9 +100,9 @@ export default async function CombatPage({ params }: PageProps) {
           <QuickActions characterClass={character.class} />
 
           {/* Combat Info Card */}
-          <div className="rounded-lg border bg-muted/50 p-4 text-sm">
-            <h3 className="mb-2 font-semibold">⚔️ Dicas de Combate:</h3>
-            <ul className="space-y-1 text-muted-foreground">
+          <div className="glass-card-light rounded-xl p-4 text-sm">
+            <h3 className="mb-2 font-semibold text-white">⚔️ Dicas de Combate:</h3>
+            <ul className="space-y-1 text-gray-300">
               <li>• Clique em &quot;Iniciar Combate&quot; para começar rastrear iniciativa</li>
               <li>• Adicione inimigos e aliados com o botão &quot;Adicionar&quot;</li>
               <li>• Use as setas para avançar/voltar turnos</li>

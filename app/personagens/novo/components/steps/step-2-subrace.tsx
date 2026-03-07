@@ -1,10 +1,10 @@
 'use client';
 
 import { useEffect } from 'react';
+import Image from 'next/image';
 import { Check, Info } from 'lucide-react';
 import { useWizard } from '../../wizard-context';
 import { getRaceById, type Subrace } from '@/lib/data/races';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 export function Step2Subrace() {
   const { characterData, updateCharacterData, nextStep } = useWizard();
@@ -44,15 +44,15 @@ export function Step2Subrace() {
       <div className="space-y-6">
         <div className="text-center">
           <p className="text-4xl">👥</p>
-          <h2 className="mt-4 text-2xl font-bold">Escolha sua Sub-raça</h2>
-          <p className="mt-2 text-sm text-muted-foreground">
+          <h2 className="mt-4 text-2xl font-bold text-white">Escolha sua Sub-raça</h2>
+          <p className="mt-2 text-sm text-gray-400">
             Algumas raças têm sub-raças com bônus adicionais.
           </p>
         </div>
 
-        <div className="rounded-lg border border-amber-200 bg-amber-50 p-6 text-center dark:border-amber-900 dark:bg-amber-950/20">
-          <Info className="mx-auto h-8 w-8 text-amber-600 dark:text-amber-400" />
-          <p className="mt-4 text-sm text-amber-900 dark:text-amber-100">
+        <div className="glass-card-light rounded-xl border border-amber-400/50 p-6 text-center">
+          <Info className="mx-auto h-8 w-8 text-amber-400" />
+          <p className="mt-4 text-sm text-amber-100">
             Por favor, volte e selecione uma raça primeiro.
           </p>
         </div>
@@ -66,7 +66,7 @@ export function Step2Subrace() {
       <div className="space-y-6">
         <div className="text-center">
           <p className="text-4xl">👥</p>
-          <p className="mt-4 text-muted-foreground">Carregando...</p>
+          <p className="mt-4 text-gray-400">Carregando...</p>
         </div>
       </div>
     );
@@ -77,20 +77,20 @@ export function Step2Subrace() {
       {/* Header */}
       <div className="text-center">
         <p className="text-4xl">👥</p>
-        <h2 className="mt-4 text-2xl font-bold">Escolha sua Sub-raça</h2>
-        <p className="mt-2 text-sm text-muted-foreground">
+        <h2 className="mt-4 text-2xl font-bold text-white">Escolha sua Sub-raça</h2>
+        <p className="mt-2 text-sm text-gray-400">
           {selectedRace.name} tem {subraces.length} sub-raças disponíveis. Escolha uma para ganhar
           bônus adicionais.
         </p>
       </div>
 
       {/* Info da Raça Principal */}
-      <div className="rounded-lg border bg-muted/50 p-4">
+      <div className="glass-card-light rounded-xl p-4">
         <div className="flex items-center gap-2">
           <span className="text-2xl">🎭</span>
           <div>
-            <p className="text-sm text-muted-foreground">Raça selecionada</p>
-            <p className="font-semibold">{selectedRace.name}</p>
+            <p className="text-sm text-gray-400">Raça selecionada</p>
+            <p className="font-semibold text-white">{selectedRace.name}</p>
           </div>
         </div>
       </div>
@@ -101,50 +101,67 @@ export function Step2Subrace() {
           const isSelected = characterData.subrace === subrace.id;
 
           return (
-            <Card
+            <div
               key={subrace.id}
-              className={`cursor-pointer transition-all hover:shadow-md ${
+              className={`glass-card rounded-xl p-4 cursor-pointer transition-all ${
                 isSelected
-                  ? 'border-2 border-deep-purple bg-deep-purple/5 ring-2 ring-deep-purple/20'
-                  : 'border hover:border-deep-purple/50'
+                  ? 'border-2 border-purple-500 bg-purple-500/10 scale-105'
+                  : 'hover:scale-105 hover:border-purple-500/50'
               }`}
               onClick={() => selectSubrace(subrace.id)}
             >
-              <CardHeader className="pb-3">
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <CardTitle className="text-lg">{subrace.name}</CardTitle>
-                    <CardDescription className="text-xs">
-                      Sub-raça de {selectedRace.name}
-                    </CardDescription>
-                  </div>
-                  {isSelected && (
-                    <div className="flex h-6 w-6 items-center justify-center rounded-full bg-deep-purple text-white">
-                      <Check className="h-4 w-4" />
+              <div className="flex items-start gap-3 mb-3">
+                {/* Imagem circular da sub-raça */}
+                {subrace.image && (
+                  <div className="flex-shrink-0">
+                    <div className="relative h-14 w-14 overflow-hidden rounded-full border-2 border-purple-400">
+                      <Image
+                        src={subrace.image}
+                        alt={subrace.name}
+                        fill
+                        className="object-cover"
+                      />
                     </div>
-                  )}
+                  </div>
+                )}
+
+                <div className="flex-1">
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <h3 className="text-lg font-semibold text-white">{subrace.name}</h3>
+                      <p className="text-xs text-gray-400">
+                        Sub-raça de {selectedRace.name}
+                      </p>
+                    </div>
+                    {isSelected && (
+                      <div className="flex h-6 w-6 items-center justify-center rounded-full bg-gradient-to-r from-purple-600 to-violet-600 text-white">
+                        <Check className="h-4 w-4" />
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </CardHeader>
-              <CardContent className="space-y-3 pb-4">
-                <p className="text-sm text-muted-foreground">{subrace.description}</p>
+              </div>
+
+              <div className="space-y-3">
+                <p className="text-sm text-gray-300">{subrace.description}</p>
 
                 {/* Bônus de Atributos Adicionais */}
-                <div className="rounded-md bg-muted px-3 py-2">
-                  <p className="text-xs font-medium text-muted-foreground">Bônus Adicionais</p>
-                  <p className="mt-1 text-sm font-semibold">{formatBonuses(subrace)}</p>
+                <div className="glass-card-light rounded-lg px-3 py-2">
+                  <p className="text-xs font-medium text-gray-400">Bônus Adicionais</p>
+                  <p className="mt-1 text-sm font-semibold text-white">{formatBonuses(subrace)}</p>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           );
         })}
       </div>
 
       {/* Info sobre seleção atual */}
       {characterData.subrace && (
-        <div className="rounded-lg border bg-green-50 p-4 dark:bg-green-950/20">
+        <div className="glass-card-light rounded-xl border border-green-400/50 p-4">
           <div className="flex items-center gap-2">
-            <Check className="h-5 w-5 text-green-600 dark:text-green-400" />
-            <p className="text-sm font-medium text-green-900 dark:text-green-100">
+            <Check className="h-5 w-5 text-green-400" />
+            <p className="text-sm font-medium text-green-100">
               Sub-raça selecionada: {subraces.find((sr) => sr.id === characterData.subrace)?.name}
             </p>
           </div>

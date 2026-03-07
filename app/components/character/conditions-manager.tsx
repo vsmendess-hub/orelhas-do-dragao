@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { AlertCircle, X, Plus } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import {
   Dialog,
@@ -106,9 +105,9 @@ export function ConditionsManager({ characterId, initialConditions }: Conditions
                 )}
               </div>
             </div>
-            <p className="mt-2 text-xs text-muted-foreground">{details.description}</p>
+            <p className="mt-2 text-xs text-gray-400">{details.description}</p>
             {condition.notes && (
-              <p className="mt-2 rounded bg-muted p-2 text-xs italic">{condition.notes}</p>
+              <p className="mt-2 rounded glass-card-light p-2 text-xs italic text-gray-400">{condition.notes}</p>
             )}
           </div>
           <Button
@@ -136,38 +135,37 @@ export function ConditionsManager({ characterId, initialConditions }: Conditions
       <button
         key={type}
         onClick={() => setSelectedCondition(type)}
-        className={`flex items-start gap-3 rounded-lg border p-3 text-left transition-all hover:bg-muted ${
-          selectedCondition === type ? 'border-deep-purple bg-deep-purple/5' : ''
+        className={`flex items-start gap-3 rounded-lg border p-3 text-left transition-all hover:scale-[1.01] ${
+          selectedCondition === type ? 'border-2 border-purple-500 bg-purple-500/10' : 'border-white/10 hover:border-purple-500/50'
         }`}
       >
         <span className="text-2xl">{details.icon}</span>
         <div className="flex-1">
-          <p className="font-medium">{details.name}</p>
-          <p className="mt-1 text-xs text-muted-foreground">{details.description}</p>
+          <p className="font-medium text-white">{details.name}</p>
+          <p className="mt-1 text-xs text-gray-400">{details.description}</p>
         </div>
       </button>
     );
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center gap-2">
-            <AlertCircle className="h-5 w-5" />
-            Condições
-            {activeConditions.length > 0 && (
-              <Badge variant="secondary">{activeConditions.length}</Badge>
-            )}
-          </CardTitle>
-          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-            <DialogTrigger asChild>
-              <Button variant="outline" size="sm" disabled={isSaving}>
-                <Plus className="mr-2 h-4 w-4" />
-                Adicionar
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-h-[80vh] overflow-y-auto">
+    <div className="glass-card rounded-2xl p-6 space-y-4">
+      <div className="flex items-center justify-between">
+        <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+          <AlertCircle className="h-5 w-5 text-red-500" />
+          Condições
+          {activeConditions.length > 0 && (
+            <Badge variant="secondary">{activeConditions.length}</Badge>
+          )}
+        </h3>
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <DialogTrigger asChild>
+            <Button variant="outline" size="sm" disabled={isSaving}>
+              <Plus className="mr-2 h-4 w-4" />
+              Adicionar
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="max-h-[80vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle>Adicionar Condição</DialogTitle>
                 <DialogDescription>
@@ -183,8 +181,8 @@ export function ConditionsManager({ characterId, initialConditions }: Conditions
 
                 {/* Campos extras para condição selecionada */}
                 {selectedCondition && (
-                  <div className="space-y-4 rounded-lg border bg-muted/50 p-4">
-                    <h4 className="font-medium">
+                  <div className="space-y-4 glass-card-light rounded-lg border border-white/10 p-4">
+                    <h4 className="font-medium text-white">
                       Configurar: {CONDITION_DETAILS[selectedCondition].name}
                     </h4>
 
@@ -219,44 +217,42 @@ export function ConditionsManager({ characterId, initialConditions }: Conditions
                     <Button
                       onClick={() => handleActivateCondition(selectedCondition)}
                       disabled={isSaving}
-                      className="w-full"
+                      className="w-full tab-purple"
                     >
                       Aplicar Condição
                     </Button>
                   </div>
                 )}
               </div>
-            </DialogContent>
-          </Dialog>
-        </div>
-      </CardHeader>
-      <CardContent>
-        {activeConditions.length === 0 ? (
-          <div className="py-8 text-center text-sm text-muted-foreground">
-            <AlertCircle className="mx-auto mb-2 h-8 w-8 opacity-50" />
-            <p>Nenhuma condição ativa</p>
-          </div>
-        ) : (
-          <div className="grid gap-3">{activeConditions.map(renderActiveCondition)}</div>
-        )}
+          </DialogContent>
+        </Dialog>
+      </div>
 
-        {/* Resumo rápido de efeitos */}
-        {activeConditions.length > 0 && (
-          <div className="mt-4 rounded-lg border bg-muted/50 p-3 text-xs text-muted-foreground">
-            <p className="mb-2 font-medium text-foreground">⚠️ Efeitos Ativos:</p>
-            <ul className="space-y-1">
-              {activeConditions.map((condition) => (
-                <li key={condition.type}>
-                  • <span className="font-medium">{CONDITION_DETAILS[condition.type].name}</span>
-                  {condition.type === 'exhaustion' && condition.level && (
-                    <span> (Nível {condition.level})</span>
-                  )}
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-      </CardContent>
-    </Card>
+      {activeConditions.length === 0 ? (
+        <div className="glass-card-light rounded-lg border border-dashed border-purple-500/50 py-8 text-center text-sm">
+          <AlertCircle className="mx-auto mb-2 h-8 w-8 text-gray-400" />
+          <p className="text-white">Nenhuma condição ativa</p>
+        </div>
+      ) : (
+        <div className="grid gap-3">{activeConditions.map(renderActiveCondition)}</div>
+      )}
+
+      {/* Resumo rápido de efeitos */}
+      {activeConditions.length > 0 && (
+        <div className="glass-card-light rounded-lg border border-white/10 p-3 text-xs">
+          <p className="mb-2 font-medium text-white">⚠️ Efeitos Ativos:</p>
+          <ul className="space-y-1 text-gray-400">
+            {activeConditions.map((condition) => (
+              <li key={condition.type}>
+                • <span className="font-medium text-white">{CONDITION_DETAILS[condition.type].name}</span>
+                {condition.type === 'exhaustion' && condition.level && (
+                  <span> (Nível {condition.level})</span>
+                )}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
   );
 }

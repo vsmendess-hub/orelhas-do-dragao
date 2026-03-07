@@ -205,7 +205,9 @@ export default async function SharedCharacterPage({ params }: PageProps) {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Deslocamento:</span>
-                  <span className="font-semibold">{character.speed} pés</span>
+                  <span className="font-semibold">
+                    {Math.round((character.speed * 0.3048) * 10) / 10} m
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Bônus de Proficiência:</span>

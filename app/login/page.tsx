@@ -1,5 +1,7 @@
 import { redirect } from 'next/navigation';
+import Image from 'next/image';
 import { createClient } from '@/lib/supabase/server';
+import { ThemeToggle } from '@/app/components/theme-toggle';
 import { LoginButton } from './login-button';
 
 export const metadata = {
@@ -20,11 +22,16 @@ export default async function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-background p-4">
+    <div className="relative flex min-h-screen flex-col items-center justify-center bg-background p-4">
+      {/* Theme Toggle - Fixed position */}
+      <div className="absolute right-4 top-4">
+        <ThemeToggle />
+      </div>
+
       <div className="w-full max-w-md space-y-8">
         {/* Logo */}
-        <div className="flex justify-center">
-          <img src="/logo.jpg" alt="Orelhas do Dragão" className="h-32 w-auto object-contain" />
+        <div className="flex justify-center relative h-32">
+          <Image src="/logo.jpg" alt="Orelhas do Dragão" width={128} height={128} className="object-contain" />
         </div>
 
         {/* Título */}

@@ -1,8 +1,8 @@
 import Link from 'next/link';
-import { Search, Users, Eye, TrendingUp, Filter } from 'lucide-react';
+import { Users, Eye, TrendingUp } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import {
   toCommunityCharacter,

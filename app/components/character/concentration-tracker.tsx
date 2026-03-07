@@ -62,6 +62,7 @@ export function ConcentrationTracker({
   };
 
   // Iniciar concentração (chamado de fora, ex: ao conjurar magia)
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const startConcentration = (spellName: string, duration: string) => {
     const newConcentration: ConcentrationSpell = {
       spellName,

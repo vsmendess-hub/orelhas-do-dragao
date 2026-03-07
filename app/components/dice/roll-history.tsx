@@ -57,7 +57,7 @@ export function RollHistory({ maxEntries = 50 }: RollHistoryProps) {
       // @ts-expect-error - Limpeza
       window.addRollToHistory = undefined;
     };
-  }, []);
+  }, [addRoll]);
 
   // Calcular estatísticas
   const stats = calculateRollStats(history);

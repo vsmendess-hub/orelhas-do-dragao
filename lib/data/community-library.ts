@@ -2,6 +2,7 @@
  * Sistema de Biblioteca da Comunidade D&D 5e
  */
 
+import type { Character } from '@/lib/supabase/types';
 import type { CharacterShare } from './character-sharing';
 
 export interface CommunityCharacter {
@@ -251,7 +252,7 @@ export function calculateLibraryStats(
 /**
  * Transforma character completo em CommunityCharacter
  */
-export function toCommunityCharacter(character: any): CommunityCharacter | null {
+export function toCommunityCharacter(character: Character & { character_share?: CharacterShare; portrait_url?: string }): CommunityCharacter | null {
   if (!character.character_share) return null;
   if (character.character_share.visibility !== 'public') return null;
 
@@ -261,10 +262,10 @@ export function toCommunityCharacter(character: any): CommunityCharacter | null 
     race: character.race,
     class: character.class,
     level: character.level,
-    background: character.background,
-    alignment: character.alignment,
+    background: character.background || undefined,
+    alignment: character.alignment || undefined,
     shareInfo: character.character_share,
-    previewImage: character.portrait_url,
+    previewImage: character.portrait_url || undefined,
   };
 }
 

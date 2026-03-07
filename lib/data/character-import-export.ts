@@ -2,6 +2,8 @@
  * Sistema de Import/Export de Personagens D&D 5e
  */
 
+import type { Character } from '@/lib/supabase/types';
+
 export interface ExportMetadata {
   version: string; // Versão do schema de export
   exportedAt: string; // Data/hora do export
@@ -11,7 +13,7 @@ export interface ExportMetadata {
 
 export interface CharacterExport {
   metadata: ExportMetadata;
-  character: any; // Character completo
+  character: Character; // Character completo
 }
 
 export interface ImportValidation {
@@ -36,7 +38,7 @@ export const CURRENT_EXPORT_VERSION = '1.0.0';
  * Exporta personagem para JSON
  */
 export function exportCharacter(
-  character: any,
+  character: Character,
   userId: string,
   appVersion: string = '1.0.0'
 ): CharacterExport {
@@ -48,13 +50,11 @@ export function exportCharacter(
   };
 
   // Limpar campos sensíveis
-  const cleanCharacter = { ...character };
-  delete cleanCharacter.created_at;
-  delete cleanCharacter.updated_at;
+  const { created_at, updated_at, ...cleanCharacter } = character;
 
   return {
     metadata,
-    character: cleanCharacter,
+    character: cleanCharacter as Character,
   };
 }
 
@@ -157,33 +157,29 @@ export function parseImport(
   jsonString: string,
   userId: string,
   options: ImportOptions = {}
-): any | null {
+): Character | null {
   try {
     const data: CharacterExport = JSON.parse(jsonString);
 
-    let character = { ...data.character };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const characterData = data.character as any;
 
     // Gerar novo ID se solicitado
     if (options.generateNewId) {
-      character.id = crypto.randomUUID();
+      characterData.id = crypto.randomUUID();
     }
 
     // Definir user_id
     if (!options.preserveUser) {
-      character.user_id = userId;
+      characterData.user_id = userId;
     }
-
-    // Remover campos que não devem ser importados
-    delete character.created_at;
-    delete character.updated_at;
-    delete character.character_share; // Não importar compartilhamento
 
     // Adicionar timestamps
     const now = new Date().toISOString();
-    character.created_at = now;
-    character.updated_at = now;
+    characterData.created_at = now;
+    characterData.updated_at = now;
 
-    return character;
+    return characterData as Character;
   } catch (err) {
     console.error('Erro ao fazer parse do import:', err);
     return null;
@@ -217,16 +213,17 @@ export interface ExportStats {
 }
 
 export function calculateExportStats(characterExport: CharacterExport): ExportStats {
-  const character = characterExport.character;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const character = characterExport.character as any;
   const jsonSize = new Blob([JSON.stringify(characterExport)]).size;
 
   return {
     characterName: character.name || 'Unknown',
     level: character.level || 0,
     class: character.class || 'Unknown',
-    totalSpells: (character.spells || []).length,
-    totalFeats: (character.feats || []).length,
-    totalItems: (character.inventory || []).length,
+    totalSpells: Array.isArray(character.spells) ? character.spells.length : 0,
+    totalFeats: Array.isArray(character.feats) ? character.feats.length : 0,
+    totalItems: Array.isArray(character.inventory) ? character.inventory.length : 0,
     exportSize: `${(jsonSize / 1024).toFixed(2)} KB`,
   };
 }
@@ -278,7 +275,7 @@ export function exportWithFormat(
 /**
  * Clona personagem (export + import com novo ID)
  */
-export function cloneCharacter(character: any, userId: string): any {
+export function cloneCharacter(character: Character, userId: string): Character | null {
   const exported = exportCharacter(character, userId);
   const cloned = parseImport(JSON.stringify(exported), userId, {
     generateNewId: true,
@@ -295,7 +292,7 @@ export function cloneCharacter(character: any, userId: string): any {
 /**
  * Backup automático (export simplificado)
  */
-export function createBackup(character: any, userId: string): string {
+export function createBackup(character: Character, userId: string): string {
   const exported = exportCharacter(character, userId);
   return exportWithFormat(exported, 'json-compact');
 }
@@ -307,7 +304,7 @@ export function restoreFromBackup(
   backupString: string,
   userId: string,
   characterId: string
-): any | null {
+): Character | null {
   const validation = validateImport(backupString);
   if (!validation.valid) {
     return null;
@@ -330,21 +327,25 @@ export function restoreFromBackup(
  */
 export interface CharacterDiff {
   field: string;
-  oldValue: any;
-  newValue: any;
+  oldValue: unknown;
+  newValue: unknown;
   type: 'added' | 'removed' | 'changed';
 }
 
-export function compareCharacters(oldChar: any, newChar: any): CharacterDiff[] {
+export function compareCharacters(oldChar: Character, newChar: Character): CharacterDiff[] {
   const diffs: CharacterDiff[] = [];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const oldCharAny = oldChar as any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const newCharAny = newChar as any;
   const allKeys = new Set([...Object.keys(oldChar), ...Object.keys(newChar)]);
 
   for (const key of allKeys) {
     // Ignorar timestamps e IDs
     if (['created_at', 'updated_at', 'user_id'].includes(key)) continue;
 
-    const oldValue = oldChar[key];
-    const newValue = newChar[key];
+    const oldValue = oldCharAny[key];
+    const newValue = newCharAny[key];
 
     if (oldValue === undefined && newValue !== undefined) {
       diffs.push({ field: key, oldValue: null, newValue, type: 'added' });

@@ -4,6 +4,7 @@ import { ArrowLeft, Eye } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ThemeToggle } from '@/app/components/theme-toggle';
 import { AppearanceEditor } from '@/app/components/character/appearance-editor';
 import { PersonalityEditor } from '@/app/components/character/personality-editor';
 import { BackstoryEditor } from '@/app/components/character/backstory-editor';
@@ -54,7 +55,24 @@ export default async function PersonalizationPage({ params }: PageProps) {
   // Garantir que os campos de personalização existam
   const appearance: Appearance = character.appearance || EMPTY_APPEARANCE;
   const personality: Personality = character.personality || EMPTY_PERSONALITY;
-  const background: Background = character.background || EMPTY_BACKGROUND;
+
+  // O campo background_data (JSONB) armazena o objeto Background completo
+  // O campo background (TEXT) é mantido para compatibilidade (apenas backstory)
+  let background: Background = EMPTY_BACKGROUND;
+
+  // Prioridade: background_data (novo) > background (legado)
+  if (character.background_data) {
+    background = character.background_data;
+  } else if (character.background) {
+    if (typeof character.background === 'string') {
+      // Se for string, é a história gerada pela IA - coloca no campo backstory
+      background = { ...EMPTY_BACKGROUND, backstory: character.background };
+    } else {
+      // Se for objeto, usa direto
+      background = character.background;
+    }
+  }
+
   const avatarUrl: string | undefined = character.avatar_url;
 
   return (
@@ -75,12 +93,15 @@ export default async function PersonalizationPage({ params }: PageProps) {
             </div>
           </div>
 
-          <Button asChild variant="outline" size="sm">
-            <Link href={`/personagens/${id}`}>
-              <Eye className="mr-2 h-4 w-4" />
-              Ver Ficha
-            </Link>
-          </Button>
+          <div className="flex items-center gap-2">
+            <ThemeToggle />
+            <Button asChild variant="outline" size="sm">
+              <Link href={`/personagens/${id}`}>
+                <Eye className="mr-2 h-4 w-4" />
+                Ver Ficha
+              </Link>
+            </Button>
+          </div>
         </div>
       </header>
 
@@ -121,7 +142,14 @@ export default async function PersonalizationPage({ params }: PageProps) {
 
             {/* Tab: Personalidade */}
             <TabsContent value="personality" className="space-y-4">
-              <PersonalityEditor characterId={id} initialPersonality={personality} />
+              <PersonalityEditor
+                characterId={id}
+                characterName={character.name}
+                characterRace={character.race}
+                characterClass={character.class}
+                initialPersonality={personality}
+                backgroundStory={background.backstory}
+              />
             </TabsContent>
 
             {/* Tab: História */}

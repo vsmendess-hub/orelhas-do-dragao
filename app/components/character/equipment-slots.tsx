@@ -2,7 +2,6 @@
 
 import { Shield, Sword, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   type Item,
   getEquippedArmor,
@@ -26,26 +25,26 @@ export function EquipmentSlots({ items, dexModifier, onUnequip }: EquipmentSlots
   const calculatedAC = calculateArmorClass(equippedArmor, equippedShield, dexModifier);
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
+    <div className="glass-card rounded-2xl p-6">
+      <div className="mb-6">
+        <h3 className="flex items-center gap-2 text-lg font-semibold text-white">
           <Shield className="h-5 w-5" />
           Equipamento
-        </CardTitle>
-        <CardDescription>Itens equipados • CA calculada: {calculatedAC}</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4">
+        </h3>
+        <p className="text-sm text-gray-400 mt-1">Itens equipados • CA calculada: {calculatedAC}</p>
+      </div>
+      <div className="space-y-4">
         {/* Slot de Armadura */}
         <div className="space-y-2">
-          <h4 className="text-sm font-medium text-muted-foreground">Armadura</h4>
+          <h4 className="text-sm font-medium text-gray-400">Armadura</h4>
           {equippedArmor ? (
-            <div className="flex items-center justify-between rounded-lg border bg-deep-purple/5 p-3">
+            <div className="flex items-center justify-between rounded-lg border border-purple-500/30 glass-card-light p-3">
               <div className="flex items-center gap-3">
                 <Shield className="h-5 w-5 text-deep-purple" />
                 <div>
                   <p className="font-medium">{equippedArmor.name}</p>
                   {equippedArmor.properties?.armorClass && (
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-xs text-gray-400">
                       CA {equippedArmor.properties.armorClass}
                       {equippedArmor.properties.armorType === 'light' && ' + DEX'}
                       {equippedArmor.properties.armorType === 'medium' && ' + DEX (máx +2)'}
@@ -58,7 +57,7 @@ export function EquipmentSlots({ items, dexModifier, onUnequip }: EquipmentSlots
               </Button>
             </div>
           ) : (
-            <div className="rounded-lg border border-dashed p-3 text-center text-sm text-muted-foreground">
+            <div className="rounded-lg border border-dashed border-white/10 p-3 text-center text-sm text-gray-400">
               Nenhuma armadura equipada
             </div>
           )}
@@ -66,14 +65,14 @@ export function EquipmentSlots({ items, dexModifier, onUnequip }: EquipmentSlots
 
         {/* Slot de Escudo */}
         <div className="space-y-2">
-          <h4 className="text-sm font-medium text-muted-foreground">Escudo</h4>
+          <h4 className="text-sm font-medium text-gray-400">Escudo</h4>
           {equippedShield ? (
-            <div className="flex items-center justify-between rounded-lg border bg-deep-purple/5 p-3">
+            <div className="flex items-center justify-between rounded-lg border border-purple-500/30 glass-card-light p-3">
               <div className="flex items-center gap-3">
                 <Shield className="h-5 w-5 text-deep-purple" />
                 <div>
                   <p className="font-medium">{equippedShield.name}</p>
-                  <p className="text-xs text-muted-foreground">+2 CA</p>
+                  <p className="text-xs text-gray-400">+2 CA</p>
                 </div>
               </div>
               <Button variant="ghost" size="sm" onClick={() => onUnequip(equippedShield.id)}>
@@ -81,7 +80,7 @@ export function EquipmentSlots({ items, dexModifier, onUnequip }: EquipmentSlots
               </Button>
             </div>
           ) : (
-            <div className="rounded-lg border border-dashed p-3 text-center text-sm text-muted-foreground">
+            <div className="rounded-lg border border-dashed border-white/10 p-3 text-center text-sm text-gray-400">
               Nenhum escudo equipado
             </div>
           )}
@@ -89,7 +88,7 @@ export function EquipmentSlots({ items, dexModifier, onUnequip }: EquipmentSlots
 
         {/* Slots de Armas */}
         <div className="space-y-2">
-          <h4 className="text-sm font-medium text-muted-foreground">
+          <h4 className="text-sm font-medium text-gray-400">
             Armas ({equippedWeapons.length}/2)
           </h4>
           {equippedWeapons.length > 0 ? (
@@ -97,14 +96,14 @@ export function EquipmentSlots({ items, dexModifier, onUnequip }: EquipmentSlots
               {equippedWeapons.map((weapon) => (
                 <div
                   key={weapon.id}
-                  className="flex items-center justify-between rounded-lg border bg-deep-purple/5 p-3"
+                  className="flex items-center justify-between rounded-lg border border-purple-500/30 glass-card-light p-3"
                 >
                   <div className="flex items-center gap-3">
                     <Sword className="h-5 w-5 text-deep-purple" />
                     <div>
                       <p className="font-medium">{weapon.name}</p>
                       {weapon.properties?.damage && (
-                        <p className="text-xs text-muted-foreground">
+                        <p className="text-xs text-gray-400">
                           {weapon.properties.damage} {weapon.properties.damageType}
                         </p>
                       )}
@@ -117,16 +116,16 @@ export function EquipmentSlots({ items, dexModifier, onUnequip }: EquipmentSlots
               ))}
             </div>
           ) : (
-            <div className="rounded-lg border border-dashed p-3 text-center text-sm text-muted-foreground">
+            <div className="rounded-lg border border-dashed border-white/10 p-3 text-center text-sm text-gray-400">
               Nenhuma arma equipada
             </div>
           )}
         </div>
 
         {/* Cálculo de AC */}
-        <div className="rounded-lg border bg-muted/50 p-3 text-sm">
-          <p className="font-medium">Cálculo da Classe de Armadura:</p>
-          <div className="mt-2 space-y-1 text-xs text-muted-foreground">
+        <div className="rounded-lg glass-card-light p-3 text-sm">
+          <p className="font-medium text-white">Cálculo da Classe de Armadura:</p>
+          <div className="mt-2 space-y-1 text-xs text-gray-400">
             {equippedArmor ? (
               <>
                 <p>• Base da armadura: {equippedArmor.properties?.armorClass || 10}</p>
@@ -147,17 +146,17 @@ export function EquipmentSlots({ items, dexModifier, onUnequip }: EquipmentSlots
               </>
             )}
             {equippedShield && <p>• Escudo: +2</p>}
-            <p className="font-medium text-foreground">= CA Total: {calculatedAC}</p>
+            <p className="font-medium text-white">= CA Total: {calculatedAC}</p>
           </div>
         </div>
 
         {/* Aviso sobre limite de armas */}
         {equippedWeapons.length >= 2 && (
-          <div className="rounded-md border border-amber-200 bg-amber-50 p-3 text-xs text-amber-900 dark:border-amber-900 dark:bg-amber-950/20 dark:text-amber-100">
+          <div className="rounded-md glass-card-light border border-amber-400/30 p-3 text-xs text-amber-300">
             ⚠️ Você já tem 2 armas equipadas. Desequipe uma para equipar outra.
           </div>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }

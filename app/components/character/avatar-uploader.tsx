@@ -5,7 +5,6 @@ import Image from 'next/image';
 import { Upload, Loader2, X, ImageIcon } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { generateAvatarPlaceholder } from '@/lib/data/personality';
 
 interface AvatarUploaderProps {
@@ -165,89 +164,91 @@ export function AvatarUploader({
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <ImageIcon className="h-5 w-5" />
+    <div className="glass-card rounded-2xl p-6 space-y-4">
+      {/* Header */}
+      <div>
+        <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+          <ImageIcon className="h-5 w-5 text-purple-400" />
           Avatar do Personagem
-        </CardTitle>
-        <CardDescription>Imagem que representa seu personagem</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        {/* Preview do Avatar */}
-        <div className="flex flex-col items-center gap-4">
-          <div className="relative h-48 w-48 overflow-hidden rounded-full border-4 border-muted">
-            <Image
-              src={displayAvatar}
-              alt={characterName}
-              fill
-              className="object-cover"
-              sizes="192px"
-              priority
-            />
-            {isUploading && (
-              <div className="absolute inset-0 flex items-center justify-center bg-black/50">
-                <Loader2 className="h-8 w-8 animate-spin text-white" />
-              </div>
-            )}
-          </div>
+        </h3>
+        <p className="text-sm text-gray-400 mt-1">Imagem que representa seu personagem</p>
+      </div>
 
-          {/* Botões de ação */}
-          <div className="flex gap-2">
-            <Button onClick={handleClickUpload} disabled={isUploading} size="sm">
-              <Upload className="mr-2 h-4 w-4" />
-              {avatarUrl ? 'Alterar Imagem' : 'Enviar Imagem'}
-            </Button>
-            {avatarUrl && (
-              <Button
-                onClick={handleRemoveAvatar}
-                disabled={isUploading}
-                variant="outline"
-                size="sm"
-              >
-                <X className="mr-2 h-4 w-4" />
-                Remover
-              </Button>
-            )}
-          </div>
-
-          {/* Input escondido */}
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/jpeg,image/jpg,image/png,image/webp,image/gif"
-            onChange={handleFileChange}
-            className="hidden"
-            disabled={isUploading}
+      {/* Preview do Avatar */}
+      <div className="flex flex-col items-center gap-4">
+        <div className="relative h-48 w-48 overflow-hidden rounded-full border-4 border-purple-500/30">
+          <Image
+            src={displayAvatar}
+            alt={characterName}
+            fill
+            className="object-cover"
+            sizes="192px"
+            priority
           />
+          {isUploading && (
+            <div className="absolute inset-0 flex items-center justify-center bg-black/70 backdrop-blur-sm">
+              <Loader2 className="h-8 w-8 animate-spin text-purple-400" />
+            </div>
+          )}
         </div>
 
-        {/* Informações */}
-        <div className="rounded-lg border bg-muted/50 p-3 text-xs text-muted-foreground">
-          <p className="font-medium text-foreground">📋 Requisitos da Imagem:</p>
-          <ul className="mt-2 space-y-1">
-            <li>• Formatos aceitos: JPG, PNG, WebP, GIF</li>
-            <li>• Tamanho máximo: 5MB</li>
-            <li>• Recomendado: imagem quadrada (1:1)</li>
-            <li>• A imagem será exibida em formato circular</li>
-          </ul>
+        {/* Botões de ação */}
+        <div className="flex gap-2">
+          <Button onClick={handleClickUpload} disabled={isUploading} size="sm" className="tab-purple">
+            <Upload className="mr-2 h-4 w-4" />
+            {avatarUrl ? 'Alterar Imagem' : 'Enviar Imagem'}
+          </Button>
+          {avatarUrl && (
+            <Button
+              onClick={handleRemoveAvatar}
+              disabled={isUploading}
+              variant="outline"
+              size="sm"
+            >
+              <X className="mr-2 h-4 w-4" />
+              Remover
+            </Button>
+          )}
         </div>
 
-        {/* Erro */}
-        {error && (
-          <div className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-900 dark:border-red-900 dark:bg-red-950/20 dark:text-red-100">
-            ⚠️ {error}
-          </div>
-        )}
+        {/* Input escondido */}
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/jpeg,image/jpg,image/png,image/webp,image/gif"
+          onChange={handleFileChange}
+          className="hidden"
+          disabled={isUploading}
+        />
+      </div>
 
-        {/* Dica sobre placeholder */}
-        {!avatarUrl && !previewUrl && (
-          <div className="rounded-lg border bg-blue-50 p-3 text-xs text-blue-800 dark:bg-blue-950/20 dark:text-blue-200">
+      {/* Informações */}
+      <div className="glass-card-light rounded-xl border border-white/10 p-3 text-xs">
+        <p className="font-medium text-white">📋 Requisitos da Imagem:</p>
+        <ul className="mt-2 space-y-1 text-gray-300">
+          <li>• Formatos aceitos: JPG, PNG, WebP, GIF</li>
+          <li>• Tamanho máximo: 5MB</li>
+          <li>• Recomendado: imagem quadrada (1:1)</li>
+          <li>• A imagem será exibida em formato circular</li>
+        </ul>
+      </div>
+
+      {/* Erro */}
+      {error && (
+        <div className="glass-card-light rounded-xl border border-red-400/50 p-3 text-sm">
+          <p className="text-red-300">⚠️ {error}</p>
+        </div>
+      )}
+
+      {/* Dica sobre placeholder */}
+      {!avatarUrl && !previewUrl && (
+        <div className="glass-card-light rounded-xl border border-blue-400/50 p-3 text-xs">
+          <p className="text-blue-200">
             💡 <strong>Sem imagem?</strong> Não se preocupe! Um avatar com a primeira letra do nome
             será usado automaticamente.
-          </div>
-        )}
-      </CardContent>
-    </Card>
+          </p>
+        </div>
+      )}
+    </div>
   );
 }

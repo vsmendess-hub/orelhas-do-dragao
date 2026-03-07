@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { Award, Plus, X, Lightbulb, BookOpen, Search } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -108,86 +107,80 @@ export function FeatsManager({
 
   return (
     <div className="space-y-4">
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle className="flex items-center gap-2">
-                <Award className="h-5 w-5 text-amber-600" />
-                Feats (Talentos)
-              </CardTitle>
-              <CardDescription>
-                Habilidades especiais obtidas no lugar de Ability Score Improvements
-              </CardDescription>
-            </div>
-            <Badge variant="secondary">{feats.length} feats</Badge>
+      <div className="glass-card rounded-2xl p-6 space-y-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+              <Award className="h-5 w-5 text-amber-500" />
+              Feats (Talentos)
+            </h3>
+            <p className="text-sm text-gray-400">
+              Habilidades especiais obtidas no lugar de Ability Score Improvements
+            </p>
           </div>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {/* Feats do Personagem */}
-          {feats.length > 0 ? (
+          <Badge variant="secondary">{feats.length} feats</Badge>
+        </div>
+
+        {/* Feats do Personagem */}
+        {feats.length > 0 ? (
             <div className="space-y-3">
               {feats.map((feat) => {
                 const featDetails = getFeatById(feat.featId);
                 if (!featDetails) return null;
 
                 return (
-                  <Card key={`${feat.featId}-${feat.level}`} className="border-2">
-                    <CardHeader className="pb-3">
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2">
-                            <CardTitle className="text-base">{feat.featName}</CardTitle>
-                            <Badge variant="outline" className="text-xs">
-                              Nível {feat.level}
-                            </Badge>
-                          </div>
-                          {featDetails.prerequisites && (
-                            <p className="mt-1 text-xs text-muted-foreground">
-                              Pré-requisito: {featDetails.prerequisites}
-                            </p>
-                          )}
+                  <div key={`${feat.featId}-${feat.level}`} className="glass-card rounded-xl p-4 border-2 border-white/10">
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                          <h4 className="text-base font-semibold text-white">{feat.featName}</h4>
+                          <Badge variant="outline" className="text-xs">
+                            Nível {feat.level}
+                          </Badge>
                         </div>
-                        <div className="flex gap-1">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => setViewingFeat(featDetails)}
-                          >
-                            <BookOpen className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleRemoveFeat(feat.featId)}
-                            disabled={isSaving}
-                            className="text-destructive hover:text-destructive"
-                          >
-                            <X className="h-4 w-4" />
-                          </Button>
+                        {featDetails.prerequisites && (
+                          <p className="mt-1 text-xs text-gray-400">
+                            Pré-requisito: {featDetails.prerequisites}
+                          </p>
+                        )}
+                      </div>
+                      <div className="flex gap-1">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setViewingFeat(featDetails)}
+                        >
+                          <BookOpen className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleRemoveFeat(feat.featId)}
+                          disabled={isSaving}
+                          className="text-destructive hover:text-destructive"
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                    <p className="text-sm text-gray-400">{featDetails.description}</p>
+                    <div className="mt-2 space-y-1">
+                      {featDetails.benefits.map((benefit, idx) => (
+                        <div key={idx} className="flex items-start gap-2 text-sm text-white">
+                          <span className="text-green-400">✓</span>
+                          <span>{benefit}</span>
                         </div>
-                      </div>
-                    </CardHeader>
-                    <CardContent className="pt-0">
-                      <p className="text-sm text-muted-foreground">{featDetails.description}</p>
-                      <div className="mt-2 space-y-1">
-                        {featDetails.benefits.map((benefit, idx) => (
-                          <div key={idx} className="flex items-start gap-2 text-sm">
-                            <span className="text-green-600">✓</span>
-                            <span>{benefit}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </CardContent>
-                  </Card>
+                      ))}
+                    </div>
+                  </div>
                 );
               })}
             </div>
           ) : (
-            <div className="rounded-lg border border-dashed p-8 text-center">
-              <Award className="mx-auto h-12 w-12 text-muted-foreground" />
-              <p className="mt-2 text-sm font-medium">Nenhum feat ainda</p>
-              <p className="text-xs text-muted-foreground">
+            <div className="glass-card-light rounded-lg border border-dashed border-purple-500/50 p-8 text-center">
+              <Award className="mx-auto h-12 w-12 text-gray-400" />
+              <p className="mt-2 text-sm font-medium text-white">Nenhum feat ainda</p>
+              <p className="text-xs text-gray-400">
                 Adicione feats obtidos em níveis ASI
               </p>
             </div>
@@ -206,7 +199,7 @@ export function FeatsManager({
           {/* Botão Adicionar */}
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="w-full" disabled={isSaving}>
+              <Button className="w-full tab-purple" disabled={isSaving}>
                 <Plus className="mr-2 h-4 w-4" />
                 Adicionar Feat
               </Button>
@@ -260,20 +253,20 @@ export function FeatsManager({
                       filteredFeats.map((feat) => (
                         <div
                           key={feat.id}
-                          className={`cursor-pointer rounded-md border-2 p-3 transition-colors hover:border-primary ${
-                            selectedFeatId === feat.id ? 'border-primary bg-primary/5' : ''
+                          className={`cursor-pointer rounded-md border-2 p-3 transition-colors hover:border-purple-500/50 hover:scale-[1.01] ${
+                            selectedFeatId === feat.id ? 'border-2 border-purple-500 bg-purple-500/10' : 'border-white/10'
                           }`}
                           onClick={() => setSelectedFeatId(feat.id)}
                         >
                           <div className="flex items-start justify-between">
                             <div className="flex-1">
-                              <p className="font-semibold">{feat.name}</p>
+                              <p className="font-semibold text-white">{feat.name}</p>
                               {feat.prerequisites && (
-                                <p className="text-xs text-muted-foreground">
+                                <p className="text-xs text-gray-400">
                                   Pré-requisito: {feat.prerequisites}
                                 </p>
                               )}
-                              <p className="mt-1 text-sm text-muted-foreground">
+                              <p className="mt-1 text-sm text-gray-400">
                                 {feat.description}
                               </p>
                             </div>
@@ -284,7 +277,7 @@ export function FeatsManager({
                         </div>
                       ))
                     ) : (
-                      <p className="py-8 text-center text-sm text-muted-foreground">
+                      <p className="py-8 text-center text-sm text-gray-400">
                         Nenhum feat encontrado
                       </p>
                     )}
@@ -294,15 +287,14 @@ export function FeatsManager({
                 <Button
                   onClick={handleAddFeat}
                   disabled={!selectedFeatId || isSaving}
-                  className="w-full"
+                  className="w-full tab-purple"
                 >
                   {isSaving ? 'Salvando...' : 'Adicionar Feat'}
                 </Button>
               </div>
             </DialogContent>
-          </Dialog>
-        </CardContent>
-      </Card>
+        </Dialog>
+      </div>
 
       {/* Dialog de Visualização de Feat */}
       {viewingFeat && (
@@ -316,21 +308,21 @@ export function FeatsManager({
             </DialogHeader>
             <div className="space-y-4">
               <div>
-                <p className="text-sm text-muted-foreground">{viewingFeat.description}</p>
+                <p className="text-sm text-gray-400">{viewingFeat.description}</p>
               </div>
               <div>
-                <Label className="text-base">Benefícios:</Label>
+                <Label className="text-base text-white">Benefícios:</Label>
                 <ul className="mt-2 space-y-2">
                   {viewingFeat.benefits.map((benefit, idx) => (
-                    <li key={idx} className="flex items-start gap-2 text-sm">
-                      <span className="text-green-600">✓</span>
+                    <li key={idx} className="flex items-start gap-2 text-sm text-white">
+                      <span className="text-green-400">✓</span>
                       <span>{benefit}</span>
                     </li>
                   ))}
                 </ul>
               </div>
-              <div className="flex items-center justify-between rounded-lg border bg-muted/50 p-2 text-xs">
-                <span className="text-muted-foreground">Fonte:</span>
+              <div className="flex items-center justify-between glass-card-light rounded-lg border border-white/10 p-2 text-xs">
+                <span className="text-gray-400">Fonte:</span>
                 <Badge variant="outline">{viewingFeat.source}</Badge>
               </div>
             </div>

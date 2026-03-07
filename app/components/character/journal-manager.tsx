@@ -1,10 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { BookOpen, Plus, Edit2, Trash2, Star, Search, Filter } from 'lucide-react';
+import { BookOpen, Plus, Edit2, Trash2, Star, Search } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -180,7 +179,7 @@ export function JournalManager({ characterId, initialEntries }: JournalManagerPr
               {entry.important && <Star className="h-4 w-4 fill-amber-500 text-amber-500" />}
             </div>
             <h4 className="mt-2 font-semibold">{entry.title}</h4>
-            <p className="text-xs text-muted-foreground">{formatEntryDate(entry.date)}</p>
+            <p className="text-xs text-gray-400">{formatEntryDate(entry.date)}</p>
           </div>
           <div className="flex gap-1 opacity-0 transition-opacity group-hover:opacity-100">
             <Button
@@ -216,7 +215,7 @@ export function JournalManager({ characterId, initialEntries }: JournalManagerPr
         </div>
 
         {/* Content */}
-        <p className="mb-3 whitespace-pre-wrap text-sm text-muted-foreground">{entry.content}</p>
+        <p className="mb-3 whitespace-pre-wrap text-sm text-gray-400">{entry.content}</p>
 
         {/* Tags */}
         {entry.tags && entry.tags.length > 0 && (
@@ -233,31 +232,30 @@ export function JournalManager({ characterId, initialEntries }: JournalManagerPr
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex flex-col gap-4">
-          <div className="flex items-center justify-between">
-            <CardTitle className="flex items-center gap-2">
-              <BookOpen className="h-5 w-5" />
-              Diário de Aventura
-              {entries.length > 0 && <Badge variant="secondary">{entries.length}</Badge>}
-            </CardTitle>
-            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-              <DialogTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  disabled={isSaving}
-                  onClick={() => {
-                    setEditingId(null);
-                    resetForm();
-                  }}
-                >
-                  <Plus className="mr-2 h-4 w-4" />
-                  Nova Entrada
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="max-h-[80vh] max-w-2xl overflow-y-auto">
+    <div className="glass-card rounded-2xl p-6 space-y-4">
+      <div className="flex flex-col gap-4">
+        <div className="flex items-center justify-between">
+          <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+            <BookOpen className="h-5 w-5 text-blue-500" />
+            Diário de Aventura
+            {entries.length > 0 && <Badge variant="secondary">{entries.length}</Badge>}
+          </h3>
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={isSaving}
+                onClick={() => {
+                  setEditingId(null);
+                  resetForm();
+                }}
+              >
+                <Plus className="mr-2 h-4 w-4" />
+                Nova Entrada
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-h-[80vh] max-w-2xl overflow-y-auto">
                 <DialogHeader>
                   <DialogTitle>
                     {editingId ? 'Editar Entrada' : 'Nova Entrada de Diário'}
@@ -346,7 +344,7 @@ export function JournalManager({ characterId, initialEntries }: JournalManagerPr
                     />
                     {allTags.length > 0 && (
                       <div className="flex flex-wrap gap-1">
-                        <span className="text-xs text-muted-foreground">Existentes:</span>
+                        <span className="text-xs text-gray-400">Existentes:</span>
                         {allTags.map((tag) => (
                           <button
                             key={tag}
@@ -384,19 +382,19 @@ export function JournalManager({ characterId, initialEntries }: JournalManagerPr
                   <Button
                     onClick={editingId ? handleUpdateEntry : handleAddEntry}
                     disabled={isSaving || !formData.title || !formData.content}
-                    className="w-full"
+                    className="w-full tab-purple"
                   >
                     {editingId ? 'Atualizar' : 'Adicionar'} Entrada
                   </Button>
                 </div>
-              </DialogContent>
-            </Dialog>
-          </div>
+            </DialogContent>
+          </Dialog>
+        </div>
 
-          {/* Search and Filter */}
+        {/* Search and Filter */}
           <div className="flex gap-2">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
               <Input
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -418,19 +416,17 @@ export function JournalManager({ characterId, initialEntries }: JournalManagerPr
             </select>
           </div>
         </div>
-      </CardHeader>
-      <CardContent>
+
         {filteredEntries.length === 0 ? (
-          <div className="py-8 text-center text-sm text-muted-foreground">
-            <BookOpen className="mx-auto mb-2 h-8 w-8 opacity-50" />
-            <p>
-              {entries.length === 0 ? 'Nenhuma entrada no diário' : 'Nenhuma entrada encontrada'}
-            </p>
-          </div>
-        ) : (
-          <div className="space-y-3">{filteredEntries.map(renderEntryCard)}</div>
-        )}
-      </CardContent>
-    </Card>
+        <div className="glass-card-light rounded-lg border border-dashed border-purple-500/50 py-8 text-center text-sm">
+          <BookOpen className="mx-auto mb-2 h-8 w-8 text-gray-400" />
+          <p className="text-white">
+            {entries.length === 0 ? 'Nenhuma entrada no diário' : 'Nenhuma entrada encontrada'}
+          </p>
+        </div>
+      ) : (
+        <div className="space-y-3">{filteredEntries.map(renderEntryCard)}</div>
+      )}
+    </div>
   );
 }

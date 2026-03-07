@@ -4,8 +4,6 @@ import { useState } from 'react';
 import { Download, Upload, FileJson, Copy, AlertTriangle, CheckCircle2, Info } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import {
@@ -37,19 +35,18 @@ import {
   type ImportValidation,
   type ExportStats,
 } from '@/lib/data/character-import-export';
+import type { Character } from '@/lib/supabase/types';
 
 interface CharacterImportExportProps {
   characterId: string;
-  character: any;
+  character: Character;
   userId: string;
-  onImportSuccess?: () => void;
 }
 
 export function CharacterImportExport({
   characterId,
   character,
   userId,
-  onImportSuccess,
 }: CharacterImportExportProps) {
   const [exportFormat, setExportFormat] = useState<ExportFormat>('json');
   const [isExportOpen, setIsExportOpen] = useState(false);
@@ -127,9 +124,8 @@ export function CharacterImportExport({
       setImportJSON('');
       setValidation(null);
 
-      if (onImportSuccess) {
-        onImportSuccess();
-      }
+      // Recarregar página para atualizar dados
+      window.location.reload();
     } catch (err) {
       console.error('Erro ao importar:', err);
       alert('Erro ao importar personagem. Verifique o JSON e tente novamente.');
@@ -176,15 +172,16 @@ export function CharacterImportExport({
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <FileJson className="h-5 w-5 text-green-600" />
+    <div className="glass-card rounded-2xl p-6 space-y-4">
+      <div>
+        <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+          <FileJson className="h-5 w-5 text-green-500" />
           Import / Export
-        </CardTitle>
-        <CardDescription>Exporte, importe ou clone seu personagem</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4">
+        </h3>
+        <p className="text-sm text-gray-400">Exporte, importe ou clone seu personagem</p>
+      </div>
+
+      <div className="space-y-3">
         {/* Export */}
         <Dialog open={isExportOpen} onOpenChange={setIsExportOpen}>
           <DialogTrigger asChild>
@@ -204,30 +201,28 @@ export function CharacterImportExport({
             <div className="space-y-4">
               {/* Stats */}
               {exportStats && (
-                <Card className="bg-muted/50">
-                  <CardContent className="pt-4">
-                    <div className="grid grid-cols-2 gap-4 text-sm">
-                      <div>
-                        <span className="text-muted-foreground">Nome:</span>
-                        <p className="font-semibold">{exportStats.characterName}</p>
-                      </div>
-                      <div>
-                        <span className="text-muted-foreground">Classe/Nível:</span>
-                        <p className="font-semibold">
-                          {exportStats.class} {exportStats.level}
-                        </p>
-                      </div>
-                      <div>
-                        <span className="text-muted-foreground">Magias:</span>
-                        <p className="font-semibold">{exportStats.totalSpells}</p>
-                      </div>
-                      <div>
-                        <span className="text-muted-foreground">Tamanho:</span>
-                        <p className="font-semibold">{exportStats.exportSize}</p>
-                      </div>
+                <div className="glass-card-light rounded-xl border border-white/10 p-4">
+                  <div className="grid grid-cols-2 gap-4 text-sm">
+                    <div>
+                      <span className="text-gray-400">Nome:</span>
+                      <p className="font-semibold text-white">{exportStats.characterName}</p>
                     </div>
-                  </CardContent>
-                </Card>
+                    <div>
+                      <span className="text-gray-400">Classe/Nível:</span>
+                      <p className="font-semibold text-white">
+                        {exportStats.class} {exportStats.level}
+                      </p>
+                    </div>
+                    <div>
+                      <span className="text-gray-400">Magias:</span>
+                      <p className="font-semibold text-white">{exportStats.totalSpells}</p>
+                    </div>
+                    <div>
+                      <span className="text-gray-400">Tamanho:</span>
+                      <p className="font-semibold text-white">{exportStats.exportSize}</p>
+                    </div>
+                  </div>
+                </div>
               )}
 
               {/* Format */}
@@ -251,21 +246,19 @@ export function CharacterImportExport({
               </div>
 
               {/* Info */}
-              <Card className="border-2 border-blue-500/50 bg-blue-500/5">
-                <CardContent className="pt-4">
-                  <div className="flex items-start gap-3">
-                    <Info className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" />
-                    <div className="text-sm">
-                      <p className="font-medium">Como usar o export</p>
-                      <ul className="mt-1 space-y-1 text-muted-foreground">
-                        <li>• Faça backup do seu personagem regularmente</li>
-                        <li>• Use para transferir entre contas</li>
-                        <li>• Compartilhe com amigos (remova informações sensíveis)</li>
-                      </ul>
-                    </div>
+              <div className="glass-card-light rounded-xl border border-blue-400/50 p-4">
+                <div className="flex items-start gap-3">
+                  <Info className="h-5 w-5 text-blue-400 mt-0.5 flex-shrink-0" />
+                  <div className="text-sm">
+                    <p className="font-medium text-white">Como usar o export</p>
+                    <ul className="mt-1 space-y-1 text-gray-400">
+                      <li>• Faça backup do seu personagem regularmente</li>
+                      <li>• Use para transferir entre contas</li>
+                      <li>• Compartilhe com amigos (remova informações sensíveis)</li>
+                    </ul>
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
 
               {/* Actions */}
               <div className="flex gap-2">
@@ -273,7 +266,7 @@ export function CharacterImportExport({
                   <Copy className="mr-2 h-4 w-4" />
                   Copiar JSON
                 </Button>
-                <Button onClick={handleDownload} className="flex-1">
+                <Button onClick={handleDownload} className="flex-1 tab-purple">
                   <Download className="mr-2 h-4 w-4" />
                   Baixar Arquivo
                 </Button>
@@ -300,20 +293,18 @@ export function CharacterImportExport({
 
             <div className="space-y-4">
               {/* Warning */}
-              <Card className="border-2 border-amber-500/50 bg-amber-500/5">
-                <CardContent className="pt-4">
-                  <div className="flex items-start gap-3">
-                    <AlertTriangle className="h-5 w-5 text-amber-600 mt-0.5 flex-shrink-0" />
-                    <div className="text-sm">
-                      <p className="font-medium">Atenção</p>
-                      <p className="text-muted-foreground">
-                        Esta ação substituirá completamente os dados atuais do personagem. Faça um
-                        backup antes de continuar.
-                      </p>
-                    </div>
+              <div className="glass-card-light rounded-xl border border-amber-400/50 p-4">
+                <div className="flex items-start gap-3">
+                  <AlertTriangle className="h-5 w-5 text-amber-400 mt-0.5 flex-shrink-0" />
+                  <div className="text-sm">
+                    <p className="font-medium text-white">Atenção</p>
+                    <p className="text-gray-400">
+                      Esta ação substituirá completamente os dados atuais do personagem. Faça um
+                      backup antes de continuar.
+                    </p>
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
 
               {/* File Upload */}
               <div className="space-y-2">
@@ -344,35 +335,31 @@ export function CharacterImportExport({
               {validation && (
                 <div className="space-y-2">
                   {validation.valid ? (
-                    <Card className="border-2 border-green-500/50 bg-green-500/5">
-                      <CardContent className="pt-4">
-                        <div className="flex items-center gap-2">
-                          <CheckCircle2 className="h-5 w-5 text-green-600" />
-                          <p className="font-medium">JSON Válido</p>
-                        </div>
-                        {validation.warnings.length > 0 && (
-                          <ul className="mt-2 space-y-1 text-sm text-muted-foreground">
-                            {validation.warnings.map((warning, i) => (
-                              <li key={i}>⚠️ {warning}</li>
-                            ))}
-                          </ul>
-                        )}
-                      </CardContent>
-                    </Card>
-                  ) : (
-                    <Card className="border-2 border-red-500/50 bg-red-500/5">
-                      <CardContent className="pt-4">
-                        <div className="flex items-center gap-2">
-                          <AlertTriangle className="h-5 w-5 text-red-600" />
-                          <p className="font-medium">JSON Inválido</p>
-                        </div>
-                        <ul className="mt-2 space-y-1 text-sm text-muted-foreground">
-                          {validation.errors.map((error, i) => (
-                            <li key={i}>❌ {error}</li>
+                    <div className="glass-card-light rounded-xl border border-green-400/50 p-4">
+                      <div className="flex items-center gap-2">
+                        <CheckCircle2 className="h-5 w-5 text-green-400" />
+                        <p className="font-medium text-white">JSON Válido</p>
+                      </div>
+                      {validation.warnings.length > 0 && (
+                        <ul className="mt-2 space-y-1 text-sm text-gray-400">
+                          {validation.warnings.map((warning, i) => (
+                            <li key={i}>⚠️ {warning}</li>
                           ))}
                         </ul>
-                      </CardContent>
-                    </Card>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="glass-card-light rounded-xl border border-red-400/50 p-4">
+                      <div className="flex items-center gap-2">
+                        <AlertTriangle className="h-5 w-5 text-red-400" />
+                        <p className="font-medium text-white">JSON Inválido</p>
+                      </div>
+                      <ul className="mt-2 space-y-1 text-sm text-gray-400">
+                        {validation.errors.map((error, i) => (
+                          <li key={i}>❌ {error}</li>
+                        ))}
+                      </ul>
+                    </div>
                   )}
                 </div>
               )}
@@ -385,7 +372,7 @@ export function CharacterImportExport({
                 <Button
                   onClick={handleImport}
                   disabled={!validation?.valid || isImporting}
-                  className="flex-1"
+                  className="flex-1 tab-purple"
                 >
                   {isImporting ? 'Importando...' : 'Importar'}
                 </Button>
@@ -399,8 +386,8 @@ export function CharacterImportExport({
           <Copy className="mr-2 h-4 w-4" />
           Clonar Personagem
         </Button>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }
 

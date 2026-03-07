@@ -98,46 +98,45 @@ export function XPManager({
   };
 
   return (
-    <Card className={canLevel ? 'border-amber-500 bg-amber-50/50 dark:bg-amber-950/20' : ''}>
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center gap-2">
-            <TrendingUp className="h-5 w-5" />
-            Experiência
-          </CardTitle>
-          {canLevel && (
-            <Badge className="bg-amber-600">
-              <Award className="mr-1 h-3 w-3" />
-              Pode subir de nível!
-            </Badge>
-          )}
-        </div>
-      </CardHeader>
-      <CardContent className="space-y-4">
+    <>
+      <div className={`glass-card rounded-2xl p-6 ${canLevel ? 'border-2 border-amber-400/50' : ''}`}>
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="flex items-center gap-2 text-lg font-semibold text-white">
+          <TrendingUp className="h-5 w-5 text-purple-400" />
+          Experiência
+        </h3>
+        {canLevel && (
+          <span className="bg-gradient-to-r from-amber-500 to-orange-500 text-white px-3 py-1 rounded-lg text-sm flex items-center gap-1 font-semibold shadow-lg">
+            <Award className="h-3 w-3" />
+            Pode subir de nível!
+          </span>
+        )}
+      </div>
+      <div className="space-y-4">
         {/* Current XP */}
         <div className="text-center">
-          <p className="text-sm text-muted-foreground">XP Atual</p>
-          <p className="text-3xl font-bold">{formatXP(currentXP)}</p>
+          <p className="text-sm text-gray-400">XP Atual</p>
+          <p className="text-3xl font-bold text-white">{formatXP(currentXP)}</p>
         </div>
 
         {/* Progress Bar */}
         {currentLevel < 20 && (
           <div>
-            <div className="mb-2 flex justify-between text-xs text-muted-foreground">
+            <div className="mb-2 flex justify-between text-xs text-gray-400">
               <span>Nível {currentLevel}</span>
               <span>Nível {currentLevel + 1}</span>
             </div>
-            <div className="h-3 overflow-hidden rounded-full bg-muted">
+            <div className="h-3 overflow-hidden rounded-full bg-white/10">
               <div
                 className={`h-full transition-all duration-300 ${
-                  canLevel ? 'bg-amber-500' : 'bg-deep-purple'
+                  canLevel ? 'bg-gradient-to-r from-amber-500 to-orange-500' : 'bg-gradient-to-r from-purple-600 to-violet-600'
                 }`}
                 style={{ width: `${progress}%` }}
               />
             </div>
-            <div className="mt-2 text-center text-xs text-muted-foreground">
+            <div className="mt-2 text-center text-xs text-gray-300">
               {canLevel ? (
-                <span className="font-semibold text-amber-600">Pronto para subir de nível!</span>
+                <span className="font-semibold text-amber-400">Pronto para subir de nível!</span>
               ) : (
                 <span>
                   Faltam {formatXP(xpNeeded)} XP para o nível {currentLevel + 1}
@@ -148,21 +147,21 @@ export function XPManager({
         )}
 
         {currentLevel === 20 && (
-          <div className="rounded-lg border border-amber-200 bg-amber-50 p-3 text-center text-sm text-amber-900 dark:border-amber-900 dark:bg-amber-950/20 dark:text-amber-100">
+          <div className="rounded-lg glass-card-light border border-amber-400/50 p-3 text-center text-sm text-amber-300 font-semibold">
             🏆 Nível Máximo Alcançado!
           </div>
         )}
 
         {/* XP Range */}
-        <div className="rounded-lg border bg-muted/50 p-3 text-xs">
+        <div className="rounded-lg glass-card-light p-3 text-xs">
           <div className="flex justify-between">
-            <span className="text-muted-foreground">Nível {currentLevel}:</span>
-            <span className="font-medium">{formatXP(currentLevelXP)} XP</span>
+            <span className="text-gray-400">Nível {currentLevel}:</span>
+            <span className="font-medium text-white">{formatXP(currentLevelXP)} XP</span>
           </div>
           {currentLevel < 20 && (
             <div className="flex justify-between">
-              <span className="text-muted-foreground">Nível {currentLevel + 1}:</span>
-              <span className="font-medium">{formatXP(nextLevelXP)} XP</span>
+              <span className="text-gray-400">Nível {currentLevel + 1}:</span>
+              <span className="font-medium text-white">{formatXP(nextLevelXP)} XP</span>
             </div>
           )}
         </div>
@@ -171,7 +170,7 @@ export function XPManager({
         {canLevel && (
           <Button
             onClick={() => setIsLevelUpWizardOpen(true)}
-            className="w-full bg-amber-600 hover:bg-amber-700"
+            className="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-semibold shadow-lg"
           >
             <Award className="mr-2 h-4 w-4" />
             Subir de Nível!
@@ -182,9 +181,8 @@ export function XPManager({
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
             <Button
-              className="w-full"
+              className={`w-full ${canLevel ? 'bg-white/10 hover:bg-white/20 text-white' : 'tab-purple'}`}
               disabled={isSaving}
-              variant={canLevel ? 'outline' : 'default'}
             >
               <Plus className="mr-2 h-4 w-4" />
               Adicionar XP
@@ -234,7 +232,7 @@ export function XPManager({
             </div>
           </DialogContent>
         </Dialog>
-      </CardContent>
+      </div>
 
       {/* Level Up Wizard */}
       <LevelUpWizard
@@ -251,6 +249,7 @@ export function XPManager({
           window.location.reload();
         }}
       />
-    </Card>
+      </div>
+    </>
   );
 }

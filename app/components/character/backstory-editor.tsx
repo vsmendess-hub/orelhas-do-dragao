@@ -1,11 +1,11 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { BookOpen, Save, Loader2 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -24,6 +24,7 @@ interface BackstoryEditorProps {
 }
 
 export function BackstoryEditor({ characterId, initialBackground }: BackstoryEditorProps) {
+  const router = useRouter();
   const [background, setBackground] = useState<Background>(initialBackground);
   const [isSaving, setIsSaving] = useState(false);
   const [saveMessage, setSaveMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(
@@ -46,12 +47,16 @@ export function BackstoryEditor({ characterId, initialBackground }: BackstoryEdi
 
       const { error } = await supabase
         .from('characters')
-        .update({ background })
+        .update({ background_data: background })
         .eq('id', characterId);
 
       if (error) throw error;
 
       setSaveMessage({ type: 'success', text: 'História salva com sucesso!' });
+
+      // Recarregar dados do servidor
+      router.refresh();
+
       setTimeout(() => setSaveMessage(null), 3000);
     } catch (err) {
       console.error('Erro ao salvar história:', err);
@@ -81,7 +86,7 @@ export function BackstoryEditor({ characterId, initialBackground }: BackstoryEdi
               <SelectValue placeholder="Selecione um background..." />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">Nenhum / Personalizado</SelectItem>
+              <SelectItem value="none">Nenhum / Personalizado</SelectItem>
               {COMMON_BACKGROUNDS.map((bg) => (
                 <SelectItem key={bg} value={bg}>
                   {bg}

@@ -31,9 +31,11 @@ export interface CharacterWizardData {
   // Step 5: Perícias
   skills: string[]; // IDs das skills proficientes
 
-  // Step 6: Nome e Alinhamento
+  // Step 6: Nome, Alinhamento, Background e Imagem
   name?: string;
   alignment?: string;
+  background?: string; // História do personagem gerada por IA
+  portraitUrl?: string; // URL da imagem do personagem gerada por IA
 }
 
 /**

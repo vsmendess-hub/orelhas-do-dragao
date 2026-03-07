@@ -11,7 +11,6 @@ import { SKILLS } from '@/lib/data/skills';
 import { calculateModifier, formatModifier } from '@/lib/data/point-buy';
 import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 const ABILITY_NAMES = {
   str: 'Força',
@@ -83,6 +82,8 @@ export function Step7Summary() {
         archetype: archetype?.name || null,
         level: characterData.level,
         alignment: alignment?.name || '',
+        background: characterData.background || null,
+        avatar_url: characterData.portraitUrl || null,
         attributes: finalAbilities,
         skills: characterData.skills.map((skillId) => {
           const skill = SKILLS.find((s) => s.id === skillId);
@@ -137,150 +138,169 @@ export function Step7Summary() {
       {/* Header */}
       <div className="text-center">
         <p className="text-4xl">✨</p>
-        <h2 className="mt-4 text-2xl font-bold">Revise seu Personagem</h2>
-        <p className="mt-2 text-sm text-muted-foreground">
+        <h2 className="mt-4 text-2xl font-bold text-white">Revise seu Personagem</h2>
+        <p className="mt-2 text-sm text-gray-400">
           Confira todos os detalhes antes de salvar seu personagem.
         </p>
       </div>
 
       {/* Nome e Identidade */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-2xl">{characterData.name}</CardTitle>
-          <CardDescription>
-            {race?.name} {subrace && `(${subrace.name})`} • {selectedClass?.name}{' '}
-            {archetype && `- ${archetype.name}`} • Nível {characterData.level}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <p className="text-sm text-muted-foreground">
-            Alinhamento: {alignment?.name} ({alignment?.abbreviation})
-          </p>
-        </CardContent>
-      </Card>
+      <div className="glass-card rounded-xl p-6">
+        <div className="flex items-start gap-4">
+          {/* Imagem do Personagem */}
+          {characterData.portraitUrl && (
+            <div className="relative h-24 w-24 flex-shrink-0 overflow-hidden rounded-lg border-2 border-purple-400">
+              <img
+                src={characterData.portraitUrl}
+                alt={characterData.name}
+                className="h-full w-full object-cover"
+              />
+            </div>
+          )}
+
+          {/* Informações */}
+          <div className="flex-1">
+            <h2 className="text-2xl font-bold text-white">{characterData.name}</h2>
+            <p className="text-sm text-gray-400">
+              {race?.name} {subrace && `(${subrace.name})`} • {selectedClass?.name}{' '}
+              {archetype && `- ${archetype.name}`} • Nível {characterData.level}
+            </p>
+            <p className="mt-2 text-sm text-gray-400">
+              Alinhamento: {alignment?.name} ({alignment?.abbreviation})
+            </p>
+          </div>
+        </div>
+        {characterData.background && (
+          <div className="mt-4">
+            <div className="glass-card-light rounded-lg p-3">
+              <p className="text-xs font-medium text-gray-400 mb-1">História:</p>
+              <p className="text-sm text-gray-300 line-clamp-3">
+                {characterData.background}
+              </p>
+            </div>
+          </div>
+        )}
+      </div>
 
       {/* Estatísticas de Combate */}
       <div className="grid gap-4 md:grid-cols-4">
-        <Card>
-          <CardHeader className="pb-3">
-            <CardDescription className="flex items-center gap-1 text-xs">
+        <div className="glass-card rounded-xl p-4">
+          <div className="mb-3">
+            <p className="flex items-center gap-1 text-xs text-gray-400">
               <Heart className="h-4 w-4" />
               Pontos de Vida
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p className="text-3xl font-bold">{maxHP}</p>
-            <p className="text-xs text-muted-foreground">
+            </p>
+          </div>
+          <div>
+            <p className="text-3xl font-bold text-white">{maxHP}</p>
+            <p className="text-xs text-gray-400">
               d{selectedClass?.hitDie} + {conModifier}
             </p>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
-        <Card>
-          <CardHeader className="pb-3">
-            <CardDescription className="flex items-center gap-1 text-xs">
+        <div className="glass-card rounded-xl p-4">
+          <div className="mb-3">
+            <p className="flex items-center gap-1 text-xs text-gray-400">
               <Shield className="h-4 w-4" />
               Classe de Armadura
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p className="text-3xl font-bold">{armorClass}</p>
-            <p className="text-xs text-muted-foreground">10 + DES ({dexModifier})</p>
-          </CardContent>
-        </Card>
+            </p>
+          </div>
+          <div>
+            <p className="text-3xl font-bold text-white">{armorClass}</p>
+            <p className="text-xs text-gray-400">10 + DES ({dexModifier})</p>
+          </div>
+        </div>
 
-        <Card>
-          <CardHeader className="pb-3">
-            <CardDescription className="flex items-center gap-1 text-xs">
+        <div className="glass-card rounded-xl p-4">
+          <div className="mb-3">
+            <p className="flex items-center gap-1 text-xs text-gray-400">
               <Zap className="h-4 w-4" />
               Iniciativa
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p className="text-3xl font-bold">{formatModifier(initiative)}</p>
-            <p className="text-xs text-muted-foreground">Mod. DES</p>
-          </CardContent>
-        </Card>
+            </p>
+          </div>
+          <div>
+            <p className="text-3xl font-bold text-white">{formatModifier(initiative)}</p>
+            <p className="text-xs text-gray-400">Mod. DES</p>
+          </div>
+        </div>
 
-        <Card>
-          <CardHeader className="pb-3">
-            <CardDescription className="flex items-center gap-1 text-xs">
+        <div className="glass-card rounded-xl p-4">
+          <div className="mb-3">
+            <p className="flex items-center gap-1 text-xs text-gray-400">
               <Dices className="h-4 w-4" />
               Bônus Proficiência
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p className="text-3xl font-bold">+{proficiencyBonus}</p>
-            <p className="text-xs text-muted-foreground">Nível {characterData.level}</p>
-          </CardContent>
-        </Card>
+            </p>
+          </div>
+          <div>
+            <p className="text-3xl font-bold text-white">+{proficiencyBonus}</p>
+            <p className="text-xs text-gray-400">Nível {characterData.level}</p>
+          </div>
+        </div>
       </div>
 
       {/* Atributos */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Atributos</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
-            {(Object.keys(finalAbilities) as Array<keyof typeof finalAbilities>).map(
-              (abilityKey) => {
-                const baseValue = characterData.abilities[abilityKey];
-                const racialBonus = racialBonuses[abilityKey] || 0;
-                const finalValue = finalAbilities[abilityKey];
-                const modifier = calculateModifier(finalValue);
+      <div className="glass-card rounded-xl p-6">
+        <h3 className="text-lg font-semibold text-white mb-4">Atributos</h3>
+        <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
+          {(Object.keys(finalAbilities) as Array<keyof typeof finalAbilities>).map(
+            (abilityKey) => {
+              const baseValue = characterData.abilities[abilityKey];
+              const racialBonus = racialBonuses[abilityKey] || 0;
+              const finalValue = finalAbilities[abilityKey];
+              const modifier = calculateModifier(finalValue);
 
-                return (
-                  <div key={abilityKey} className="rounded-lg border bg-muted/50 p-3 text-center">
-                    <p className="text-xs font-medium text-muted-foreground">
-                      {ABILITY_NAMES[abilityKey]}
-                    </p>
-                    <p className="mt-1 text-2xl font-bold">{finalValue}</p>
-                    <p className="text-sm text-muted-foreground">{formatModifier(modifier)}</p>
-                    {racialBonus > 0 && (
-                      <p className="mt-1 text-xs text-green-600 dark:text-green-400">
-                        {baseValue} + {racialBonus}
-                      </p>
-                    )}
-                  </div>
-                );
-              }
-            )}
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Perícias */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Perícias Proficientes ({characterData.skills.length})</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-wrap gap-2">
-            {characterData.skills.map((skillId) => {
-              const skill = SKILLS.find((s) => s.id === skillId);
               return (
-                <div
-                  key={skillId}
-                  className="rounded-md bg-deep-purple/10 px-3 py-1 text-sm font-medium"
-                >
-                  {skill?.name}
+                <div key={abilityKey} className="glass-card-light rounded-lg p-3 text-center">
+                  <p className="text-xs font-medium text-gray-400">
+                    {ABILITY_NAMES[abilityKey]}
+                  </p>
+                  <p className="mt-1 text-2xl font-bold text-white">{finalValue}</p>
+                  <p className="text-sm text-gray-300">{formatModifier(modifier)}</p>
+                  {racialBonus > 0 && (
+                    <p className="mt-1 text-xs text-green-400">
+                      {baseValue} + {racialBonus}
+                    </p>
+                  )}
                 </div>
               );
-            })}
-          </div>
-        </CardContent>
-      </Card>
+            }
+          )}
+        </div>
+      </div>
+
+      {/* Perícias */}
+      <div className="glass-card rounded-xl p-6">
+        <h3 className="text-lg font-semibold text-white mb-4">Perícias Proficientes ({characterData.skills.length})</h3>
+        <div className="flex flex-wrap gap-2">
+          {characterData.skills.map((skillId) => {
+            const skill = SKILLS.find((s) => s.id === skillId);
+            return (
+              <div
+                key={skillId}
+                className="glass-card-light rounded-md px-3 py-1 text-sm font-medium text-white"
+              >
+                {skill?.name}
+              </div>
+            );
+          })}
+        </div>
+      </div>
 
       {/* Botão Salvar */}
       {error && (
-        <div className="rounded-lg border border-red-200 bg-red-50 p-4 dark:border-red-900 dark:bg-red-950/20">
-          <p className="text-sm text-red-900 dark:text-red-100">⚠️ {error}</p>
+        <div className="glass-card-light rounded-xl border border-red-400/50 p-4">
+          <p className="text-sm text-red-100">⚠️ {error}</p>
         </div>
       )}
 
       <div className="flex gap-4">
-        <Button onClick={saveCharacter} disabled={isSaving} className="flex-1" size="lg">
+        <Button
+          onClick={saveCharacter}
+          disabled={isSaving}
+          className="flex-1 bg-gradient-to-r from-purple-600 to-violet-600 hover:from-purple-700 hover:to-violet-700"
+          size="lg"
+        >
           {isSaving ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />

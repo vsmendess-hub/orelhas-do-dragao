@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { Share2, Copy, Eye, Clock, Users, Link2, Check, Settings } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
@@ -162,27 +161,25 @@ export function CharacterShareManager({
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <div>
-            <CardTitle className="flex items-center gap-2">
-              <Share2 className="h-5 w-5 text-blue-600" />
-              Compartilhamento
-            </CardTitle>
-            <CardDescription>Compartilhe seu personagem com outros jogadores</CardDescription>
-          </div>
-          {isActive && (
-            <Badge variant="default" className="bg-green-600">
-              <Eye className="mr-1 h-3 w-3" />
-              Ativo
-            </Badge>
-          )}
+    <div className="glass-card rounded-2xl p-6 space-y-4">
+      <div className="flex items-center justify-between">
+        <div>
+          <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+            <Share2 className="h-5 w-5 text-blue-500" />
+            Compartilhamento
+          </h3>
+          <p className="text-sm text-gray-400">Compartilhe seu personagem com outros jogadores</p>
         </div>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        {/* Status e Link */}
-        {share && isActive ? (
+        {isActive && (
+          <Badge variant="default" className="bg-green-600">
+            <Eye className="mr-1 h-3 w-3" />
+            Ativo
+          </Badge>
+        )}
+      </div>
+
+      {/* Status e Link */}
+      {share && isActive ? (
           <div className="space-y-4">
             {/* Link de Compartilhamento */}
             <div className="space-y-2">
@@ -213,61 +210,53 @@ export function CharacterShareManager({
             {/* Estatísticas */}
             {stats && (
               <div className="grid grid-cols-3 gap-4">
-                <Card className="border-2">
-                  <CardContent className="pt-4">
-                    <div className="text-center">
-                      <Eye className="mx-auto h-5 w-5 text-muted-foreground mb-1" />
-                      <p className="text-2xl font-bold">{stats.totalViews}</p>
-                      <p className="text-xs text-muted-foreground">Visualizações</p>
-                    </div>
-                  </CardContent>
-                </Card>
-                <Card className="border-2">
-                  <CardContent className="pt-4">
-                    <div className="text-center">
-                      <Clock className="mx-auto h-5 w-5 text-muted-foreground mb-1" />
-                      <p className="text-2xl font-bold">{stats.daysActive}</p>
-                      <p className="text-xs text-muted-foreground">Dias Ativo</p>
-                    </div>
-                  </CardContent>
-                </Card>
-                <Card className="border-2">
-                  <CardContent className="pt-4">
-                    <div className="text-center">
-                      <Users className="mx-auto h-5 w-5 text-muted-foreground mb-1" />
-                      <p className="text-2xl font-bold">
-                        {share.visibility === 'public' ? 'Público' : 'Privado'}
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        {formatTimeRemaining(share.expiresAt)}
-                      </p>
-                    </div>
-                  </CardContent>
-                </Card>
+                <div className="glass-card rounded-xl p-4 border-2 border-white/10">
+                  <div className="text-center">
+                    <Eye className="mx-auto h-5 w-5 text-gray-400 mb-1" />
+                    <p className="text-2xl font-bold text-white">{stats.totalViews}</p>
+                    <p className="text-xs text-gray-400">Visualizações</p>
+                  </div>
+                </div>
+                <div className="glass-card rounded-xl p-4 border-2 border-white/10">
+                  <div className="text-center">
+                    <Clock className="mx-auto h-5 w-5 text-gray-400 mb-1" />
+                    <p className="text-2xl font-bold text-white">{stats.daysActive}</p>
+                    <p className="text-xs text-gray-400">Dias Ativo</p>
+                  </div>
+                </div>
+                <div className="glass-card rounded-xl p-4 border-2 border-white/10">
+                  <div className="text-center">
+                    <Users className="mx-auto h-5 w-5 text-gray-400 mb-1" />
+                    <p className="text-2xl font-bold text-white">
+                      {share.visibility === 'public' ? 'Público' : 'Privado'}
+                    </p>
+                    <p className="text-xs text-gray-400">
+                      {formatTimeRemaining(share.expiresAt)}
+                    </p>
+                  </div>
+                </div>
               </div>
             )}
 
             {/* Configurações Atuais */}
-            <Card className="bg-muted/50">
-              <CardContent className="pt-4 space-y-2">
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">Visibilidade:</span>
-                  <Badge variant="outline">{VISIBILITY_LABELS[share.visibility]}</Badge>
-                </div>
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">Comentários:</span>
-                  <Badge variant={share.allowComments ? 'default' : 'secondary'}>
-                    {share.allowComments ? 'Permitido' : 'Desativado'}
-                  </Badge>
-                </div>
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">Clonar:</span>
-                  <Badge variant={share.allowClone ? 'default' : 'secondary'}>
-                    {share.allowClone ? 'Permitido' : 'Desativado'}
-                  </Badge>
-                </div>
-              </CardContent>
-            </Card>
+            <div className="glass-card-light rounded-xl border border-white/10 p-4 space-y-2">
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-gray-400">Visibilidade:</span>
+                <Badge variant="outline">{VISIBILITY_LABELS[share.visibility]}</Badge>
+              </div>
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-gray-400">Comentários:</span>
+                <Badge variant={share.allowComments ? 'default' : 'secondary'}>
+                  {share.allowComments ? 'Permitido' : 'Desativado'}
+                </Badge>
+              </div>
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-gray-400">Clonar:</span>
+                <Badge variant={share.allowClone ? 'default' : 'secondary'}>
+                  {share.allowClone ? 'Permitido' : 'Desativado'}
+                </Badge>
+              </div>
+            </div>
 
             {/* Botões de Ação */}
             <div className="flex gap-2">
@@ -278,6 +267,46 @@ export function CharacterShareManager({
                     Configurações
                   </Button>
                 </DialogTrigger>
+                <DialogContent className="max-w-md">
+                  <ShareSettingsDialog
+                    visibility={visibility}
+                    setVisibility={setVisibility}
+                    allowComments={allowComments}
+                    setAllowComments={setAllowComments}
+                    allowClone={allowClone}
+                    setAllowClone={setAllowClone}
+                    expirationMs={expirationMs}
+                    setExpirationMs={setExpirationMs}
+                    onSave={handleSaveShare}
+                    onClose={() => setIsOpen(false)}
+                    isSaving={isSaving}
+                  />
+                </DialogContent>
+              </Dialog>
+              <Button variant="destructive" onClick={handleDisableSharing} disabled={isSaving}>
+                Desativar
+              </Button>
+            </div>
+          </div>
+        ) : (
+          // Compartilhamento não ativo
+          <div className="space-y-4">
+            <div className="glass-card-light rounded-lg border border-dashed border-purple-500/50 p-8 text-center">
+              <Link2 className="mx-auto h-12 w-12 text-gray-400" />
+              <p className="mt-2 text-sm font-medium text-white">Compartilhamento Desativado</p>
+              <p className="text-xs text-gray-400">
+                Configure e ative o compartilhamento para gerar um link
+              </p>
+            </div>
+
+            <Dialog open={isOpen} onOpenChange={setIsOpen}>
+              <DialogTrigger asChild>
+                <Button className="w-full tab-purple">
+                  <Share2 className="mr-2 h-4 w-4" />
+                  Ativar Compartilhamento
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-md">
                 <ShareSettingsDialog
                   visibility={visibility}
                   setVisibility={setVisibility}
@@ -291,48 +320,11 @@ export function CharacterShareManager({
                   onClose={() => setIsOpen(false)}
                   isSaving={isSaving}
                 />
-              </Dialog>
-              <Button variant="destructive" onClick={handleDisableSharing} disabled={isSaving}>
-                Desativar
-              </Button>
-            </div>
-          </div>
-        ) : (
-          // Compartilhamento não ativo
-          <div className="space-y-4">
-            <div className="rounded-lg border border-dashed p-8 text-center">
-              <Link2 className="mx-auto h-12 w-12 text-muted-foreground" />
-              <p className="mt-2 text-sm font-medium">Compartilhamento Desativado</p>
-              <p className="text-xs text-muted-foreground">
-                Configure e ative o compartilhamento para gerar um link
-              </p>
-            </div>
-
-            <Dialog open={isOpen} onOpenChange={setIsOpen}>
-              <DialogTrigger asChild>
-                <Button className="w-full">
-                  <Share2 className="mr-2 h-4 w-4" />
-                  Ativar Compartilhamento
-                </Button>
-              </DialogTrigger>
-              <ShareSettingsDialog
-                visibility={visibility}
-                setVisibility={setVisibility}
-                allowComments={allowComments}
-                setAllowComments={setAllowComments}
-                allowClone={allowClone}
-                setAllowClone={setAllowClone}
-                expirationMs={expirationMs}
-                setExpirationMs={setExpirationMs}
-                onSave={handleSaveShare}
-                onClose={() => setIsOpen(false)}
-                isSaving={isSaving}
-              />
+              </DialogContent>
             </Dialog>
           </div>
         )}
-      </CardContent>
-    </Card>
+    </div>
   );
 }
 
@@ -365,7 +357,7 @@ function ShareSettingsDialog({
   isSaving,
 }: ShareSettingsDialogProps) {
   return (
-    <DialogContent className="max-w-md">
+    <>
       <DialogHeader>
         <DialogTitle>Configurações de Compartilhamento</DialogTitle>
         <DialogDescription>Configure como seu personagem será compartilhado</DialogDescription>
@@ -457,6 +449,6 @@ function ShareSettingsDialog({
           </Button>
         </div>
       </div>
-    </DialogContent>
+    </>
   );
 }

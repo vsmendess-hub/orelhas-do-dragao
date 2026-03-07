@@ -55,7 +55,7 @@ export function TreasureGenerator() {
 
           <div className="space-y-2">
             <Label htmlFor="size">Tipo de Tesouro</Label>
-            <Select value={hoardSize} onValueChange={(v) => setHoardSize(v as any)}>
+            <Select value={hoardSize} onValueChange={(v) => setHoardSize(v as 'individual' | 'hoard')}>
               <SelectTrigger id="size">
                 <SelectValue />
               </SelectTrigger>

@@ -152,7 +152,7 @@ export function ItemDialog({ open, onOpenChange, onSave, editingItem }: ItemDial
               rows={3}
               maxLength={500}
             />
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-gray-400">
               {formData.description?.length || 0} / 500 caracteres
             </p>
           </div>
@@ -247,7 +247,7 @@ export function ItemDialog({ open, onOpenChange, onSave, editingItem }: ItemDial
                 checked={formData.equipped ?? false}
                 onChange={(e) => setFormData({ ...formData, equipped: e.target.checked })}
                 disabled={isSaving}
-                className="h-4 w-4 rounded border-gray-300 text-deep-purple focus:ring-deep-purple"
+                className="h-4 w-4 rounded border-gray-300 text-purple-500 focus:ring-purple-500"
               />
               <label htmlFor="equipped" className="text-sm font-medium">
                 Equipar automaticamente
@@ -257,9 +257,9 @@ export function ItemDialog({ open, onOpenChange, onSave, editingItem }: ItemDial
 
           {/* Info sobre peso e valor total */}
           {formData.quantity && formData.quantity > 1 && (
-            <div className="rounded-lg border bg-muted/50 p-3 text-sm">
-              <p className="font-medium">Totais:</p>
-              <div className="mt-1 grid grid-cols-2 gap-2 text-xs text-muted-foreground">
+            <div className="rounded-lg glass-card-light p-3 text-sm">
+              <p className="font-medium text-white">Totais:</p>
+              <div className="mt-1 grid grid-cols-2 gap-2 text-xs text-gray-400">
                 <span>
                   Peso total: {((formData.weight ?? 0) * (formData.quantity ?? 1)).toFixed(1)} lb
                 </span>
@@ -272,7 +272,7 @@ export function ItemDialog({ open, onOpenChange, onSave, editingItem }: ItemDial
 
           {/* Erro */}
           {error && (
-            <div className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-900 dark:border-red-900 dark:bg-red-950/20 dark:text-red-100">
+            <div className="rounded-md glass-card-light border border-red-400/50 p-3 text-sm text-red-300">
               ⚠️ {error}
             </div>
           )}

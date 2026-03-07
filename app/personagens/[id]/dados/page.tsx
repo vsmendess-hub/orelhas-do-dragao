@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { ArrowLeft, Dices } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import { Button } from '@/components/ui/button';
+import { ThemeToggle } from '@/app/components/theme-toggle';
 import { DiceManager } from '@/app/components/dice/dice-manager';
 import { calculateModifier } from '@/lib/data/point-buy';
 
@@ -51,22 +52,35 @@ export default async function DicePage({ params }: PageProps) {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen relative">
+      {/* Fantasy Background */}
+      <div className="fantasy-bg" />
+      <div
+        className="fixed inset-0 -z-10 bg-cover bg-center opacity-20"
+        style={{
+          backgroundImage:
+            'url(https://i.pinimg.com/originals/a1/5d/0e/a15d0e8c4f4f8b8c4f4f8b8c4f4f8b8c.jpg)',
+          filter: 'blur(3px)',
+        }}
+      />
+
       {/* Header */}
-      <header className="border-b">
+      <header className="glass-card border-0 rounded-none backdrop-blur-xl">
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
           <div className="flex items-center gap-4">
-            <Button asChild variant="ghost" size="sm">
+            <Button asChild variant="ghost" size="sm" className="text-white hover:bg-white/10">
               <Link href={`/personagens/${id}`}>
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 Voltar
               </Link>
             </Button>
             <div>
-              <h1 className="text-lg font-semibold">{character.name}</h1>
-              <p className="text-xs text-muted-foreground">Sistema de Rolagem de Dados</p>
+              <h1 className="text-lg font-semibold text-white">{character.name}</h1>
+              <p className="text-xs text-gray-400">Sistema de Rolagem de Dados</p>
             </div>
           </div>
+
+          <ThemeToggle />
         </div>
       </header>
 
@@ -75,11 +89,11 @@ export default async function DicePage({ params }: PageProps) {
         <div className="mx-auto max-w-7xl space-y-6">
           {/* Header de Dados */}
           <div>
-            <h2 className="flex items-center gap-2 text-3xl font-bold">
-              <Dices className="h-8 w-8" />
+            <h2 className="flex items-center gap-2 text-3xl font-bold text-white">
+              <Dices className="h-8 w-8 text-purple-400" />
               Rolador de Dados
             </h2>
-            <p className="mt-2 text-muted-foreground">
+            <p className="mt-2 text-gray-300">
               Role dados para ataques, perícias, testes de resistência e muito mais
             </p>
           </div>

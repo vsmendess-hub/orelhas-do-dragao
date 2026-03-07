@@ -5,7 +5,6 @@ import { Coins, Loader2 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   type Currency,
   CURRENCY_NAMES,
@@ -67,20 +66,20 @@ export function CurrencyManager({ characterId, currency: initialCurrency }: Curr
   };
 
   return (
-    <Card>
-      <CardHeader>
+    <div className="glass-card rounded-2xl p-6">
+      <div className="mb-6">
         <div className="flex items-center justify-between">
           <div>
-            <CardTitle className="flex items-center gap-2">
+            <h3 className="flex items-center gap-2 text-lg font-semibold text-white">
               <Coins className="h-5 w-5 text-yellow-500" />
               Moedas
-            </CardTitle>
-            <CardDescription>Gerencie suas moedas (po, pp, pe, pc, pl)</CardDescription>
+            </h3>
+            <p className="text-sm text-gray-400 mt-1">Gerencie suas moedas (po, pp, pe, pc, pl)</p>
           </div>
-          {isSaving && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
+          {isSaving && <Loader2 className="h-4 w-4 animate-spin text-purple-400" />}
         </div>
-      </CardHeader>
-      <CardContent className="space-y-6">
+      </div>
+      <div className="space-y-6">
         {/* Grid de Moedas */}
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {(Object.keys(CURRENCY_NAMES) as CurrencyType[]).map((type) => {
@@ -89,9 +88,9 @@ export function CurrencyManager({ characterId, currency: initialCurrency }: Curr
 
             // Cores por tipo de moeda
             const colors = {
-              copper: 'text-orange-600 dark:text-orange-400',
+              copper: 'text-orange-400',
               silver: 'text-gray-400',
-              electrum: 'text-green-600 dark:text-green-400',
+              electrum: 'text-green-400',
               gold: 'text-yellow-500',
               platinum: 'text-blue-400',
             };
@@ -101,7 +100,7 @@ export function CurrencyManager({ characterId, currency: initialCurrency }: Curr
                 <label className="flex items-center gap-2 text-sm font-medium">
                   <span className={`text-lg ${colors[type]}`}>●</span>
                   {info.full}
-                  <span className="text-xs text-muted-foreground">({info.abbr})</span>
+                  <span className="text-xs text-gray-400">({info.abbr})</span>
                 </label>
 
                 <div className="flex items-center gap-2">
@@ -138,27 +137,27 @@ export function CurrencyManager({ characterId, currency: initialCurrency }: Curr
         </div>
 
         {/* Totais */}
-        <div className="rounded-lg border bg-muted/50 p-4">
+        <div className="rounded-lg glass-card-light p-4">
           <div className="grid gap-2 text-sm md:grid-cols-2">
             <div className="flex items-center justify-between">
-              <span className="text-muted-foreground">Valor total em ouro:</span>
-              <span className="font-bold text-yellow-600 dark:text-yellow-400">
+              <span className="text-gray-400">Valor total em ouro:</span>
+              <span className="font-bold text-yellow-400">
                 {totalGold.toFixed(2)} po
               </span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-muted-foreground">Peso das moedas:</span>
-              <span className="font-medium">{totalWeight.toFixed(2)} lb</span>
+              <span className="text-gray-400">Peso das moedas:</span>
+              <span className="font-medium text-white">{totalWeight.toFixed(2)} lb</span>
             </div>
           </div>
 
-          <p className="mt-2 text-xs text-muted-foreground">💡 Dica: 50 moedas pesam 1 libra</p>
+          <p className="mt-2 text-xs text-gray-400">💡 Dica: 50 moedas pesam 1 libra</p>
         </div>
 
         {/* Conversão rápida */}
-        <details className="rounded-lg border bg-card p-3">
-          <summary className="cursor-pointer text-sm font-medium">📊 Tabela de Conversão</summary>
-          <div className="mt-3 space-y-1 text-xs text-muted-foreground">
+        <details className="rounded-lg border border-white/10 glass-card-light p-3">
+          <summary className="cursor-pointer text-sm font-medium text-white">📊 Tabela de Conversão</summary>
+          <div className="mt-3 space-y-1 text-xs text-gray-400">
             <p>• 1 pl = 10 po</p>
             <p>• 1 po = 1 po (base)</p>
             <p>• 2 pe = 1 po</p>
@@ -169,11 +168,11 @@ export function CurrencyManager({ characterId, currency: initialCurrency }: Curr
 
         {/* Erro */}
         {error && (
-          <div className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-900 dark:border-red-900 dark:bg-red-950/20 dark:text-red-100">
+          <div className="rounded-md glass-card-light border border-red-400/50 p-3 text-sm text-red-300">
             ⚠️ {error}
           </div>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }

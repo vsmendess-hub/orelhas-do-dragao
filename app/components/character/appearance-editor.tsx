@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { User, Save, Loader2 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -17,6 +18,7 @@ interface AppearanceEditorProps {
 }
 
 export function AppearanceEditor({ characterId, initialAppearance }: AppearanceEditorProps) {
+  const router = useRouter();
   const [appearance, setAppearance] = useState<Appearance>(initialAppearance);
   const [isSaving, setIsSaving] = useState(false);
   const [saveMessage, setSaveMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(
@@ -45,6 +47,10 @@ export function AppearanceEditor({ characterId, initialAppearance }: AppearanceE
       if (error) throw error;
 
       setSaveMessage({ type: 'success', text: 'Aparência salva com sucesso!' });
+
+      // Recarregar dados do servidor
+      router.refresh();
+
       setTimeout(() => setSaveMessage(null), 3000);
     } catch (err) {
       console.error('Erro ao salvar aparência:', err);

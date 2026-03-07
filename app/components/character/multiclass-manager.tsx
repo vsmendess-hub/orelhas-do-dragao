@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { Users, Plus, Minus, Info, AlertTriangle } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
 import {
@@ -144,26 +143,24 @@ export function MulticlassManager({
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <div>
-            <CardTitle className="flex items-center gap-2">
-              <Users className="h-5 w-5 text-purple-600" />
-              Multiclasse
-            </CardTitle>
-            <CardDescription>
-              {multiclass ? formatMulticlassDescription(classes) : 'Classe única'}
-            </CardDescription>
-          </div>
-          <Badge variant="secondary" className="text-lg">
-            Nível {totalLevel}
-          </Badge>
+    <div className="glass-card rounded-2xl p-6 space-y-4">
+      <div className="flex items-center justify-between">
+        <div>
+          <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+            <Users className="h-5 w-5 text-purple-500" />
+            Multiclasse
+          </h3>
+          <p className="text-sm text-gray-400">
+            {multiclass ? formatMulticlassDescription(classes) : 'Classe única'}
+          </p>
         </div>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        {/* Validation Errors */}
-        {!validation.valid && (
+        <Badge variant="secondary" className="text-lg">
+          Nível {totalLevel}
+        </Badge>
+      </div>
+
+      {/* Validation Errors */}
+      {!validation.valid && (
           <Alert variant="destructive">
             <AlertTriangle className="h-4 w-4" />
             <AlertTitle>Pré-requisitos não atendidos</AlertTitle>
@@ -179,73 +176,71 @@ export function MulticlassManager({
 
         {/* Stats Gerais */}
         <div className="grid grid-cols-3 gap-3">
-          <div className="rounded-lg border bg-muted/50 p-3 text-center">
-            <p className="text-xs text-muted-foreground">Nível Total</p>
-            <p className="text-2xl font-bold">{totalLevel}</p>
+          <div className="glass-card-light rounded-lg border border-white/10 p-3 text-center">
+            <p className="text-xs text-gray-400">Nível Total</p>
+            <p className="text-2xl font-bold text-white">{totalLevel}</p>
           </div>
-          <div className="rounded-lg border bg-muted/50 p-3 text-center">
-            <p className="text-xs text-muted-foreground">Proficiência</p>
-            <p className="text-2xl font-bold">+{proficiencyBonus}</p>
+          <div className="glass-card-light rounded-lg border border-white/10 p-3 text-center">
+            <p className="text-xs text-gray-400">Proficiência</p>
+            <p className="text-2xl font-bold text-white">+{proficiencyBonus}</p>
           </div>
-          <div className="rounded-lg border bg-muted/50 p-3 text-center">
-            <p className="text-xs text-muted-foreground">Caster Level</p>
-            <p className="text-2xl font-bold">{casterLevel}</p>
+          <div className="glass-card-light rounded-lg border border-white/10 p-3 text-center">
+            <p className="text-xs text-gray-400">Caster Level</p>
+            <p className="text-2xl font-bold text-white">{casterLevel}</p>
           </div>
         </div>
 
         {/* Classes */}
         <div className="space-y-3">
-          <Label className="text-base font-semibold">Classes Atuais</Label>
+          <Label className="text-base font-semibold text-white">Classes Atuais</Label>
           {classes.map((cls) => {
             const isPrimary = primaryClass?.className === cls.className;
             return (
-              <Card key={cls.className} className={isPrimary ? 'border-2 border-purple-500' : ''}>
-                <CardContent className="pt-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2">
-                        <p className="font-semibold">{cls.className}</p>
-                        {isPrimary && (
-                          <Badge variant="outline" className="text-xs">
-                            Primária
-                          </Badge>
-                        )}
-                      </div>
-                      <div className="mt-1 flex items-center gap-4 text-xs text-muted-foreground">
-                        <span>Nível {cls.level}</span>
-                        <span>Dado de Vida: {cls.hitDie}</span>
-                        {cls.subclass && <span>Subclasse: {cls.subclass}</span>}
-                      </div>
+              <div key={cls.className} className={`glass-card rounded-xl p-4 ${isPrimary ? 'border-2 border-purple-500 bg-purple-500/10' : ''}`}>
+                <div className="flex items-center justify-between">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <p className="font-semibold text-white">{cls.className}</p>
+                      {isPrimary && (
+                        <Badge variant="outline" className="text-xs">
+                          Primária
+                        </Badge>
+                      )}
                     </div>
-                    <div className="flex gap-1">
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        onClick={() => handleLevelUp(cls.className)}
-                        disabled={isSaving}
-                      >
-                        <Plus className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        onClick={() => handleLevelDown(cls.className)}
-                        disabled={isSaving || classes.length === 1}
-                      >
-                        <Minus className="h-4 w-4" />
-                      </Button>
+                    <div className="mt-1 flex items-center gap-4 text-xs text-gray-400">
+                      <span>Nível {cls.level}</span>
+                      <span>Dado de Vida: {cls.hitDie}</span>
+                      {cls.subclass && <span>Subclasse: {cls.subclass}</span>}
                     </div>
                   </div>
-                </CardContent>
-              </Card>
+                  <div className="flex gap-1">
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={() => handleLevelUp(cls.className)}
+                      disabled={isSaving}
+                    >
+                      <Plus className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={() => handleLevelDown(cls.className)}
+                      disabled={isSaving || classes.length === 1}
+                    >
+                      <Minus className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              </div>
             );
           })}
         </div>
 
         {/* Hit Dice Summary */}
         {multiclass && (
-          <div className="rounded-lg border bg-muted/50 p-3">
-            <p className="mb-2 text-sm font-medium">Dados de Vida:</p>
+          <div className="glass-card-light rounded-lg border border-white/10 p-3">
+            <p className="mb-2 text-sm font-medium text-white">Dados de Vida:</p>
             <div className="flex flex-wrap gap-2">
               {Object.entries(hitDice).map(([die, count]) => (
                 <Badge key={die} variant="outline">
@@ -312,13 +307,13 @@ export function MulticlassManager({
 
               {/* Pré-requisitos */}
               {selectedClass && MULTICLASS_PREREQUISITES[selectedClass] && (
-                <div className="rounded-lg border bg-muted/50 p-3 text-sm">
-                  <p className="font-medium">Pré-requisitos:</p>
-                  <ul className="mt-1 space-y-1 text-muted-foreground">
+                <div className="glass-card-light rounded-lg border border-white/10 p-3 text-sm">
+                  <p className="font-medium text-white">Pré-requisitos:</p>
+                  <ul className="mt-1 space-y-1 text-gray-400">
                     {MULTICLASS_PREREQUISITES[selectedClass].map((prereq, idx) => {
                       const hasPrereq = attributes[prereq.attribute] >= prereq.minimum;
                       return (
-                        <li key={idx} className={hasPrereq ? 'text-green-600' : 'text-red-600'}>
+                        <li key={idx} className={hasPrereq ? 'text-green-400' : 'text-red-400'}>
                           {hasPrereq ? '✓' : '✗'} {prereq.attribute.toUpperCase()}{' '}
                           {prereq.minimum}+ (atual: {attributes[prereq.attribute]})
                         </li>
@@ -328,13 +323,12 @@ export function MulticlassManager({
                 </div>
               )}
 
-              <Button onClick={handleAddClass} disabled={!selectedClass || isSaving} className="w-full">
+              <Button onClick={handleAddClass} disabled={!selectedClass || isSaving} className="w-full tab-purple">
                 {isSaving ? 'Salvando...' : 'Adicionar Classe'}
               </Button>
             </div>
           </DialogContent>
         </Dialog>
-      </CardContent>
-    </Card>
+    </div>
   );
 }

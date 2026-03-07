@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { Sparkles, Plus, Minus, RotateCcw, Moon, Coffee } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import {
   type ClassResource,
@@ -91,25 +90,25 @@ export function ClassResourcesManager({
 
   if (resources.length === 0) {
     return (
-      <Card className="border-dashed">
-        <CardContent className="py-8 text-center">
-          <Sparkles className="mx-auto mb-2 h-8 w-8 text-muted-foreground/50" />
-          <p className="text-sm text-muted-foreground">
+      <div className="glass-card rounded-2xl border-dashed p-6">
+        <div className="py-8 text-center">
+          <Sparkles className="mx-auto mb-2 h-8 w-8 text-gray-400/50" />
+          <p className="text-sm text-gray-400">
             Esta classe não possui recursos rastreáveis
           </p>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     );
   }
 
   return (
-    <Card>
-      <CardHeader>
+    <div className="glass-card rounded-2xl p-6">
+      <div className="mb-6">
         <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center gap-2">
+          <h3 className="flex items-center gap-2 text-lg font-semibold text-white">
             <Sparkles className="h-5 w-5" />
             Recursos de Classe
-          </CardTitle>
+          </h3>
           <div className="flex gap-2">
             <Button
               variant="outline"
@@ -131,8 +130,8 @@ export function ClassResourcesManager({
             </Button>
           </div>
         </div>
-      </CardHeader>
-      <CardContent className="space-y-4">
+      </div>
+      <div className="space-y-4">
         {resources.map((resource) => {
           const percentage = (resource.current / resource.max) * 100;
           const isLow = percentage < 30;
@@ -141,21 +140,21 @@ export function ClassResourcesManager({
           return (
             <div
               key={resource.id}
-              className={`rounded-lg border p-4 transition-colors ${
-                isEmpty ? 'border-red-200 bg-red-50/50 dark:border-red-900 dark:bg-red-950/20' : ''
+              className={`rounded-lg glass-card-light border p-4 transition-colors ${
+                isEmpty ? 'border-red-400/50 bg-red-500/10' : 'border-white/10'
               }`}
             >
               {/* Header do Recurso */}
               <div className="mb-3 flex items-start justify-between">
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
-                    <h4 className="font-semibold">{resource.name}</h4>
+                    <h4 className="font-semibold text-white">{resource.name}</h4>
                     <Badge variant="secondary" className={RECOVERY_COLORS[resource.recovery]}>
                       {RECOVERY_LABELS[resource.recovery]}
                     </Badge>
                   </div>
                   {resource.description && (
-                    <p className="mt-1 text-xs text-muted-foreground">{resource.description}</p>
+                    <p className="mt-1 text-xs text-gray-400">{resource.description}</p>
                   )}
                 </div>
                 <Button
@@ -187,16 +186,16 @@ export function ClassResourcesManager({
                     <span
                       className={`text-3xl font-bold transition-colors ${
                         isEmpty
-                          ? 'text-red-600 dark:text-red-400'
+                          ? 'text-red-400'
                           : isLow
-                            ? 'text-amber-600 dark:text-amber-400'
-                            : ''
+                            ? 'text-amber-400'
+                            : 'text-white'
                       }`}
                     >
                       {resource.current}
                     </span>
-                    <span className="text-xl text-muted-foreground">/</span>
-                    <span className="text-xl text-muted-foreground">{resource.max}</span>
+                    <span className="text-xl text-gray-400">/</span>
+                    <span className="text-xl text-gray-400">{resource.max}</span>
                   </div>
 
                   <Button
@@ -211,10 +210,10 @@ export function ClassResourcesManager({
                 </div>
 
                 {/* Barra de Progresso */}
-                <div className="h-2 overflow-hidden rounded-full bg-muted">
+                <div className="h-2 overflow-hidden rounded-full bg-white/10">
                   <div
                     className={`h-full transition-all duration-300 ${
-                      isEmpty ? 'bg-red-500' : isLow ? 'bg-amber-500' : 'bg-deep-purple'
+                      isEmpty ? 'bg-red-500' : isLow ? 'bg-amber-500' : 'bg-purple-500'
                     }`}
                     style={{ width: `${percentage}%` }}
                   />
@@ -225,8 +224,8 @@ export function ClassResourcesManager({
         })}
 
         {/* Legenda de Descansos */}
-        <div className="rounded-lg border bg-muted/50 p-3 text-xs text-muted-foreground">
-          <p className="mb-2 font-medium text-foreground">💤 Recuperação:</p>
+        <div className="rounded-lg glass-card-light p-3 text-xs text-gray-400">
+          <p className="mb-2 font-medium text-white">💤 Recuperação:</p>
           <div className="space-y-1">
             <div className="flex items-center gap-2">
               <Coffee className="h-3 w-3" />
@@ -238,7 +237,7 @@ export function ClassResourcesManager({
             </div>
           </div>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }

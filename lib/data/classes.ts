@@ -7,6 +7,7 @@ export interface Archetype {
   id: string;
   name: string;
   description: string;
+  image?: string;
 }
 
 export interface Class {
@@ -18,6 +19,7 @@ export interface Class {
   savingThrows: string[];
   skillChoices: number;
   availableSkills: string[];
+  image?: string;
   archetypes: Archetype[];
 }
 
@@ -30,6 +32,7 @@ export const CLASSES: Class[] = [
     primaryAbility: ['Força'],
     savingThrows: ['Força', 'Constituição'],
     skillChoices: 2,
+    image: 'https://i.pinimg.com/1200x/e9/5d/f5/e95df529c1f9a9332ec2743eadb028c6.jpg',
     availableSkills: [
       'Adestrar Animais',
       'Atletismo',
@@ -59,6 +62,7 @@ export const CLASSES: Class[] = [
     primaryAbility: ['Carisma'],
     savingThrows: ['Destreza', 'Carisma'],
     skillChoices: 3,
+    image: 'https://i.pinimg.com/736x/4c/8f/e1/4c8fe1e0db55d63a534d34137933517c.jpg',
     availableSkills: [
       'Acrobacia',
       'Arcanismo',
@@ -100,6 +104,7 @@ export const CLASSES: Class[] = [
     primaryAbility: ['Carisma'],
     savingThrows: ['Sabedoria', 'Carisma'],
     skillChoices: 2,
+    image: 'https://i.pinimg.com/736x/bb/c6/0c/bbc60ce4142e6dc6ceffc56ea2b2269d.jpg',
     availableSkills: [
       'Arcanismo',
       'Enganação',
@@ -132,6 +137,7 @@ export const CLASSES: Class[] = [
     name: 'Clérigo',
     description: 'Servo divino que canaliza o poder de sua divindade.',
     hitDie: 8,
+    image: 'https://i.pinimg.com/736x/14/99/2b/14992b2f9df46eee6889d166b0b04aaa.jpg',
     primaryAbility: ['Sabedoria'],
     savingThrows: ['Sabedoria', 'Carisma'],
     skillChoices: 2,
@@ -179,6 +185,7 @@ export const CLASSES: Class[] = [
     name: 'Druida',
     description: 'Guardião da natureza com poder de transformação.',
     hitDie: 8,
+    image: 'https://i.pinimg.com/736x/b7/ad/4e/b7ad4ee4ab98cc3db23ce25c5d275f5b.jpg',
     primaryAbility: ['Sabedoria'],
     savingThrows: ['Inteligência', 'Sabedoria'],
     skillChoices: 2,
@@ -210,6 +217,7 @@ export const CLASSES: Class[] = [
     name: 'Feiticeiro',
     description: 'Conjurador com magia inata correndo em suas veias.',
     hitDie: 6,
+    image: 'https://i.pinimg.com/736x/99/93/3a/99933ae2afaf5aaff51cd5dfecd151c7.jpg',
     primaryAbility: ['Carisma'],
     savingThrows: ['Constituição', 'Carisma'],
     skillChoices: 2,
@@ -232,6 +240,7 @@ export const CLASSES: Class[] = [
     name: 'Guerreiro',
     description: 'Mestre de armas e táticas de combate.',
     hitDie: 10,
+    image: 'https://i.pinimg.com/736x/37/32/e3/3732e32fa396dc33d51a276977c96a91.jpg',
     primaryAbility: ['Força', 'Destreza'],
     savingThrows: ['Força', 'Constituição'],
     skillChoices: 2,
@@ -268,6 +277,7 @@ export const CLASSES: Class[] = [
     name: 'Ladino',
     description: 'Especialista em furtividade e ataques precisos.',
     hitDie: 8,
+    image: 'https://i.pinimg.com/736x/6b/da/a1/6bdaa193060791ee8fa0ccb7c4093baa.jpg',
     primaryAbility: ['Destreza'],
     savingThrows: ['Destreza', 'Inteligência'],
     skillChoices: 4,
@@ -307,6 +317,7 @@ export const CLASSES: Class[] = [
     name: 'Mago',
     description: 'Estudioso da magia arcana e seus mistérios.',
     hitDie: 6,
+    image: 'https://i.pinimg.com/736x/75/6d/3f/756d3fb8caeac08244fabf09210f0b92.jpg',
     primaryAbility: ['Inteligência'],
     savingThrows: ['Inteligência', 'Sabedoria'],
     skillChoices: 2,
@@ -359,6 +370,7 @@ export const CLASSES: Class[] = [
     name: 'Monge',
     description: 'Artista marcial que canaliza energia ki.',
     hitDie: 8,
+    image: 'https://i.pinimg.com/736x/5a/f7/53/5af753edf0ebcb681388189da9eebb7a.jpg',
     primaryAbility: ['Destreza', 'Sabedoria'],
     savingThrows: ['Força', 'Destreza'],
     skillChoices: 2,
@@ -386,6 +398,7 @@ export const CLASSES: Class[] = [
     name: 'Paladino',
     description: 'Guerreiro sagrado devotado a um juramento.',
     hitDie: 10,
+    image: 'https://i.pinimg.com/736x/af/fa/ce/afface5b7310d7b284cb53d47d34b7b3.jpg',
     primaryAbility: ['Força', 'Carisma'],
     savingThrows: ['Sabedoria', 'Carisma'],
     skillChoices: 2,
@@ -413,6 +426,7 @@ export const CLASSES: Class[] = [
     name: 'Patrulheiro',
     description: 'Guerreiro das terras selvagens e caçador nato.',
     hitDie: 10,
+    image: 'https://i.pinimg.com/736x/c9/ca/c5/c9cac5fa92c586b4c3d37dd740fb6a96.jpg',
     primaryAbility: ['Destreza', 'Sabedoria'],
     savingThrows: ['Força', 'Destreza'],
     skillChoices: 3,

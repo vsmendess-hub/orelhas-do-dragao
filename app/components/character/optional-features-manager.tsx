@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { Sparkles, Plus, X, Info, Filter } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
 import {
@@ -128,28 +127,26 @@ export function OptionalFeaturesManager({
   );
 
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <div>
-            <CardTitle className="flex items-center gap-2">
-              <Sparkles className="h-5 w-5 text-purple-600" />
-              Optional Features
-            </CardTitle>
-            <CardDescription>
-              Fighting Styles, Invocações, Manobras e outras features opcionais
-            </CardDescription>
-          </div>
-          <Badge variant="secondary">{features.length} features</Badge>
+    <div className="glass-card rounded-2xl p-6 space-y-4">
+      <div className="flex items-center justify-between">
+        <div>
+          <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+            <Sparkles className="h-5 w-5 text-purple-500" />
+            Optional Features
+          </h3>
+          <p className="text-sm text-gray-400">
+            Fighting Styles, Invocações, Manobras e outras features opcionais
+          </p>
         </div>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        {/* Features do Personagem */}
-        {features.length > 0 ? (
+        <Badge variant="secondary">{features.length} features</Badge>
+      </div>
+
+      {/* Features do Personagem */}
+      {features.length > 0 ? (
           <div className="space-y-4">
             {Object.entries(featuresByCategory).map(([category, categoryFeatures]) => (
               <div key={category}>
-                <Label className="text-sm font-semibold">
+                <Label className="text-sm font-semibold text-white">
                   {CATEGORY_LABELS[category as FeatureCategory]}
                 </Label>
                 <div className="mt-2 space-y-2">
@@ -158,49 +155,47 @@ export function OptionalFeaturesManager({
                     if (!featureDetails) return null;
 
                     return (
-                      <Card key={feature.featureId} className="border-2">
-                        <CardContent className="pt-4">
-                          <div className="flex items-start justify-between gap-2">
-                            <div className="flex-1 min-w-0">
-                              <div className="flex items-center gap-2 flex-wrap">
-                                <p className="font-semibold">{feature.featureName}</p>
-                                <Badge variant="outline" className="text-xs">
-                                  Nível {feature.level}
-                                </Badge>
-                                <Badge variant="outline" className="text-xs">
-                                  {featureDetails.source}
-                                </Badge>
-                              </div>
-                              {featureDetails.prerequisites && (
-                                <p className="mt-1 text-xs text-muted-foreground">
-                                  Pré-requisito: {featureDetails.prerequisites}
-                                </p>
-                              )}
-                              <p className="mt-1 text-sm text-muted-foreground">
-                                {featureDetails.description}
+                      <div key={feature.featureId} className="glass-card rounded-xl p-4 border-2 border-white/10">
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <p className="font-semibold text-white">{feature.featureName}</p>
+                              <Badge variant="outline" className="text-xs">
+                                Nível {feature.level}
+                              </Badge>
+                              <Badge variant="outline" className="text-xs">
+                                {featureDetails.source}
+                              </Badge>
+                            </div>
+                            {featureDetails.prerequisites && (
+                              <p className="mt-1 text-xs text-gray-400">
+                                Pré-requisito: {featureDetails.prerequisites}
                               </p>
-                            </div>
-                            <div className="flex gap-1">
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => setViewingFeature(featureDetails)}
-                              >
-                                <Info className="h-4 w-4" />
-                              </Button>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => handleRemoveFeature(feature.featureId)}
-                                disabled={isSaving}
-                                className="text-destructive hover:text-destructive"
-                              >
-                                <X className="h-4 w-4" />
-                              </Button>
-                            </div>
+                            )}
+                            <p className="mt-1 text-sm text-gray-400">
+                              {featureDetails.description}
+                            </p>
                           </div>
-                        </CardContent>
-                      </Card>
+                          <div className="flex gap-1">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => setViewingFeature(featureDetails)}
+                            >
+                              <Info className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleRemoveFeature(feature.featureId)}
+                              disabled={isSaving}
+                              className="text-destructive hover:text-destructive"
+                            >
+                              <X className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
                     );
                   })}
                 </div>
@@ -208,10 +203,10 @@ export function OptionalFeaturesManager({
             ))}
           </div>
         ) : (
-          <div className="rounded-lg border border-dashed p-8 text-center">
-            <Sparkles className="mx-auto h-12 w-12 text-muted-foreground" />
-            <p className="mt-2 text-sm font-medium">Nenhuma optional feature ainda</p>
-            <p className="text-xs text-muted-foreground">
+          <div className="glass-card-light rounded-lg border border-dashed border-purple-500/50 p-8 text-center">
+            <Sparkles className="mx-auto h-12 w-12 text-gray-400" />
+            <p className="mt-2 text-sm font-medium text-white">Nenhuma optional feature ainda</p>
+            <p className="text-xs text-gray-400">
               Adicione Fighting Styles, Invocações e outras features
             </p>
           </div>
@@ -219,7 +214,7 @@ export function OptionalFeaturesManager({
 
         {/* Info */}
         {availableFeatures.length === 0 && (
-          <div className="rounded-lg border bg-muted/50 p-3 text-sm text-muted-foreground">
+          <div className="glass-card-light rounded-lg border border-white/10 p-3 text-sm text-gray-400">
             Sua classe ({characterClass}) não tem optional features disponíveis neste sistema.
           </div>
         )}
@@ -228,7 +223,7 @@ export function OptionalFeaturesManager({
         {availableFeatures.length > 0 && (
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="w-full" disabled={isSaving}>
+              <Button className="w-full tab-purple" disabled={isSaving}>
                 <Plus className="mr-2 h-4 w-4" />
                 Adicionar Optional Feature
               </Button>
@@ -275,19 +270,19 @@ export function OptionalFeaturesManager({
                         return (
                           <div
                             key={feature.id}
-                            className={`cursor-pointer rounded-md border-2 p-3 transition-colors ${
+                            className={`cursor-pointer rounded-md border-2 p-3 transition-all ${
                               alreadyTaken
                                 ? 'opacity-50 cursor-not-allowed'
                                 : selectedFeatureId === feature.id
-                                  ? 'border-primary bg-primary/5'
-                                  : 'hover:border-primary'
+                                  ? 'border-2 border-purple-500 bg-purple-500/10'
+                                  : 'border-white/10 hover:border-purple-500/50 hover:scale-[1.01]'
                             }`}
                             onClick={() => !alreadyTaken && setSelectedFeatureId(feature.id)}
                           >
                             <div className="flex items-start justify-between">
                               <div className="flex-1">
                                 <div className="flex items-center gap-2 flex-wrap">
-                                  <p className="font-semibold">{feature.name}</p>
+                                  <p className="font-semibold text-white">{feature.name}</p>
                                   <Badge variant="outline" className="text-xs">
                                     {CATEGORY_LABELS[feature.category]}
                                   </Badge>
@@ -301,15 +296,15 @@ export function OptionalFeaturesManager({
                                   )}
                                 </div>
                                 {feature.prerequisites && (
-                                  <p className="mt-1 text-xs text-muted-foreground">
+                                  <p className="mt-1 text-xs text-gray-400">
                                     Pré-requisito: {feature.prerequisites}
                                   </p>
                                 )}
-                                <p className="mt-1 text-sm text-muted-foreground">
+                                <p className="mt-1 text-sm text-gray-400">
                                   {feature.description}
                                 </p>
                                 {!check.meets && (
-                                  <p className="mt-1 text-xs text-red-600">{check.reason}</p>
+                                  <p className="mt-1 text-xs text-red-400">{check.reason}</p>
                                 )}
                               </div>
                               <Badge variant="outline" className="ml-2 text-xs">
@@ -320,7 +315,7 @@ export function OptionalFeaturesManager({
                         );
                       })
                     ) : (
-                      <p className="py-8 text-center text-sm text-muted-foreground">
+                      <p className="py-8 text-center text-sm text-gray-400">
                         Nenhuma feature encontrada nesta categoria
                       </p>
                     )}
@@ -330,7 +325,7 @@ export function OptionalFeaturesManager({
                 <Button
                   onClick={handleAddFeature}
                   disabled={!selectedFeatureId || isSaving}
-                  className="w-full"
+                  className="w-full tab-purple"
                 >
                   {isSaving ? 'Salvando...' : 'Adicionar Feature'}
                 </Button>
@@ -338,7 +333,6 @@ export function OptionalFeaturesManager({
             </DialogContent>
           </Dialog>
         )}
-      </CardContent>
 
       {/* Dialog de Visualização */}
       {viewingFeature && (
@@ -352,22 +346,22 @@ export function OptionalFeaturesManager({
             </DialogHeader>
             <div className="space-y-4">
               <div>
-                <p className="text-sm">{viewingFeature.description}</p>
+                <p className="text-sm text-white">{viewingFeature.description}</p>
               </div>
               {viewingFeature.prerequisites && (
-                <div className="rounded-lg border bg-muted/50 p-3 text-sm">
-                  <p className="font-medium">Pré-requisito:</p>
-                  <p className="text-muted-foreground">{viewingFeature.prerequisites}</p>
+                <div className="glass-card-light rounded-lg border border-white/10 p-3 text-sm">
+                  <p className="font-medium text-white">Pré-requisito:</p>
+                  <p className="text-gray-400">{viewingFeature.prerequisites}</p>
                 </div>
               )}
-              <div className="flex items-center justify-between rounded-lg border bg-muted/50 p-2 text-xs">
-                <span className="text-muted-foreground">Nível mínimo:</span>
+              <div className="flex items-center justify-between glass-card-light rounded-lg border border-white/10 p-2 text-xs">
+                <span className="text-gray-400">Nível mínimo:</span>
                 <Badge variant="outline">{viewingFeature.level}+</Badge>
               </div>
             </div>
           </DialogContent>
         </Dialog>
       )}
-    </Card>
+    </div>
   );
 }

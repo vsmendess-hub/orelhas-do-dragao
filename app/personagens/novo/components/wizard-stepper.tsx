@@ -1,16 +1,16 @@
 'use client';
 
-import { Check } from 'lucide-react';
+import { Check, Users, UsersRound, Swords, Zap, Target, User, Sparkles } from 'lucide-react';
 import { useWizard } from '../wizard-context';
 
 const STEPS = [
-  { number: 1, title: 'Raça', icon: '🎭' },
-  { number: 2, title: 'Sub-raça', icon: '👥' },
-  { number: 3, title: 'Classe', icon: '⚔️' },
-  { number: 4, title: 'Atributos', icon: '💪' },
-  { number: 5, title: 'Perícias', icon: '🎯' },
-  { number: 6, title: 'Identidade', icon: '📝' },
-  { number: 7, title: 'Resumo', icon: '✨' },
+  { number: 1, title: 'Raça', Icon: Users },
+  { number: 2, title: 'Sub-raça', Icon: UsersRound },
+  { number: 3, title: 'Classe', Icon: Swords },
+  { number: 4, title: 'Atributos', Icon: Zap },
+  { number: 5, title: 'Perícias', Icon: Target },
+  { number: 6, title: 'Identidade', Icon: User },
+  { number: 7, title: 'Resumo', Icon: Sparkles },
 ];
 
 export function WizardStepper() {
@@ -34,7 +34,11 @@ export function WizardStepper() {
                         : 'border-border bg-background text-muted-foreground'
                   }`}
                 >
-                  {step.number < currentStep ? <Check className="h-6 w-6" /> : step.icon}
+                  {step.number < currentStep ? (
+                    <Check className="h-6 w-6" />
+                  ) : (
+                    <step.Icon className="h-6 w-6" />
+                  )}
                 </div>
                 <span
                   className={`mt-2 text-sm font-medium ${
@@ -67,7 +71,10 @@ export function WizardStepper() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-deep-purple bg-deep-purple text-white">
-              {STEPS[currentStep - 1].icon}
+              {(() => {
+                const StepIcon = STEPS[currentStep - 1].Icon;
+                return <StepIcon className="h-5 w-5" />;
+              })()}
             </div>
             <div>
               <p className="text-xs text-muted-foreground">Passo {currentStep} de 7</p>

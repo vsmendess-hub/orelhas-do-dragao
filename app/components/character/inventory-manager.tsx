@@ -25,7 +25,7 @@ export function InventoryManager({
   dexModifier,
 }: InventoryManagerProps) {
   const [items, setItems] = useState<Item[]>(initialItems);
-  const [currency, setCurrency] = useState<Currency>(initialCurrency);
+  const [currency] = useState<Currency>(initialCurrency);
   const [isItemDialogOpen, setIsItemDialogOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<Item | null>(null);
 

@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { Heart, Save, Loader2, Plus, X, Lightbulb } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { Heart, Save, Loader2, Plus, X, Lightbulb, Sparkles } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -19,14 +20,27 @@ import {
 
 interface PersonalityEditorProps {
   characterId: string;
+  characterName: string;
+  characterRace: string;
+  characterClass: string;
   initialPersonality: Personality;
+  backgroundStory?: string;
 }
 
 type PersonalityField = 'traits' | 'ideals' | 'bonds' | 'flaws';
 
-export function PersonalityEditor({ characterId, initialPersonality }: PersonalityEditorProps) {
+export function PersonalityEditor({
+  characterId,
+  characterName,
+  characterRace,
+  characterClass,
+  initialPersonality,
+  backgroundStory,
+}: PersonalityEditorProps) {
+  const router = useRouter();
   const [personality, setPersonality] = useState<Personality>(initialPersonality);
   const [isSaving, setIsSaving] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
   const [saveMessage, setSaveMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(
     null
   );
@@ -65,6 +79,48 @@ export function PersonalityEditor({ characterId, initialPersonality }: Personali
     }));
   };
 
+  const generatePersonality = async () => {
+    if (!backgroundStory) {
+      setSaveMessage({
+        type: 'error',
+        text: 'Você precisa ter uma história definida antes de gerar a personalidade.',
+      });
+      return;
+    }
+
+    try {
+      setIsGenerating(true);
+      setSaveMessage(null);
+
+      const response = await fetch('/api/generate-personality', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          characterName,
+          background: backgroundStory,
+          race: characterRace,
+          characterClass,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Erro ao gerar personalidade');
+      }
+
+      const data = await response.json();
+      setPersonality(data.personality);
+      setSaveMessage({
+        type: 'success',
+        text: 'Personalidade gerada com IA! Revise e edite conforme necessário.',
+      });
+    } catch (err) {
+      console.error('Erro ao gerar personalidade:', err);
+      setSaveMessage({ type: 'error', text: 'Erro ao gerar personalidade. Tente novamente.' });
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
   const handleSave = async () => {
     try {
       setIsSaving(true);
@@ -80,6 +136,10 @@ export function PersonalityEditor({ characterId, initialPersonality }: Personali
       if (error) throw error;
 
       setSaveMessage({ type: 'success', text: 'Personalidade salva com sucesso!' });
+
+      // Recarregar dados do servidor
+      router.refresh();
+
       setTimeout(() => setSaveMessage(null), 3000);
     } catch (err) {
       console.error('Erro ao salvar personalidade:', err);
@@ -181,13 +241,38 @@ export function PersonalityEditor({ characterId, initialPersonality }: Personali
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Heart className="h-5 w-5" />
-          Personalidade
-        </CardTitle>
-        <CardDescription>
-          Defina os traços, ideais, vínculos e defeitos do seu personagem
-        </CardDescription>
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <CardTitle className="flex items-center gap-2">
+              <Heart className="h-5 w-5" />
+              Personalidade
+            </CardTitle>
+            <CardDescription>
+              Defina os traços, ideais, vínculos e defeitos do seu personagem
+            </CardDescription>
+          </div>
+          {backgroundStory && (
+            <Button
+              onClick={generatePersonality}
+              disabled={isGenerating}
+              variant="outline"
+              size="sm"
+              className="flex-shrink-0"
+            >
+              {isGenerating ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Gerando...
+                </>
+              ) : (
+                <>
+                  <Sparkles className="mr-2 h-4 w-4" />
+                  Gerar com IA
+                </>
+              )}
+            </Button>
+          )}
+        </div>
       </CardHeader>
       <CardContent className="space-y-8">
         {/* D&D 5e recomenda 2 traits, 1 ideal, 1 bond, 1 flaw */}

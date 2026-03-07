@@ -1,15 +1,13 @@
 'use client';
 
 import { useState } from 'react';
-import { Users, Plus, Trash2, Heart, Shield, Zap, Edit2, Check, X } from 'lucide-react';
+import { Users, Plus, Trash2, Heart, Shield, Zap, Edit2 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Select } from '@/components/ui/select';
 import {
   Dialog,
   DialogContent,
@@ -148,7 +146,7 @@ export function CompanionsManager({ characterId, initialCompanions }: Companions
                   {COMPANION_TYPE_LABELS[companion.type]}
                 </Badge>
                 {companion.race && (
-                  <span className="text-xs text-muted-foreground">{companion.race}</span>
+                  <span className="text-xs text-gray-400">{companion.race}</span>
                 )}
               </div>
             </div>
@@ -177,8 +175,8 @@ export function CompanionsManager({ characterId, initialCompanions }: Companions
 
         {/* Stats */}
         <div className="mb-3 grid grid-cols-3 gap-2 text-center">
-          <div className="rounded bg-muted p-2">
-            <div className="flex items-center justify-center gap-1 text-xs text-muted-foreground">
+          <div className="rounded glass-card-light p-2">
+            <div className="flex items-center justify-center gap-1 text-xs text-gray-400">
               <Heart className="h-3 w-3" />
               HP
             </div>
@@ -209,16 +207,16 @@ export function CompanionsManager({ characterId, initialCompanions }: Companions
             </div>
           </div>
 
-          <div className="rounded bg-muted p-2">
-            <div className="flex items-center justify-center gap-1 text-xs text-muted-foreground">
+          <div className="rounded glass-card-light p-2">
+            <div className="flex items-center justify-center gap-1 text-xs text-gray-400">
               <Shield className="h-3 w-3" />
               AC
             </div>
             <p className="mt-1 font-bold">{companion.ac}</p>
           </div>
 
-          <div className="rounded bg-muted p-2">
-            <div className="flex items-center justify-center gap-1 text-xs text-muted-foreground">
+          <div className="rounded glass-card-light p-2">
+            <div className="flex items-center justify-center gap-1 text-xs text-gray-400">
               <Zap className="h-3 w-3" />
               Vel
             </div>
@@ -229,10 +227,10 @@ export function CompanionsManager({ characterId, initialCompanions }: Companions
         {/* Attributes */}
         <div className="mb-3 grid grid-cols-6 gap-1 text-center text-xs">
           {(['str', 'dex', 'con', 'int', 'wis', 'cha'] as const).map((attr) => (
-            <div key={attr} className="rounded bg-muted/50 p-1">
-              <p className="font-medium uppercase text-muted-foreground">{attr}</p>
+            <div key={attr} className="rounded glass-card-light/50 p-1">
+              <p className="font-medium uppercase text-gray-400">{attr}</p>
               <p className="font-bold">{companion.abilities[attr]}</p>
-              <p className="text-[10px] text-muted-foreground">
+              <p className="text-[10px] text-gray-400">
                 {calculateCompanionModifier(companion.abilities[attr]) >= 0 ? '+' : ''}
                 {calculateCompanionModifier(companion.abilities[attr])}
               </p>
@@ -243,7 +241,7 @@ export function CompanionsManager({ characterId, initialCompanions }: Companions
         {/* Features */}
         {companion.features && companion.features.length > 0 && (
           <div className="mb-3 text-xs">
-            <p className="mb-1 font-medium text-muted-foreground">Características:</p>
+            <p className="mb-1 font-medium text-gray-400">Características:</p>
             <div className="flex flex-wrap gap-1">
               {companion.features.map((feature, idx) => (
                 <Badge key={idx} variant="outline" className="text-xs">
@@ -256,7 +254,7 @@ export function CompanionsManager({ characterId, initialCompanions }: Companions
 
         {/* Notes */}
         {companion.notes && (
-          <div className="mb-3 rounded bg-muted/50 p-2 text-xs italic text-muted-foreground">
+          <div className="mb-3 rounded glass-card-light/50 p-2 text-xs italic text-gray-400">
             {companion.notes}
           </div>
         )}
@@ -276,29 +274,28 @@ export function CompanionsManager({ characterId, initialCompanions }: Companions
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center gap-2">
-            <Users className="h-5 w-5" />
-            Companheiros
-            {companions.length > 0 && <Badge variant="secondary">{companions.length}</Badge>}
-          </CardTitle>
-          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-            <DialogTrigger asChild>
-              <Button
-                variant="outline"
-                size="sm"
-                disabled={isSaving}
-                onClick={() => {
-                  setEditingId(null);
-                  setFormData({ ...EMPTY_COMPANION });
-                }}
-              >
-                <Plus className="mr-2 h-4 w-4" />
-                Adicionar
-              </Button>
-            </DialogTrigger>
+    <div className="glass-card rounded-2xl p-6 space-y-4">
+      <div className="flex items-center justify-between">
+        <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+          <Users className="h-5 w-5 text-blue-500" />
+          Companheiros
+          {companions.length > 0 && <Badge variant="secondary">{companions.length}</Badge>}
+        </h3>
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <DialogTrigger asChild>
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={isSaving}
+              onClick={() => {
+                setEditingId(null);
+                setFormData({ ...EMPTY_COMPANION });
+              }}
+            >
+              <Plus className="mr-2 h-4 w-4" />
+              Adicionar
+            </Button>
+          </DialogTrigger>
             <DialogContent className="max-h-[80vh] max-w-2xl overflow-y-auto">
               <DialogHeader>
                 <DialogTitle>
@@ -457,19 +454,17 @@ export function CompanionsManager({ characterId, initialCompanions }: Companions
                 </Button>
               </div>
             </DialogContent>
-          </Dialog>
+        </Dialog>
+      </div>
+
+      {companions.length === 0 ? (
+        <div className="glass-card-light rounded-lg border border-dashed border-purple-500/50 py-8 text-center text-sm">
+          <Users className="mx-auto mb-2 h-8 w-8 text-gray-400" />
+          <p className="text-white">Nenhum companheiro</p>
         </div>
-      </CardHeader>
-      <CardContent>
-        {companions.length === 0 ? (
-          <div className="py-8 text-center text-sm text-muted-foreground">
-            <Users className="mx-auto mb-2 h-8 w-8 opacity-50" />
-            <p>Nenhum companheiro</p>
-          </div>
-        ) : (
-          <div className="grid gap-4 md:grid-cols-2">{companions.map(renderCompanionCard)}</div>
-        )}
-      </CardContent>
-    </Card>
+      ) : (
+        <div className="grid gap-4 md:grid-cols-2">{companions.map(renderCompanionCard)}</div>
+      )}
+    </div>
   );
 }

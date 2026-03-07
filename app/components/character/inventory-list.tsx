@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { Package, Plus, Search, Trash2, Edit, Shield, Sword } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   type Item,
   type ItemCategory,
@@ -91,25 +90,25 @@ export function InventoryList({
   };
 
   return (
-    <Card>
-      <CardHeader>
+    <div className="glass-card rounded-2xl p-6">
+      <div className="mb-6">
         <div className="flex items-center justify-between">
           <div>
-            <CardTitle className="flex items-center gap-2">
+            <h3 className="flex items-center gap-2 text-lg font-semibold text-white">
               <Package className="h-5 w-5" />
               Inventário
-            </CardTitle>
-            <CardDescription>
+            </h3>
+            <p className="text-sm text-gray-400 mt-1">
               {items.length} itens • {totalWeight.toFixed(1)} lb
-            </CardDescription>
+            </p>
           </div>
-          <Button onClick={onAddItem} size="sm">
+          <Button onClick={onAddItem} size="sm" className="tab-purple">
             <Plus className="mr-2 h-4 w-4" />
             Adicionar Item
           </Button>
         </div>
-      </CardHeader>
-      <CardContent className="space-y-6">
+      </div>
+      <div className="space-y-6">
         {/* Capacidade de Carga */}
         <div className="space-y-2">
           <div className="flex items-center justify-between text-sm">
@@ -117,28 +116,28 @@ export function InventoryList({
             <span
               className={
                 encumbrance === 'normal'
-                  ? 'text-green-600 dark:text-green-400'
+                  ? 'text-green-400'
                   : encumbrance === 'encumbered'
-                    ? 'text-orange-600 dark:text-orange-400'
-                    : 'text-red-600 dark:text-red-400'
+                    ? 'text-orange-400'
+                    : 'text-red-400'
               }
             >
               {totalWeight.toFixed(1)} / {capacity} lb
             </span>
           </div>
-          <div className="h-2 overflow-hidden rounded-full bg-muted">
+          <div className="h-2 overflow-hidden rounded-full bg-white/10">
             <div
               className={`h-full transition-all ${getWeightColor()}`}
               style={{ width: `${Math.min(100, weightPercentage)}%` }}
             />
           </div>
           {encumbrance === 'encumbered' && (
-            <p className="text-xs text-orange-600 dark:text-orange-400">
+            <p className="text-xs text-orange-400">
               ⚠️ Sobrecarregado: Velocidade reduzida em 10 pés
             </p>
           )}
           {encumbrance === 'heavily_encumbered' && (
-            <p className="text-xs text-red-600 dark:text-red-400">
+            <p className="text-xs text-red-400">
               ⚠️ Muito sobrecarregado: Velocidade reduzida em 20 pés + desvantagem em testes de
               atributo, ataques e salvaguardas usando FOR, DES e CON
             </p>
@@ -149,12 +148,12 @@ export function InventoryList({
         <div className="space-y-3">
           <div className="flex gap-2">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
               <Input
                 placeholder="Buscar itens..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-9"
+                className="pl-9 bg-white/5 border-white/10"
               />
             </div>
           </div>
@@ -184,7 +183,7 @@ export function InventoryList({
           </div>
 
           <div className="flex items-center gap-2 text-sm">
-            <span className="text-muted-foreground">Ordenar por:</span>
+            <span className="text-gray-400">Ordenar por:</span>
             <Button
               variant={sortBy === 'name' ? 'secondary' : 'ghost'}
               size="sm"
@@ -211,14 +210,14 @@ export function InventoryList({
 
         {/* Lista de Itens */}
         {filteredItems.length === 0 ? (
-          <div className="rounded-lg border border-dashed p-8 text-center">
-            <Package className="mx-auto h-12 w-12 text-muted-foreground" />
-            <p className="mt-2 text-sm font-medium">
+          <div className="rounded-lg border border-dashed border-white/10 p-8 text-center">
+            <Package className="mx-auto h-12 w-12 text-gray-400" />
+            <p className="mt-2 text-sm font-medium text-white">
               {searchTerm || filterCategory !== 'all'
                 ? 'Nenhum item encontrado'
                 : 'Inventário vazio'}
             </p>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-gray-400">
               {searchTerm || filterCategory !== 'all'
                 ? 'Tente ajustar os filtros'
                 : 'Adicione itens ao seu inventário'}
@@ -229,10 +228,10 @@ export function InventoryList({
             {filteredItems.map((item) => (
               <div
                 key={item.id}
-                className={`rounded-lg border p-3 transition-all ${
+                className={`rounded-lg border p-3 transition-all hover:scale-[1.01] ${
                   item.equipped
-                    ? 'border-deep-purple bg-deep-purple/5'
-                    : 'border-border hover:bg-muted/50'
+                    ? 'border-2 border-purple-500 bg-purple-500/10'
+                    : 'border-white/10 hover:border-purple-500/50'
                 }`}
               >
                 <div className="flex items-start justify-between gap-3">
@@ -240,23 +239,23 @@ export function InventoryList({
                     <div className="flex items-center gap-2">
                       <span className="text-lg">{getCategoryIcon(item.category)}</span>
                       <div>
-                        <h4 className="font-medium">
+                        <h4 className="font-medium text-white">
                           {item.name}
                           {item.equipped && (
-                            <span className="ml-2 rounded bg-deep-purple px-2 py-0.5 text-xs text-white">
+                            <span className="ml-2 rounded bg-purple-500 px-2 py-0.5 text-xs text-white">
                               Equipado
                             </span>
                           )}
                         </h4>
-                        <p className="text-xs text-muted-foreground">
+                        <p className="text-xs text-gray-400">
                           {CATEGORY_NAMES[item.category]}
                         </p>
                       </div>
                     </div>
                     {item.description && (
-                      <p className="text-xs text-muted-foreground">{item.description}</p>
+                      <p className="text-xs text-gray-400">{item.description}</p>
                     )}
-                    <div className="flex gap-3 text-xs text-muted-foreground">
+                    <div className="flex gap-3 text-xs text-gray-400">
                       <span>Qtd: {item.quantity}</span>
                       <span>Peso: {(item.weight * item.quantity).toFixed(1)} lb</span>
                       <span>Valor: {(item.value * item.quantity).toFixed(2)} po</span>
@@ -281,7 +280,7 @@ export function InventoryList({
             ))}
           </div>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }

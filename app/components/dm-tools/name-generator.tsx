@@ -51,7 +51,7 @@ export function NameGenerator() {
             <Label htmlFor="gender">Gênero</Label>
             <Select
               value={options.gender}
-              onValueChange={(v) => setOptions({ ...options, gender: v as any })}
+              onValueChange={(v) => setOptions({ ...options, gender: v as 'male' | 'female' | 'neutral' })}
             >
               <SelectTrigger id="gender">
                 <SelectValue />
@@ -68,7 +68,7 @@ export function NameGenerator() {
             <Label htmlFor="type">Tipo</Label>
             <Select
               value={options.type}
-              onValueChange={(v) => setOptions({ ...options, type: v as any })}
+              onValueChange={(v) => setOptions({ ...options, type: v as 'first' | 'last' | 'full' })}
             >
               <SelectTrigger id="type">
                 <SelectValue />

@@ -1,10 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { Target, Plus, Edit2, Trash2, Check, X, AlertCircle, Calendar } from 'lucide-react';
+import { Target, Plus, Edit2, Trash2, Check, Calendar } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -15,7 +14,6 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from '@/components/ui/dialog';
 import {
   Select,
@@ -194,9 +192,9 @@ export function GoalsManager({ characterId, initialGoals }: GoalsManagerProps) {
   const renderGoalsList = (goalsToRender: Goal[]) => {
     if (goalsToRender.length === 0) {
       return (
-        <div className="rounded-lg border border-dashed p-8 text-center">
-          <Target className="mx-auto h-12 w-12 text-muted-foreground" />
-          <p className="mt-2 text-sm font-medium">Nenhum objetivo aqui</p>
+        <div className="glass-card-light rounded-lg border border-dashed border-purple-500/50 p-8 text-center">
+          <Target className="mx-auto h-12 w-12 text-gray-400" />
+          <p className="mt-2 text-sm font-medium text-white">Nenhum objetivo aqui</p>
         </div>
       );
     }
@@ -208,43 +206,42 @@ export function GoalsManager({ characterId, initialGoals }: GoalsManagerProps) {
           const isClose = isDeadlineClose(goal);
 
           return (
-            <Card key={goal.id} className="border-2">
-              <CardHeader className="pb-3">
-                <div className="flex items-start justify-between gap-2">
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <span className="text-lg">{GOAL_TYPE_ICONS[goal.type]}</span>
-                      <CardTitle className="text-base">{goal.title}</CardTitle>
-                      <Badge variant="outline" className={GOAL_STATUS_COLORS[goal.status]}>
-                        {GOAL_STATUS_LABELS[goal.status]}
-                      </Badge>
+            <div key={goal.id} className="glass-card rounded-xl p-4 border-2 border-white/10">
+              <div className="flex items-start justify-between gap-2 mb-3">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="text-lg">{GOAL_TYPE_ICONS[goal.type]}</span>
+                    <h4 className="text-base font-semibold text-white">{goal.title}</h4>
+                    <Badge variant="outline" className={GOAL_STATUS_COLORS[goal.status]}>
+                      {GOAL_STATUS_LABELS[goal.status]}
+                    </Badge>
+                    <Badge
+                      variant="outline"
+                      className={`text-xs ${GOAL_PRIORITY_COLORS[goal.priority]}`}
+                    >
+                      {GOAL_PRIORITY_LABELS[goal.priority]}
+                    </Badge>
+                    {goal.deadline && (
                       <Badge
                         variant="outline"
-                        className={`text-xs ${GOAL_PRIORITY_COLORS[goal.priority]}`}
+                        className={`text-xs ${
+                          isOverdue
+                            ? 'bg-red-500/10 text-red-700 border-red-500/20'
+                            : isClose
+                              ? 'bg-orange-500/10 text-orange-700 border-orange-500/20'
+                              : ''
+                        }`}
                       >
-                        {GOAL_PRIORITY_LABELS[goal.priority]}
+                        <Calendar className="mr-1 h-3 w-3" />
+                        {formatGoalDate(goal.deadline)}
                       </Badge>
-                      {goal.deadline && (
-                        <Badge
-                          variant="outline"
-                          className={`text-xs ${
-                            isOverdue
-                              ? 'bg-red-500/10 text-red-700 border-red-500/20'
-                              : isClose
-                                ? 'bg-orange-500/10 text-orange-700 border-orange-500/20'
-                                : ''
-                          }`}
-                        >
-                          <Calendar className="mr-1 h-3 w-3" />
-                          {formatGoalDate(goal.deadline)}
-                        </Badge>
-                      )}
-                    </div>
-                    <p className="mt-1 text-xs text-muted-foreground">
-                      {GOAL_TYPE_LABELS[goal.type]}
-                    </p>
+                    )}
                   </div>
-                  <div className="flex gap-1 flex-shrink-0">
+                  <p className="mt-1 text-xs text-gray-400">
+                    {GOAL_TYPE_LABELS[goal.type]}
+                  </p>
+                </div>
+                <div className="flex gap-1 flex-shrink-0">
                     {goal.status === 'active' && (
                       <Button
                         variant="ghost"
@@ -274,23 +271,22 @@ export function GoalsManager({ characterId, initialGoals }: GoalsManagerProps) {
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   </div>
-                </div>
-              </CardHeader>
-              <CardContent className="pt-0 space-y-2">
-                <p className="text-sm">{goal.description}</p>
+              </div>
+              <div className="space-y-2">
+                <p className="text-sm text-white">{goal.description}</p>
                 {goal.rewards && (
                   <div className="flex items-start gap-2 rounded-md bg-amber-50 p-2 text-xs dark:bg-amber-950/20">
                     <span>🏆</span>
                     <div>
                       <p className="font-medium">Recompensas:</p>
-                      <p className="text-muted-foreground">{goal.rewards}</p>
+                      <p className="text-gray-400">{goal.rewards}</p>
                     </div>
                   </div>
                 )}
                 {goal.notes && (
                   <div className="rounded-md bg-muted/50 p-2 text-xs">
                     <p className="font-medium">Notas:</p>
-                    <p className="text-muted-foreground">{goal.notes}</p>
+                    <p className="text-gray-400">{goal.notes}</p>
                   </div>
                 )}
                 {goal.status !== 'active' && (
@@ -305,8 +301,8 @@ export function GoalsManager({ characterId, initialGoals }: GoalsManagerProps) {
                     </Button>
                   </div>
                 )}
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           );
         })}
       </div>
@@ -314,25 +310,23 @@ export function GoalsManager({ characterId, initialGoals }: GoalsManagerProps) {
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <div>
-            <CardTitle className="flex items-center gap-2">
-              <Target className="h-5 w-5 text-blue-600" />
-              Objetivos
-            </CardTitle>
-            <CardDescription>Metas pessoais, missões e objetivos de longo prazo</CardDescription>
-          </div>
-          <Button onClick={handleOpenAdd} disabled={isSaving}>
-            <Plus className="mr-2 h-4 w-4" />
-            Novo Objetivo
-          </Button>
+    <div className="glass-card rounded-2xl p-6 space-y-4">
+      <div className="flex items-center justify-between">
+        <div>
+          <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+            <Target className="h-5 w-5 text-blue-500" />
+            Objetivos
+          </h3>
+          <p className="text-sm text-gray-400">Metas pessoais, missões e objetivos de longo prazo</p>
         </div>
-      </CardHeader>
-      <CardContent>
-        {/* Tabs */}
-        <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as GoalStatus | 'all')}>
+        <Button onClick={handleOpenAdd} disabled={isSaving} className="tab-purple">
+          <Plus className="mr-2 h-4 w-4" />
+          Novo Objetivo
+        </Button>
+      </div>
+
+      {/* Tabs */}
+      <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as GoalStatus | 'all')}>
           <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="active">
               Em Andamento ({activeGoals.length})
@@ -361,7 +355,6 @@ export function GoalsManager({ characterId, initialGoals }: GoalsManagerProps) {
             {renderGoalsList(goals)}
           </TabsContent>
         </Tabs>
-      </CardContent>
 
       {/* Dialog de Adicionar/Editar */}
       <Dialog open={isDialogOpen} onOpenChange={(open) => {
@@ -478,13 +471,13 @@ export function GoalsManager({ characterId, initialGoals }: GoalsManagerProps) {
             <Button
               onClick={handleSave}
               disabled={!formData.title.trim() || !formData.description.trim() || isSaving}
-              className="w-full"
+              className="w-full tab-purple"
             >
               {isSaving ? 'Salvando...' : editingGoal ? 'Salvar Alterações' : 'Criar Objetivo'}
             </Button>
           </div>
         </DialogContent>
       </Dialog>
-    </Card>
+    </div>
   );
 }

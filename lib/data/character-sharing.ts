@@ -2,6 +2,8 @@
  * Sistema de Compartilhamento de Personagens D&D 5e
  */
 
+import type { Character } from '@/lib/supabase/types';
+
 export type SharePermission = 'view' | 'none';
 
 export type ShareVisibility = 'private' | 'unlisted' | 'public';
@@ -22,7 +24,7 @@ export interface CharacterShare {
 }
 
 export interface SharedCharacterView {
-  character: any; // Character completo (read-only)
+  character: Character; // Character completo (read-only)
   share: CharacterShare;
   canClone: boolean;
   canComment: boolean;
@@ -159,13 +161,8 @@ export function createDefaultShare(
 /**
  * Sanitiza personagem para visualização pública (remove informações sensíveis)
  */
-export function sanitizeCharacterForSharing(character: any): any {
-  const sanitized = { ...character };
-
-  // Remover campos sensíveis
-  delete sanitized.user_id;
-  delete sanitized.created_at;
-  delete sanitized.updated_at;
+export function sanitizeCharacterForSharing(character: Character): Partial<Character> {
+  const { user_id, created_at, updated_at, ...sanitized } = character;
 
   return sanitized;
 }

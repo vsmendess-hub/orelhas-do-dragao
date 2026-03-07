@@ -6,7 +6,7 @@ import { SavingThrowButtons } from './saving-throw-buttons';
 import { WeaponRollButton } from './weapon-roll-button';
 import { QuickRollButton } from './quick-roll-button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Swords, Zap, Heart } from 'lucide-react';
+import { Swords, Zap } from 'lucide-react';
 import { type Item } from '@/lib/data/items';
 
 interface CharacterData {
