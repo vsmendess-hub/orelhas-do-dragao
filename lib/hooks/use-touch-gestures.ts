@@ -168,9 +168,9 @@ export function useSwipeNavigation(
   onNext?: () => void,
   onPrevious?: () => void
 ) {
-  const ref = useRef<HTMLDivElement>(null);
+  const ref = useRef<HTMLDivElement | null>(null);
 
-  useTouchGestures(ref, {
+  useTouchGestures(ref as RefObject<HTMLElement>, {
     onSwipeLeft: onNext,
     onSwipeRight: onPrevious,
   });

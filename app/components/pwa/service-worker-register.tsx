@@ -62,7 +62,9 @@ export function ServiceWorkerRegister() {
       console.log('Back online');
       // Trigger sync if available
       if (registration && 'sync' in registration) {
-        registration.sync.register('sync-characters').catch((error) => {
+        type SyncManager = { register: (tag: string) => Promise<void> };
+        const syncManager = (registration as unknown as { sync: SyncManager }).sync;
+        syncManager?.register('sync-characters').catch((error: Error) => {
           console.error('Background sync registration failed:', error);
         });
       }
