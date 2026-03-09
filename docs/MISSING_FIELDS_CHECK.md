@@ -45,6 +45,25 @@ ALTER TABLE characters ADD COLUMN IF NOT EXISTS death_saves JSONB DEFAULT '{"suc
 - **Adicionado em:** Migration `20260309000000_add_rest_system_fields.sql`
 - **Status:** ✅ Incluído no setup completo
 
+### 4. **Gameplay Persistence Fields** (v2.1+)
+
+```sql
+ALTER TABLE characters ADD COLUMN IF NOT EXISTS feats JSONB DEFAULT '[]'::jsonb;
+ALTER TABLE characters ADD COLUMN IF NOT EXISTS companions JSONB DEFAULT '[]'::jsonb;
+ALTER TABLE characters ADD COLUMN IF NOT EXISTS journal JSONB DEFAULT '[]'::jsonb;
+ALTER TABLE characters ADD COLUMN IF NOT EXISTS goals JSONB DEFAULT '[]'::jsonb;
+ALTER TABLE characters ADD COLUMN IF NOT EXISTS conditions JSONB DEFAULT '[]'::jsonb;
+```
+
+- **Usado em:**
+  - `feats-manager.tsx` (feats)
+  - `companions-manager.tsx` (companions)
+  - `adventure-journal.tsx` (journal)
+  - `goals-tracker.tsx` (goals)
+  - `conditions-manager.tsx` (conditions)
+- **Adicionado em:** Migration `20260309000001_add_character_gameplay_fields.sql`
+- **Status:** ✅ Incluído no setup completo
+
 ---
 
 ## ✅ Campos do Schema Inicial (Já Existem)
@@ -83,27 +102,45 @@ Execute `COMPLETE_DEV_SETUP.sql` no Supabase Dashboard → SQL Editor
 
 ### Passo 2: Verificar Campos
 
-A query de verificação no final do arquivo deve retornar **7 campos**:
+A query de verificação no final do arquivo deve retornar **12 campos**:
 
 1. ✅ appearance
 2. ✅ background_data
 3. ✅ class_resources
-4. ✅ death_saves
-5. ✅ hit_dice_used
-6. ✅ personality
-7. ✅ spell_slots
+4. ✅ companions
+5. ✅ conditions
+6. ✅ death_saves
+7. ✅ feats
+8. ✅ goals
+9. ✅ hit_dice_used
+10. ✅ journal
+11. ✅ personality
+12. ✅ spell_slots
 
 ### Passo 3: Testar Features
 
 Teste estas funcionalidades no DEV:
 
+**Sistema de Descanso:**
+
 - [ ] Descanso Curto (Short Rest)
 - [ ] Descanso Longo (Long Rest)
 - [ ] Spell Slot Tracker
 - [ ] Death Saves
+
+**Personalidade e Background:**
+
 - [ ] Editor de Personalidade
 - [ ] Editor de Aparência
 - [ ] Geração de Background por IA
+
+**Gameplay Persistente:**
+
+- [ ] Talentos (Feats)
+- [ ] Companheiros (Companions)
+- [ ] Diário de Aventura (Journal)
+- [ ] Objetivos (Goals)
+- [ ] Condições (Conditions)
 
 ---
 
@@ -148,6 +185,11 @@ Esses campos foram mantidos por compatibilidade com dados antigos.
 | spell_slots     | ✅       | ❌          | ✅           |
 | class_resources | ✅       | ❌          | ✅           |
 | death_saves     | ✅       | ❌          | ✅           |
+| feats           | ✅       | ❌          | ✅           |
+| companions      | ✅       | ❌          | ✅           |
+| journal         | ✅       | ❌          | ✅           |
+| goals           | ✅       | ❌          | ✅           |
+| conditions      | ✅       | ❌          | ✅           |
 
 ---
 
@@ -155,12 +197,25 @@ Esses campos foram mantidos por compatibilidade com dados antigos.
 
 Após aplicar `COMPLETE_DEV_SETUP.sql`, o banco de DEV estará **100% sincronizado** com produção, incluindo todos os campos necessários para:
 
+**Sistema de Descanso:**
+
 - ✨ Sistema de descanso (rest system)
-- 🎭 Personalidade e aparência
-- 📖 Background estruturado por IA
 - ⚔️ Death saves
 - 🔮 Spell slots
 - 💫 Class resources (Ki, Sorcery Points, etc.)
+
+**Personalidade e Background:**
+
+- 🎭 Personalidade e aparência
+- 📖 Background estruturado por IA
+
+**Gameplay Persistente (v2.1):**
+
+- 🎯 Talentos (Feats)
+- 🐺 Companheiros (Companions)
+- 📔 Diário de aventura (Journal)
+- 🎯 Objetivos (Goals)
+- ⚠️ Condições de combate (Conditions)
 
 ---
 
