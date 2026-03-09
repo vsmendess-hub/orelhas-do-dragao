@@ -1,8 +1,5 @@
 'use client';
 
-// Debug: Verificar se o arquivo é carregado
-console.log('📦 conditions-manager.tsx carregado', new Date().toISOString());
-
 import { useState } from 'react';
 import { AlertCircle, X, Plus } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
@@ -16,17 +13,11 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import {
   type Condition,
   type ConditionType,
   CONDITION_DETAILS,
   EMPTY_CONDITIONS,
-  activateCondition,
-  deactivateCondition,
-  updateExhaustionLevel,
-  getActiveConditions,
 } from '@/lib/data/conditions';
 
 interface ConditionsManagerProps {
@@ -35,154 +26,80 @@ interface ConditionsManagerProps {
 }
 
 export function ConditionsManager({ characterId, initialConditions }: ConditionsManagerProps) {
-  // Debug: Verificar se componente carrega
-  console.log('🎬 ConditionsManager montado:', {
-    characterId,
-    initialConditions,
-    timestamp: new Date().toISOString(),
+  // Começar sempre com EMPTY_CONDITIONS e mesclar com as ativas
+  const [conditions, setConditions] = useState<Condition[]>(() => {
+    if (!initialConditions || initialConditions.length === 0) {
+      return EMPTY_CONDITIONS;
+    }
+
+    // Mesclar: começar com todas inativas, aplicar as ativas
+    return EMPTY_CONDITIONS.map((empty) => {
+      const saved = initialConditions.find((c) => c.type === empty.type);
+      return saved || empty;
+    });
   });
 
-  // FIX: Se initialConditions estiver vazio, usar EMPTY_CONDITIONS
-  // Isso garante que sempre temos todas as 15 condições para mapear
-  const normalizedConditions =
-    initialConditions.length === 0 ? EMPTY_CONDITIONS : initialConditions;
-
-  const [conditions, setConditions] = useState<Condition[]>(normalizedConditions);
-  const [isSaving, setIsSaving] = useState(false);
-  const [selectedCondition, setSelectedCondition] = useState<ConditionType | null>(null);
-  const [notes, setNotes] = useState('');
-  const [exhaustionLevel, setExhaustionLevel] = useState(1);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [selectedCondition, setSelectedCondition] = useState<ConditionType | null>(null);
 
-  const activeConditions = getActiveConditions(conditions);
+  const activeConditions = conditions.filter((c) => c.active);
 
-  // Salvar no Supabase
-  const saveConditions = async (newConditions: Condition[]) => {
-    try {
-      setIsSaving(true);
-      const supabase = createClient();
+  const handleAdd = async () => {
+    if (!selectedCondition) return;
 
-      console.log('💾 Salvando condições:', {
-        characterId,
-        conditions: newConditions,
-      });
+    // Adicionar condição na UI
+    const newConditions = conditions.map((c) =>
+      c.type === selectedCondition ? { ...c, active: true } : c
+    );
+    setConditions(newConditions);
 
-      const { data, error } = await supabase
-        .from('characters')
-        .update({ conditions: newConditions })
-        .eq('id', characterId)
-        .select();
-
-      console.log('📊 Resultado do save:', { data, error });
-
-      if (error) throw error;
-
-      if (!data || data.length === 0) {
-        throw new Error('Nenhum personagem foi atualizado. Verifique o ID.');
-      }
-
-      setConditions(newConditions);
-      console.log('✅ Condições salvas com sucesso!');
-    } catch (err) {
-      console.error('❌ Erro ao salvar condições:', err);
-      alert(
-        `Erro ao salvar condições: ${err instanceof Error ? err.message : 'Erro desconhecido'}`
-      );
-    } finally {
-      setIsSaving(false);
-    }
-  };
-
-  // Ativar condição
-  const handleActivateCondition = (type: ConditionType) => {
-    if (type === 'exhaustion') {
-      const newConditions = updateExhaustionLevel(conditions, exhaustionLevel);
-      saveConditions(newConditions);
-    } else {
-      const newConditions = activateCondition(conditions, type, notes);
-      saveConditions(newConditions);
-    }
+    // Fechar dialog
     setIsDialogOpen(false);
-    setNotes('');
-    setExhaustionLevel(1);
+    setSelectedCondition(null);
+
+    // Salvar no banco (apenas condições ativas)
+    try {
+      const supabase = createClient();
+      const activeOnly = newConditions.filter((c) => c.active);
+
+      // NÃO usar .select() - isso evita re-fetch que causa loop
+      const { error } = await supabase
+        .from('characters')
+        .update({ conditions: activeOnly })
+        .eq('id', characterId);
+
+      if (error) {
+        console.error('Erro ao salvar:', error);
+        alert('Erro ao salvar condição');
+      }
+    } catch (err) {
+      console.error('Erro:', err);
+    }
   };
 
-  // Desativar condição
-  const handleDeactivateCondition = (type: ConditionType) => {
-    const newConditions = deactivateCondition(conditions, type);
-    saveConditions(newConditions);
-  };
+  const handleRemove = async (type: ConditionType) => {
+    // Remover condição da UI
+    const newConditions = conditions.map((c) => (c.type === type ? { ...c, active: false } : c));
+    setConditions(newConditions);
 
-  // Renderizar cartão de condição ativa
-  const renderActiveCondition = (condition: Condition) => {
-    const details = CONDITION_DETAILS[condition.type];
+    // Salvar no banco (apenas condições ativas)
+    try {
+      const supabase = createClient();
+      const activeOnly = newConditions.filter((c) => c.active);
 
-    return (
-      <div
-        key={condition.type}
-        className="group relative overflow-hidden rounded-lg border bg-card p-4 transition-all hover:shadow-md"
-      >
-        {/* Barra colorida no topo */}
-        <div className={`absolute left-0 top-0 h-1 w-full ${details.color}`} />
+      // NÃO usar .select() - isso evita re-fetch que causa loop
+      const { error } = await supabase
+        .from('characters')
+        .update({ conditions: activeOnly })
+        .eq('id', characterId);
 
-        <div className="flex items-start justify-between gap-2">
-          <div className="flex-1">
-            <div className="flex items-center gap-2">
-              <span className="text-2xl">{details.icon}</span>
-              <div>
-                <h4 className="font-semibold">{details.name}</h4>
-                {condition.type === 'exhaustion' && condition.level && (
-                  <Badge variant="destructive" className="mt-1">
-                    Nível {condition.level}
-                  </Badge>
-                )}
-              </div>
-            </div>
-            <p className="mt-2 text-xs text-gray-400">{details.description}</p>
-            {condition.notes && (
-              <p className="mt-2 rounded glass-card-light p-2 text-xs italic text-gray-400">
-                {condition.notes}
-              </p>
-            )}
-          </div>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => handleDeactivateCondition(condition.type)}
-            disabled={isSaving}
-            className="h-8 w-8 opacity-0 transition-opacity group-hover:opacity-100"
-          >
-            <X className="h-4 w-4" />
-          </Button>
-        </div>
-      </div>
-    );
-  };
-
-  // Renderizar opção de condição no dialog
-  const renderConditionOption = (type: ConditionType) => {
-    const details = CONDITION_DETAILS[type];
-    const isActive = conditions.find((c) => c.type === type)?.active;
-
-    if (isActive) return null;
-
-    return (
-      <button
-        key={type}
-        onClick={() => setSelectedCondition(type)}
-        className={`flex items-start gap-3 rounded-lg border p-3 text-left transition-all hover:scale-[1.01] ${
-          selectedCondition === type
-            ? 'border-2 border-purple-500 bg-purple-500/10'
-            : 'border-white/10 hover:border-purple-500/50'
-        }`}
-      >
-        <span className="text-2xl">{details.icon}</span>
-        <div className="flex-1">
-          <p className="font-medium text-white">{details.name}</p>
-          <p className="mt-1 text-xs text-gray-400">{details.description}</p>
-        </div>
-      </button>
-    );
+      if (error) {
+        console.error('Erro ao salvar:', error);
+        alert('Erro ao salvar condição');
+      }
+    } catch (err) {
+      console.error('Erro:', err);
+    }
   };
 
   return (
@@ -197,7 +114,7 @@ export function ConditionsManager({ characterId, initialConditions }: Conditions
         </h3>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <Button variant="outline" size="sm" disabled={isSaving}>
+            <Button variant="outline" size="sm">
               <Plus className="mr-2 h-4 w-4" />
               Adicionar
             </Button>
@@ -210,57 +127,36 @@ export function ConditionsManager({ characterId, initialConditions }: Conditions
               </DialogDescription>
             </DialogHeader>
 
-            <div className="space-y-4">
-              {/* Lista de condições disponíveis */}
-              <div className="grid gap-2">
-                {(Object.keys(CONDITION_DETAILS) as ConditionType[]).map(renderConditionOption)}
-              </div>
-
-              {/* Campos extras para condição selecionada */}
-              {selectedCondition && (
-                <div className="space-y-4 glass-card-light rounded-lg border border-white/10 p-4">
-                  <h4 className="font-medium text-white">
-                    Configurar: {CONDITION_DETAILS[selectedCondition].name}
-                  </h4>
-
-                  {selectedCondition === 'exhaustion' && (
-                    <div className="space-y-2">
-                      <Label htmlFor="exhaustion-level">Nível de Exaustão (1-6)</Label>
-                      <Input
-                        id="exhaustion-level"
-                        type="number"
-                        min="1"
-                        max="6"
-                        value={exhaustionLevel}
-                        onChange={(e) =>
-                          setExhaustionLevel(
-                            Math.max(1, Math.min(6, parseInt(e.target.value) || 1))
-                          )
-                        }
-                      />
-                    </div>
-                  )}
-
-                  <div className="space-y-2">
-                    <Label htmlFor="condition-notes">Notas (opcional)</Label>
-                    <Input
-                      id="condition-notes"
-                      placeholder="Ex: Enfeitiçado por vampiro"
-                      value={notes}
-                      onChange={(e) => setNotes(e.target.value)}
-                    />
-                  </div>
-
-                  <Button
-                    onClick={() => handleActivateCondition(selectedCondition)}
-                    disabled={isSaving}
-                    className="w-full tab-purple"
-                  >
-                    Aplicar Condição
-                  </Button>
-                </div>
-              )}
+            <div className="grid gap-2 max-h-[50vh] overflow-y-auto">
+              {(Object.keys(CONDITION_DETAILS) as ConditionType[])
+                .filter((type) => !conditions.find((c) => c.type === type && c.active))
+                .map((type) => {
+                  const details = CONDITION_DETAILS[type];
+                  return (
+                    <button
+                      key={type}
+                      onClick={() => setSelectedCondition(type)}
+                      className={`flex items-start gap-3 rounded-lg border p-3 text-left transition-all ${
+                        selectedCondition === type
+                          ? 'border-2 border-purple-500 bg-purple-500/10'
+                          : 'border-white/10 hover:border-purple-500/50'
+                      }`}
+                    >
+                      <span className="text-2xl">{details.icon}</span>
+                      <div>
+                        <p className="font-medium text-white">{details.name}</p>
+                        <p className="text-xs text-gray-400">{details.description}</p>
+                      </div>
+                    </button>
+                  );
+                })}
             </div>
+
+            {selectedCondition && (
+              <Button onClick={handleAdd} className="w-full">
+                Aplicar Condição
+              </Button>
+            )}
           </DialogContent>
         </Dialog>
       </div>
@@ -271,26 +167,35 @@ export function ConditionsManager({ characterId, initialConditions }: Conditions
           <p className="text-white">Nenhuma condição ativa</p>
         </div>
       ) : (
-        <div className="grid gap-3">{activeConditions.map(renderActiveCondition)}</div>
-      )}
-
-      {/* Resumo rápido de efeitos */}
-      {activeConditions.length > 0 && (
-        <div className="glass-card-light rounded-lg border border-white/10 p-3 text-xs">
-          <p className="mb-2 font-medium text-white">⚠️ Efeitos Ativos:</p>
-          <ul className="space-y-1 text-gray-400">
-            {activeConditions.map((condition) => (
-              <li key={condition.type}>
-                •{' '}
-                <span className="font-medium text-white">
-                  {CONDITION_DETAILS[condition.type].name}
-                </span>
-                {condition.type === 'exhaustion' && condition.level && (
-                  <span> (Nível {condition.level})</span>
-                )}
-              </li>
-            ))}
-          </ul>
+        <div className="grid gap-3">
+          {activeConditions.map((condition) => {
+            const details = CONDITION_DETAILS[condition.type];
+            return (
+              <div
+                key={condition.type}
+                className="group relative overflow-hidden rounded-lg border bg-card p-4"
+              >
+                <div className={`absolute left-0 top-0 h-1 w-full ${details.color}`} />
+                <div className="flex items-start justify-between gap-2">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <span className="text-2xl">{details.icon}</span>
+                      <h4 className="font-semibold">{details.name}</h4>
+                    </div>
+                    <p className="mt-2 text-xs text-gray-400">{details.description}</p>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => handleRemove(condition.type)}
+                    className="h-8 w-8"
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            );
+          })}
         </div>
       )}
     </div>
