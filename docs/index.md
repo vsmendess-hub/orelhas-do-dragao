@@ -88,17 +88,33 @@
 
 ## 🐛 Correções e Manutenção
 
+### Logs e Correções
+
 - **[CORRECOES.md](../CORRECOES.md)** - Log de correções de bugs
+
+### Debugging em Produção
+
+- **[DEBUG_CONDITIONS_PROD.md](../DEBUG_CONDITIONS_PROD.md)** - Guia de debug para condições em produção
+- **[FIX_CONDITIONS_PROD.sql](../FIX_CONDITIONS_PROD.sql)** - Fix específico para campo conditions em produção
+- **[QUICK_TEST_PROD.sql](../QUICK_TEST_PROD.sql)** - Testes rápidos SQL para produção
+- **[TEST_CONDITIONS_BROWSER.js](../TEST_CONDITIONS_BROWSER.js)** - Script de teste browser para condições
 
 ---
 
 ## 🗄️ Migrations SQL
 
-Arquivos SQL para migrações do banco de dados:
+### Configuração de Ambiente
+
+- **[COMPLETE_DEV_SETUP.sql](../COMPLETE_DEV_SETUP.sql)** - Setup completo do ambiente DEV
+- **[APPLY_GAMEPLAY_MIGRATION.md](../APPLY_GAMEPLAY_MIGRATION.md)** - Guia para aplicar migration de gameplay
+
+### Migrações por Feature
 
 - **[MIGRATION_HISTORIA_FIX.sql](../MIGRATION_HISTORIA_FIX.sql)** - Correção de histórico
 - **[MIGRATION_MANUAL.sql](../MIGRATION_MANUAL.sql)** - Migrações manuais
 - **[MIGRATION_REST_SYSTEM.sql](../MIGRATION_REST_SYSTEM.sql)** - Sistema de descanso
+
+### Migrações do Supabase
 
 Migrações principais em `supabase/migrations/`:
 
@@ -106,6 +122,8 @@ Migrações principais em `supabase/migrations/`:
 - `20260302225951_create_character_assets_bucket.sql` - Bucket de assets
 - `20260307000000_add_personality_appearance.sql` - Campos de personalidade
 - `20260307000001_add_background_data.sql` - Dados de background
+- `20260309000000_add_rest_system_fields.sql` - Campos do sistema de descanso
+- `20260309000001_add_character_gameplay_fields.sql` - Campos de gameplay persistente
 
 ---
 
@@ -185,12 +203,15 @@ orelhas-do-dragao/
 - **PWA?** → [MOBILE_FEATURES.md](../MOBILE_FEATURES.md)
 - **Configurar Supabase?** → [SUPABASE_SETUP_PRODUCTION.md](../SUPABASE_SETUP_PRODUCTION.md)
 - **Configurar Storage?** → [SUPABASE_STORAGE_SETUP.md](../SUPABASE_STORAGE_SETUP.md)
-- **Migrações SQL?** → [DATABASE.md](./DATABASE.md) (seção Migrações)
+- **Migrações SQL?** → [DATABASE.md](./DATABASE.md) (seção Migrações) ou [APPLY_GAMEPLAY_MIGRATION.md](../APPLY_GAMEPLAY_MIGRATION.md)
 - **Stack tecnológico?** → [ARCHITECTURE.md](./ARCHITECTURE.md)
 - **Fluxo de dados?** → [ARCHITECTURE.md](./ARCHITECTURE.md)
 - **Sistema de rotas?** → [ARCHITECTURE.md](./ARCHITECTURE.md)
 - **Wizard de criação?** → [COMPONENTS.md](./COMPONENTS.md) (seção Wizard)
 - **Glass morphism design?** → [RELEASE_v2.0.0.md](../RELEASE_v2.0.0.md)
+- **Debugar produção?** → [DEBUG_CONDITIONS_PROD.md](../DEBUG_CONDITIONS_PROD.md)
+- **Setup ambiente DEV?** → [COMPLETE_DEV_SETUP.sql](../COMPLETE_DEV_SETUP.sql)
+- **Testar condições?** → [TEST_CONDITIONS_BROWSER.js](../TEST_CONDITIONS_BROWSER.js)
 
 ---
 
@@ -204,7 +225,15 @@ Para diagramas e fluxos detalhados, consulte:
 
 ## 🆕 Últimas Atualizações
 
-### 9 de Março de 2026
+### 9 de Março de 2026 (Atualização 2)
+
+- ✅ Adicionados guias de debugging para produção
+- ✅ [DEBUG_CONDITIONS_PROD.md](../DEBUG_CONDITIONS_PROD.md) - Debug de condições
+- ✅ [APPLY_GAMEPLAY_MIGRATION.md](../APPLY_GAMEPLAY_MIGRATION.md) - Guia de migration
+- ✅ Scripts de teste e fix para produção
+- ✅ Documentação atualizada com novos arquivos
+
+### 9 de Março de 2026 (Atualização 1)
 
 - ✅ Criada documentação técnica completa em `/docs`
 - ✅ [ARCHITECTURE.md](./ARCHITECTURE.md) - Arquitetura do sistema
