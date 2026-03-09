@@ -449,7 +449,6 @@ export default async function CharacterPage({ params }: PageProps) {
           </div>
         </div>
 
-
         {/* Advanced Resources Section */}
         <div className="mt-12">
           <div className="mb-6 flex items-center justify-between">
@@ -530,14 +529,14 @@ export default async function CharacterPage({ params }: PageProps) {
             />
 
             {/* Import/Export */}
-            <CharacterImportExport
-              characterId={id}
-              character={character}
-              userId={user.id}
-            />
+            <CharacterImportExport characterId={id} character={character} userId={user.id} />
 
             {/* Conditions */}
-            <ConditionsManager characterId={id} initialConditions={characterConditions} />
+            <ConditionsManager
+              key={`conditions-${id}`}
+              characterId={id}
+              initialConditions={characterConditions}
+            />
 
             {/* Companions */}
             <div className="lg:col-span-2">
@@ -553,7 +552,6 @@ export default async function CharacterPage({ params }: PageProps) {
             <div className="lg:col-span-2">
               <GoalsManager characterId={id} initialGoals={characterGoals} />
             </div>
-
           </div>
         </div>
 
