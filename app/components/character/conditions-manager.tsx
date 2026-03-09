@@ -46,15 +46,32 @@ export function ConditionsManager({ characterId, initialConditions }: Conditions
       setIsSaving(true);
       const supabase = createClient();
 
-      const { error } = await supabase
+      console.log('💾 Salvando condições:', {
+        characterId,
+        conditions: newConditions,
+      });
+
+      const { data, error } = await supabase
         .from('characters')
         .update({ conditions: newConditions })
-        .eq('id', characterId);
+        .eq('id', characterId)
+        .select();
+
+      console.log('📊 Resultado do save:', { data, error });
 
       if (error) throw error;
+
+      if (!data || data.length === 0) {
+        throw new Error('Nenhum personagem foi atualizado. Verifique o ID.');
+      }
+
       setConditions(newConditions);
+      console.log('✅ Condições salvas com sucesso!');
     } catch (err) {
-      console.error('Erro ao salvar condições:', err);
+      console.error('❌ Erro ao salvar condições:', err);
+      alert(
+        `Erro ao salvar condições: ${err instanceof Error ? err.message : 'Erro desconhecido'}`
+      );
     } finally {
       setIsSaving(false);
     }
@@ -107,7 +124,9 @@ export function ConditionsManager({ characterId, initialConditions }: Conditions
             </div>
             <p className="mt-2 text-xs text-gray-400">{details.description}</p>
             {condition.notes && (
-              <p className="mt-2 rounded glass-card-light p-2 text-xs italic text-gray-400">{condition.notes}</p>
+              <p className="mt-2 rounded glass-card-light p-2 text-xs italic text-gray-400">
+                {condition.notes}
+              </p>
             )}
           </div>
           <Button
@@ -136,7 +155,9 @@ export function ConditionsManager({ characterId, initialConditions }: Conditions
         key={type}
         onClick={() => setSelectedCondition(type)}
         className={`flex items-start gap-3 rounded-lg border p-3 text-left transition-all hover:scale-[1.01] ${
-          selectedCondition === type ? 'border-2 border-purple-500 bg-purple-500/10' : 'border-white/10 hover:border-purple-500/50'
+          selectedCondition === type
+            ? 'border-2 border-purple-500 bg-purple-500/10'
+            : 'border-white/10 hover:border-purple-500/50'
         }`}
       >
         <span className="text-2xl">{details.icon}</span>
@@ -166,64 +187,64 @@ export function ConditionsManager({ characterId, initialConditions }: Conditions
             </Button>
           </DialogTrigger>
           <DialogContent className="max-h-[80vh] overflow-y-auto">
-              <DialogHeader>
-                <DialogTitle>Adicionar Condição</DialogTitle>
-                <DialogDescription>
-                  Selecione uma condição para aplicar ao personagem
-                </DialogDescription>
-              </DialogHeader>
+            <DialogHeader>
+              <DialogTitle>Adicionar Condição</DialogTitle>
+              <DialogDescription>
+                Selecione uma condição para aplicar ao personagem
+              </DialogDescription>
+            </DialogHeader>
 
-              <div className="space-y-4">
-                {/* Lista de condições disponíveis */}
-                <div className="grid gap-2">
-                  {(Object.keys(CONDITION_DETAILS) as ConditionType[]).map(renderConditionOption)}
-                </div>
+            <div className="space-y-4">
+              {/* Lista de condições disponíveis */}
+              <div className="grid gap-2">
+                {(Object.keys(CONDITION_DETAILS) as ConditionType[]).map(renderConditionOption)}
+              </div>
 
-                {/* Campos extras para condição selecionada */}
-                {selectedCondition && (
-                  <div className="space-y-4 glass-card-light rounded-lg border border-white/10 p-4">
-                    <h4 className="font-medium text-white">
-                      Configurar: {CONDITION_DETAILS[selectedCondition].name}
-                    </h4>
+              {/* Campos extras para condição selecionada */}
+              {selectedCondition && (
+                <div className="space-y-4 glass-card-light rounded-lg border border-white/10 p-4">
+                  <h4 className="font-medium text-white">
+                    Configurar: {CONDITION_DETAILS[selectedCondition].name}
+                  </h4>
 
-                    {selectedCondition === 'exhaustion' && (
-                      <div className="space-y-2">
-                        <Label htmlFor="exhaustion-level">Nível de Exaustão (1-6)</Label>
-                        <Input
-                          id="exhaustion-level"
-                          type="number"
-                          min="1"
-                          max="6"
-                          value={exhaustionLevel}
-                          onChange={(e) =>
-                            setExhaustionLevel(
-                              Math.max(1, Math.min(6, parseInt(e.target.value) || 1))
-                            )
-                          }
-                        />
-                      </div>
-                    )}
-
+                  {selectedCondition === 'exhaustion' && (
                     <div className="space-y-2">
-                      <Label htmlFor="condition-notes">Notas (opcional)</Label>
+                      <Label htmlFor="exhaustion-level">Nível de Exaustão (1-6)</Label>
                       <Input
-                        id="condition-notes"
-                        placeholder="Ex: Enfeitiçado por vampiro"
-                        value={notes}
-                        onChange={(e) => setNotes(e.target.value)}
+                        id="exhaustion-level"
+                        type="number"
+                        min="1"
+                        max="6"
+                        value={exhaustionLevel}
+                        onChange={(e) =>
+                          setExhaustionLevel(
+                            Math.max(1, Math.min(6, parseInt(e.target.value) || 1))
+                          )
+                        }
                       />
                     </div>
+                  )}
 
-                    <Button
-                      onClick={() => handleActivateCondition(selectedCondition)}
-                      disabled={isSaving}
-                      className="w-full tab-purple"
-                    >
-                      Aplicar Condição
-                    </Button>
+                  <div className="space-y-2">
+                    <Label htmlFor="condition-notes">Notas (opcional)</Label>
+                    <Input
+                      id="condition-notes"
+                      placeholder="Ex: Enfeitiçado por vampiro"
+                      value={notes}
+                      onChange={(e) => setNotes(e.target.value)}
+                    />
                   </div>
-                )}
-              </div>
+
+                  <Button
+                    onClick={() => handleActivateCondition(selectedCondition)}
+                    disabled={isSaving}
+                    className="w-full tab-purple"
+                  >
+                    Aplicar Condição
+                  </Button>
+                </div>
+              )}
+            </div>
           </DialogContent>
         </Dialog>
       </div>
@@ -244,7 +265,10 @@ export function ConditionsManager({ characterId, initialConditions }: Conditions
           <ul className="space-y-1 text-gray-400">
             {activeConditions.map((condition) => (
               <li key={condition.type}>
-                • <span className="font-medium text-white">{CONDITION_DETAILS[condition.type].name}</span>
+                •{' '}
+                <span className="font-medium text-white">
+                  {CONDITION_DETAILS[condition.type].name}
+                </span>
                 {condition.type === 'exhaustion' && condition.level && (
                   <span> (Nível {condition.level})</span>
                 )}
