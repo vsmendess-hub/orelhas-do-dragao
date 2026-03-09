@@ -31,6 +31,13 @@ interface ConditionsManagerProps {
 }
 
 export function ConditionsManager({ characterId, initialConditions }: ConditionsManagerProps) {
+  // Debug: Verificar se componente carrega
+  console.log('🎬 ConditionsManager montado:', {
+    characterId,
+    initialConditions,
+    timestamp: new Date().toISOString(),
+  });
+
   const [conditions, setConditions] = useState<Condition[]>(initialConditions);
   const [isSaving, setIsSaving] = useState(false);
   const [selectedCondition, setSelectedCondition] = useState<ConditionType | null>(null);
