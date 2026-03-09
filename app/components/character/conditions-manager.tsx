@@ -22,6 +22,7 @@ import {
   type Condition,
   type ConditionType,
   CONDITION_DETAILS,
+  EMPTY_CONDITIONS,
   activateCondition,
   deactivateCondition,
   updateExhaustionLevel,
@@ -41,7 +42,12 @@ export function ConditionsManager({ characterId, initialConditions }: Conditions
     timestamp: new Date().toISOString(),
   });
 
-  const [conditions, setConditions] = useState<Condition[]>(initialConditions);
+  // FIX: Se initialConditions estiver vazio, usar EMPTY_CONDITIONS
+  // Isso garante que sempre temos todas as 15 condições para mapear
+  const normalizedConditions =
+    initialConditions.length === 0 ? EMPTY_CONDITIONS : initialConditions;
+
+  const [conditions, setConditions] = useState<Condition[]>(normalizedConditions);
   const [isSaving, setIsSaving] = useState(false);
   const [selectedCondition, setSelectedCondition] = useState<ConditionType | null>(null);
   const [notes, setNotes] = useState('');
