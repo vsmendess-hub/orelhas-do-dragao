@@ -13,11 +13,15 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import {
   type Condition,
   type ConditionType,
   CONDITION_DETAILS,
   EMPTY_CONDITIONS,
+  activateCondition,
+  updateExhaustionLevel,
 } from '@/lib/data/conditions';
 
 interface ConditionsManagerProps {
@@ -41,21 +45,29 @@ export function ConditionsManager({ characterId, initialConditions }: Conditions
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedCondition, setSelectedCondition] = useState<ConditionType | null>(null);
+  const [notes, setNotes] = useState('');
+  const [exhaustionLevel, setExhaustionLevel] = useState(1);
 
   const activeConditions = conditions.filter((c) => c.active);
 
   const handleAdd = async () => {
     if (!selectedCondition) return;
 
-    // Adicionar condição na UI
-    const newConditions = conditions.map((c) =>
-      c.type === selectedCondition ? { ...c, active: true } : c
-    );
+    // Adicionar condição na UI com notas e nível
+    let newConditions: Condition[];
+    if (selectedCondition === 'exhaustion') {
+      newConditions = updateExhaustionLevel(conditions, exhaustionLevel);
+    } else {
+      newConditions = activateCondition(conditions, selectedCondition, notes);
+    }
+
     setConditions(newConditions);
 
-    // Fechar dialog
+    // Fechar dialog e limpar
     setIsDialogOpen(false);
     setSelectedCondition(null);
+    setNotes('');
+    setExhaustionLevel(1);
 
     // Salvar no banco (apenas condições ativas)
     try {
@@ -153,9 +165,41 @@ export function ConditionsManager({ characterId, initialConditions }: Conditions
             </div>
 
             {selectedCondition && (
-              <Button onClick={handleAdd} className="w-full">
-                Aplicar Condição
-              </Button>
+              <div className="space-y-4 rounded-lg border border-white/10 bg-card p-4">
+                <h4 className="font-medium text-white">
+                  Configurar: {CONDITION_DETAILS[selectedCondition].name}
+                </h4>
+
+                {selectedCondition === 'exhaustion' && (
+                  <div className="space-y-2">
+                    <Label htmlFor="exhaustion-level">Nível de Exaustão (1-6)</Label>
+                    <Input
+                      id="exhaustion-level"
+                      type="number"
+                      min="1"
+                      max="6"
+                      value={exhaustionLevel}
+                      onChange={(e) =>
+                        setExhaustionLevel(Math.max(1, Math.min(6, parseInt(e.target.value) || 1)))
+                      }
+                    />
+                  </div>
+                )}
+
+                <div className="space-y-2">
+                  <Label htmlFor="condition-notes">Notas (opcional)</Label>
+                  <Input
+                    id="condition-notes"
+                    placeholder="Ex: Envenenado por aranha"
+                    value={notes}
+                    onChange={(e) => setNotes(e.target.value)}
+                  />
+                </div>
+
+                <Button onClick={handleAdd} className="w-full">
+                  Aplicar Condição
+                </Button>
+              </div>
             )}
           </DialogContent>
         </Dialog>
@@ -180,9 +224,21 @@ export function ConditionsManager({ characterId, initialConditions }: Conditions
                   <div className="flex-1">
                     <div className="flex items-center gap-2">
                       <span className="text-2xl">{details.icon}</span>
-                      <h4 className="font-semibold">{details.name}</h4>
+                      <div>
+                        <h4 className="font-semibold">{details.name}</h4>
+                        {condition.type === 'exhaustion' && condition.level && (
+                          <Badge variant="destructive" className="mt-1">
+                            Nível {condition.level}
+                          </Badge>
+                        )}
+                      </div>
                     </div>
                     <p className="mt-2 text-xs text-gray-400">{details.description}</p>
+                    {condition.notes && (
+                      <p className="mt-2 rounded bg-card p-2 text-xs italic text-gray-400">
+                        {condition.notes}
+                      </p>
+                    )}
                   </div>
                   <Button
                     variant="ghost"
