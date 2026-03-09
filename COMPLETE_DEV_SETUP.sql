@@ -36,6 +36,29 @@ ADD COLUMN IF NOT EXISTS death_saves JSONB DEFAULT '{"successes": 0, "failures":
 
 CREATE INDEX IF NOT EXISTS idx_characters_hit_dice_used ON characters(hit_dice_used);
 
+-- 4. Campos de Gameplay (v2.1+)
+-- Talentos, Companheiros, Diário, Objetivos, Condições
+ALTER TABLE characters
+ADD COLUMN IF NOT EXISTS feats JSONB DEFAULT '[]'::jsonb;
+
+ALTER TABLE characters
+ADD COLUMN IF NOT EXISTS companions JSONB DEFAULT '[]'::jsonb;
+
+ALTER TABLE characters
+ADD COLUMN IF NOT EXISTS journal JSONB DEFAULT '[]'::jsonb;
+
+ALTER TABLE characters
+ADD COLUMN IF NOT EXISTS goals JSONB DEFAULT '[]'::jsonb;
+
+ALTER TABLE characters
+ADD COLUMN IF NOT EXISTS conditions JSONB DEFAULT '[]'::jsonb;
+
+CREATE INDEX IF NOT EXISTS idx_characters_feats ON characters USING GIN (feats);
+CREATE INDEX IF NOT EXISTS idx_characters_companions ON characters USING GIN (companions);
+CREATE INDEX IF NOT EXISTS idx_characters_journal ON characters USING GIN (journal);
+CREATE INDEX IF NOT EXISTS idx_characters_goals ON characters USING GIN (goals);
+CREATE INDEX IF NOT EXISTS idx_characters_conditions ON characters USING GIN (conditions);
+
 -- ========================================
 -- VERIFICAÇÃO FINAL
 -- ========================================
@@ -56,19 +79,29 @@ AND column_name IN (
     'hit_dice_used',
     'spell_slots',
     'class_resources',
-    'death_saves'
+    'death_saves',
+    'feats',
+    'companions',
+    'journal',
+    'goals',
+    'conditions'
 )
 ORDER BY column_name;
 
 -- ========================================
 -- RESULTADO ESPERADO:
 -- ========================================
--- Você deve ver 7 linhas retornadas:
+-- Você deve ver 12 linhas retornadas:
 -- 1. appearance         | jsonb   | NULL
 -- 2. background_data    | jsonb   | NULL
 -- 3. class_resources    | jsonb   | '[]'::jsonb
--- 4. death_saves        | jsonb   | '{"successes": 0, "failures": 0}'::jsonb
--- 5. hit_dice_used      | integer | 0
--- 6. personality        | jsonb   | NULL
--- 7. spell_slots        | jsonb   | '[]'::jsonb
+-- 4. companions         | jsonb   | '[]'::jsonb
+-- 5. conditions         | jsonb   | '[]'::jsonb
+-- 6. death_saves        | jsonb   | '{"successes": 0, "failures": 0}'::jsonb
+-- 7. feats              | jsonb   | '[]'::jsonb
+-- 8. goals              | jsonb   | '[]'::jsonb
+-- 9. hit_dice_used      | integer | 0
+-- 10. journal           | jsonb   | '[]'::jsonb
+-- 11. personality       | jsonb   | NULL
+-- 12. spell_slots       | jsonb   | '[]'::jsonb
 -- ========================================
