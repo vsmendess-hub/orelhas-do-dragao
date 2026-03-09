@@ -1,5 +1,8 @@
 'use client';
 
+// Debug: Verificar se o arquivo é carregado
+console.log('📦 conditions-manager.tsx carregado', new Date().toISOString());
+
 import { useState } from 'react';
 import { AlertCircle, X, Plus } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
