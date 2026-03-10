@@ -641,6 +641,10 @@ export default async function CharacterPage({ params }: PageProps) {
             }
             strengthScore={character.attributes.str}
             dexModifier={modifiers.dex}
+            proficiencyBonus={character.proficiency_bonus}
+            weaponProficiencies={characterProficiencies.weapons}
+            armorProficiencies={characterProficiencies.armor}
+            attributes={character.attributes}
           />
         </div>
       </main>
