@@ -16,7 +16,6 @@ import {
 import { ThemeToggle } from '@/app/components/theme-toggle';
 import { createClient } from '@/lib/supabase/server';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { calculateModifier, formatModifier } from '@/lib/data/point-buy';
 import { HPManager } from '@/app/components/character/hp-manager';
 import { DeleteCharacterDialog } from '@/app/components/character/delete-character-dialog';
@@ -43,15 +42,10 @@ import { type JournalEntry } from '@/lib/data/journal';
 import type { CharacterShare } from '@/lib/data/character-sharing';
 import { GlassCard } from '@/app/components/character/glass-card';
 import { SkillsFeaturesTabs } from '@/app/components/character/skills-features-tabs';
-
-const ABILITY_NAMES = {
-  str: 'Força',
-  dex: 'Destreza',
-  con: 'Constituição',
-  int: 'Inteligência',
-  wis: 'Sabedoria',
-  cha: 'Carisma',
-} as const;
+import { getAllCharacterFeatures } from '@/lib/data/character-features';
+import { getAllProficiencies } from '@/lib/data/proficiencies';
+import { SavingThrows } from '@/app/components/character/saving-throws';
+import { PassivePerception } from '@/app/components/character/passive-perception';
 
 const ABILITY_ABBREVIATIONS = {
   str: 'FOR',
@@ -61,13 +55,6 @@ const ABILITY_ABBREVIATIONS = {
   wis: 'SAB',
   cha: 'CAR',
 } as const;
-
-interface CharacterSkill {
-  name: string;
-  attribute: string;
-  proficient: boolean;
-  expertise: boolean;
-}
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -135,6 +122,11 @@ export default async function CharacterPage({ params }: PageProps) {
   // Feats
   const characterFeats = character.feats || [];
 
+  // Calcular Iniciativa com bônus de Alerta (+5)
+  const hasAlertFeat = characterFeats.some((feat: { featId: string }) => feat.featId === 'alert');
+  const initiativeBonus = hasAlertFeat ? 5 : 0;
+  const totalInitiative = character.initiative + initiativeBonus;
+
   // Goals
   const characterGoals = character.goals || [];
 
@@ -155,6 +147,33 @@ export default async function CharacterPage({ params }: PageProps) {
   const activeConditionsCount = characterConditions.filter((c) => c.active).length;
   const activeCompanionsCount = characterCompanions.filter((c) => c.active).length;
   const hasClassResources = classResources.length > 0;
+
+  // Obter características automaticamente baseadas em raça, sub-raça, classe e nível
+  const characterFeatures = getAllCharacterFeatures(
+    character.race,
+    character.subrace,
+    character.class,
+    character.level,
+    character.archetype
+  );
+
+  // Obter proficiências automaticamente
+  const backgroundName = character.background_data?.name || 'none';
+  const domain = character.archetype; // Para clérigos, archetype é o domínio
+  const characterProficiencies = getAllProficiencies(
+    character.race,
+    character.subrace,
+    character.class,
+    backgroundName,
+    domain
+  );
+
+  // Verificar se é proficiente em Percepção
+  const isProficientInPerception =
+    character.skills?.some(
+      (skill: { name: string; proficient: boolean }) =>
+        skill.name === 'Percepção' && skill.proficient
+    ) || false;
 
   return (
     <div className="min-h-screen relative">
@@ -284,48 +303,59 @@ export default async function CharacterPage({ params }: PageProps) {
                 </div>
               </div>
 
-              {/* Attributes Section */}
+              {/* Combat Stats Destacados - Iniciativa e CA */}
               <div className="space-y-3">
-                <h3 className="text-lg font-semibold text-white">Atributos</h3>
-                <div className="grid grid-cols-2 gap-3">
-                  {(Object.keys(character.attributes) as Array<keyof typeof modifiers>).map(
-                    (attr) => (
-                      <div key={attr} className="attribute-card">
-                        <p className="text-xs font-medium text-gray-400 uppercase tracking-wide">
-                          {ABILITY_ABBREVIATIONS[attr]}
-                        </p>
-                        <p className="mt-2 text-3xl font-bold text-white">
-                          {character.attributes[attr]}
-                        </p>
-                        <p className="text-sm text-purple-300 font-semibold">
-                          {formatModifier(modifiers[attr])}
-                        </p>
-                      </div>
-                    )
-                  )}
+                <h3 className="text-lg font-semibold text-white">Combate</h3>
+                <div className="grid grid-cols-2 gap-4">
+                  {/* Classe de Armadura */}
+                  <div className="glass-card rounded-xl p-6 text-center border-2 border-purple-500/30 hover:border-purple-500/50 transition-all">
+                    <div className="flex items-center justify-center gap-2 mb-3">
+                      <Shield className="h-6 w-6 text-purple-400" />
+                      <p className="text-sm font-medium text-gray-300 uppercase tracking-wide">
+                        Classe de Armadura
+                      </p>
+                    </div>
+                    <p className="text-4xl font-bold text-white">{character.armor_class}</p>
+                  </div>
+
+                  {/* Iniciativa */}
+                  <div className="glass-card rounded-xl p-6 text-center border-2 border-purple-500/30 hover:border-purple-500/50 transition-all">
+                    <div className="flex items-center justify-center gap-2 mb-3">
+                      <Zap className="h-6 w-6 text-purple-400" />
+                      <p className="text-sm font-medium text-gray-300 uppercase tracking-wide">
+                        Iniciativa
+                      </p>
+                    </div>
+                    <p className="text-4xl font-bold text-white">
+                      {formatModifier(totalInitiative)}
+                    </p>
+                    {hasAlertFeat && <p className="text-xs text-purple-400 mt-2">+5 Alerta</p>}
+                  </div>
                 </div>
               </div>
 
-              {/* Combat Stats Compact */}
+              {/* Attributes Section */}
               <div className="space-y-3">
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="glass-card-light rounded-xl p-4 text-center">
-                    <div className="flex items-center justify-center gap-1 mb-2">
-                      <Shield className="h-4 w-4 text-purple-400" />
-                      <p className="text-xs text-gray-400 uppercase">CA</p>
+                <h3 className="text-lg font-semibold text-white">Atributos</h3>
+                <div className="grid grid-cols-2 gap-4">
+                  {(['str', 'dex', 'con', 'int', 'wis', 'cha'] as const).map((attr) => (
+                    <div key={attr} className="attribute-card">
+                      <p className="text-xs font-medium text-gray-400 uppercase tracking-wide">
+                        {ABILITY_ABBREVIATIONS[attr]}
+                      </p>
+                      <p className="mt-2 text-3xl font-bold text-white">
+                        {character.attributes[attr]}
+                      </p>
+                      <p className="text-sm text-purple-300 font-semibold">
+                        {formatModifier(modifiers[attr])}
+                      </p>
                     </div>
-                    <p className="text-2xl font-bold text-white">{character.armor_class}</p>
-                  </div>
-                  <div className="glass-card-light rounded-xl p-4 text-center">
-                    <div className="flex items-center justify-center gap-1 mb-2">
-                      <Zap className="h-4 w-4 text-purple-400" />
-                      <p className="text-xs text-gray-400 uppercase">Init</p>
-                    </div>
-                    <p className="text-2xl font-bold text-white">
-                      {formatModifier(character.initiative)}
-                    </p>
-                  </div>
+                  ))}
                 </div>
+              </div>
+
+              {/* Proficiência e Deslocamento */}
+              <div className="space-y-3 mt-6">
                 <div className="glass-card-light rounded-xl p-4 text-center">
                   <div className="flex items-center justify-center gap-1 mb-2">
                     <Dices className="h-4 w-4 text-purple-400" />
@@ -333,15 +363,15 @@ export default async function CharacterPage({ params }: PageProps) {
                   </div>
                   <p className="text-2xl font-bold text-white">+{character.proficiency_bonus}</p>
                 </div>
-              </div>
 
-              {/* Speed */}
-              <div className="glass-card-light rounded-xl p-4 text-center">
-                <p className="text-xs text-gray-400 uppercase mb-2">Deslocamento</p>
-                <p className="text-2xl font-bold text-white">
-                  {Math.round(character.speed * 0.3048 * 10) / 10} m
-                </p>
-                <p className="text-xs text-gray-500">por turno</p>
+                {/* Speed */}
+                <div className="glass-card-light rounded-xl p-4 text-center">
+                  <p className="text-xs text-gray-400 uppercase mb-2">Deslocamento</p>
+                  <p className="text-2xl font-bold text-white">
+                    {Math.floor(character.speed * 0.3048)} m
+                  </p>
+                  <p className="text-xs text-gray-500">por turno</p>
+                </div>
               </div>
             </GlassCard>
           </div>
@@ -365,7 +395,7 @@ export default async function CharacterPage({ params }: PageProps) {
             <GlassCard variant="default">
               <SkillsFeaturesTabs
                 skills={character.skills}
-                features={character.features || []}
+                features={characterFeatures}
                 modifiers={modifiers}
                 proficiencyBonus={character.proficiency_bonus}
                 abilityAbbreviations={ABILITY_ABBREVIATIONS}
@@ -373,7 +403,7 @@ export default async function CharacterPage({ params }: PageProps) {
             </GlassCard>
           </div>
 
-          {/* RIGHT COLUMN - XP & Proficiencies */}
+          {/* RIGHT COLUMN - XP, Saving Throws, Passive Perception & Proficiencies */}
           <div className="lg:col-span-3 space-y-6">
             {/* XP Manager */}
             <XPManager
@@ -386,66 +416,106 @@ export default async function CharacterPage({ params }: PageProps) {
               currentAttributes={character.attributes}
             />
 
-            {/* Proficiencies */}
-            {character.proficiencies && (
-              <GlassCard variant="default">
-                <h3 className="text-lg font-semibold text-white mb-4">Proficiências</h3>
-                <div className="space-y-4">
-                  {character.proficiencies.weapons?.length > 0 && (
+            {/* Saving Throws */}
+            <SavingThrows
+              modifiers={modifiers}
+              proficiencyBonus={character.proficiency_bonus}
+              savingThrowProficiencies={characterProficiencies.savingThrows || []}
+            />
+
+            {/* Passive Perception */}
+            <PassivePerception
+              wisdomModifier={modifiers.wis}
+              proficiencyBonus={character.proficiency_bonus}
+              isProficientInPerception={isProficientInPerception}
+            />
+
+            {/* Proficiencies - Automaticamente geradas */}
+            <GlassCard variant="default">
+              <h3 className="text-lg font-semibold text-white mb-4">Proficiências</h3>
+              <div className="space-y-4">
+                {/* Testes de Resistência */}
+                {characterProficiencies.savingThrows &&
+                  characterProficiencies.savingThrows.length > 0 && (
                     <div>
-                      <p className="mb-2 text-xs font-medium text-purple-300 uppercase tracking-wide">
-                        Armas
+                      <p className="mb-2 text-xs font-medium text-amber-300 uppercase tracking-wide">
+                        Testes de Resistência
                       </p>
                       <p className="text-sm text-gray-300">
-                        {character.proficiencies.weapons.join(', ')}
+                        {characterProficiencies.savingThrows.join(', ')}
                       </p>
                     </div>
                   )}
-                  {character.proficiencies.armor?.length > 0 && (
-                    <div>
-                      <p className="mb-2 text-xs font-medium text-purple-300 uppercase tracking-wide">
-                        Armaduras
-                      </p>
-                      <p className="text-sm text-gray-300">
-                        {character.proficiencies.armor.join(', ')}
-                      </p>
-                    </div>
+                {/* Perícias */}
+                {characterProficiencies.skills && characterProficiencies.skills.length > 0 && (
+                  <div>
+                    <p className="mb-2 text-xs font-medium text-green-300 uppercase tracking-wide">
+                      Perícias
+                    </p>
+                    <p className="text-sm text-gray-300">
+                      {characterProficiencies.skills.join(', ')}
+                    </p>
+                  </div>
+                )}
+                {/* Armas */}
+                {characterProficiencies.weapons.length > 0 && (
+                  <div>
+                    <p className="mb-2 text-xs font-medium text-purple-300 uppercase tracking-wide">
+                      Armas
+                    </p>
+                    <p className="text-sm text-gray-300">
+                      {characterProficiencies.weapons.join(', ')}
+                    </p>
+                  </div>
+                )}
+                {/* Armaduras */}
+                {characterProficiencies.armor.length > 0 && (
+                  <div>
+                    <p className="mb-2 text-xs font-medium text-blue-300 uppercase tracking-wide">
+                      Armaduras
+                    </p>
+                    <p className="text-sm text-gray-300">
+                      {characterProficiencies.armor.join(', ')}
+                    </p>
+                  </div>
+                )}
+                {/* Ferramentas */}
+                {characterProficiencies.tools.length > 0 && (
+                  <div>
+                    <p className="mb-2 text-xs font-medium text-orange-300 uppercase tracking-wide">
+                      Ferramentas
+                    </p>
+                    <p className="text-sm text-gray-300">
+                      {characterProficiencies.tools.join(', ')}
+                    </p>
+                  </div>
+                )}
+                {/* Idiomas */}
+                {characterProficiencies.languages.length > 0 && (
+                  <div>
+                    <p className="mb-2 text-xs font-medium text-cyan-300 uppercase tracking-wide">
+                      Idiomas
+                    </p>
+                    <p className="text-sm text-gray-300">
+                      {characterProficiencies.languages.join(', ')}
+                    </p>
+                  </div>
+                )}
+                {/* Caso não tenha nada */}
+                {characterProficiencies.weapons.length === 0 &&
+                  characterProficiencies.armor.length === 0 &&
+                  characterProficiencies.tools.length === 0 &&
+                  characterProficiencies.languages.length === 0 &&
+                  (!characterProficiencies.savingThrows ||
+                    characterProficiencies.savingThrows.length === 0) &&
+                  (!characterProficiencies.skills ||
+                    characterProficiencies.skills.length === 0) && (
+                    <p className="text-sm text-gray-400 text-center py-4">
+                      Nenhuma proficiência adicional
+                    </p>
                   )}
-                  {character.proficiencies.tools?.length > 0 && (
-                    <div>
-                      <p className="mb-2 text-xs font-medium text-purple-300 uppercase tracking-wide">
-                        Ferramentas
-                      </p>
-                      <p className="text-sm text-gray-300">
-                        {character.proficiencies.tools.join(', ')}
-                      </p>
-                    </div>
-                  )}
-                  {character.proficiencies.languages?.length > 0 && (
-                    <div>
-                      <p className="mb-2 text-xs font-medium text-purple-300 uppercase tracking-wide">
-                        Idiomas
-                      </p>
-                      <p className="text-sm text-gray-300">
-                        {character.proficiencies.languages.join(', ')}
-                      </p>
-                    </div>
-                  )}
-                  {(!character.proficiencies.weapons ||
-                    character.proficiencies.weapons.length === 0) &&
-                    (!character.proficiencies.armor ||
-                      character.proficiencies.armor.length === 0) &&
-                    (!character.proficiencies.tools ||
-                      character.proficiencies.tools.length === 0) &&
-                    (!character.proficiencies.languages ||
-                      character.proficiencies.languages.length === 0) && (
-                      <p className="text-sm text-gray-400 text-center py-4">
-                        Nenhuma proficiência adicional
-                      </p>
-                    )}
-                </div>
-              </GlassCard>
-            )}
+              </div>
+            </GlassCard>
           </div>
         </div>
 

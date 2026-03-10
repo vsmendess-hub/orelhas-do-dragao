@@ -36,6 +36,13 @@
   - Queries comuns
   - Migrações
 
+- **[MISSING_FIELDS_CHECK.md](./MISSING_FIELDS_CHECK.md)** - Verificação de campos DEV vs PROD
+  - Campos que faltavam no DEV
+  - Checklist de aplicação
+  - Comparação de versões
+  - Erros conhecidos
+  - Auditoria completa
+
 ### Componentes
 
 - **[COMPONENTS.md](./COMPONENTS.md)** - Documentação de todos os componentes React
@@ -79,6 +86,32 @@
 ### Recursos de Imagens
 
 - **[IMAGENS_DND.md](../IMAGENS_DND.md)** - Recursos e referências de imagens D&D
+
+### Sistema de Características
+
+- **[FEATURES_AUTO_FILL.md](../FEATURES_AUTO_FILL.md)** - Sistema de preenchimento automático de características
+  - Características de raças e sub-raças
+  - Características de classes por nível
+  - Referências de livros (PHB) e páginas
+  - Implementação e expansões futuras
+
+### Sistema de Proficiências
+
+- **[PROFICIENCIES_AUTO_FILL.md](../PROFICIENCIES_AUTO_FILL.md)** - Sistema de preenchimento automático de proficiências
+  - Proficiências por raça e sub-raça
+  - Proficiências por classe (12 classes)
+  - Proficiências por domínio (Clérigos)
+  - Proficiências por background (13 backgrounds)
+  - Armas, armaduras, ferramentas, idiomas, testes de resistência e perícias
+
+### Testes de Resistência e Percepção Passiva
+
+- **[SAVING_THROWS_PASSIVE_PERCEPTION.md](../SAVING_THROWS_PASSIVE_PERCEPTION.md)** - Cálculo automático de salvaguardas e percepção
+  - 6 testes de resistência calculados automaticamente
+  - Proficiências por classe destacadas visualmente
+  - Percepção passiva com breakdown do cálculo
+  - Baseado no PHB (fórmulas oficiais)
+  - Explicações de quando e como usar
 
 ### Sprints Anteriores
 
@@ -135,7 +168,8 @@ orelhas-do-dragao/
 │   ├── index.md                   # Este arquivo
 │   ├── ARCHITECTURE.md            # Arquitetura do sistema
 │   ├── DATABASE.md                # Database e schema
-│   └── COMPONENTS.md              # Componentes React
+│   ├── COMPONENTS.md              # Componentes React
+│   └── MISSING_FIELDS_CHECK.md    # Verificação DEV vs PROD
 │
 ├── Raiz do Projeto               # Documentação de features e deploy
 │   ├── README.md                  # Quick start
@@ -178,9 +212,10 @@ orelhas-do-dragao/
 ### Para Trabalhar com Database
 
 1. [DATABASE.md](./DATABASE.md) - Schema completo
-2. Arquivos em `supabase/migrations/` - Migrações aplicadas
-3. [SUPABASE_STORAGE_SETUP.md](../SUPABASE_STORAGE_SETUP.md) - Storage
-4. `MIGRATION_*.sql` na raiz - Migrações adicionais
+2. [MISSING_FIELDS_CHECK.md](./MISSING_FIELDS_CHECK.md) - Verificação de campos
+3. Arquivos em `supabase/migrations/` - Migrações aplicadas
+4. [SUPABASE_STORAGE_SETUP.md](../SUPABASE_STORAGE_SETUP.md) - Storage
+5. `MIGRATION_*.sql` na raiz - Migrações adicionais
 
 ### Para Desenvolver Features
 
@@ -212,6 +247,8 @@ orelhas-do-dragao/
 - **Debugar produção?** → [DEBUG_CONDITIONS_PROD.md](../DEBUG_CONDITIONS_PROD.md)
 - **Setup ambiente DEV?** → [COMPLETE_DEV_SETUP.sql](../COMPLETE_DEV_SETUP.sql)
 - **Testar condições?** → [TEST_CONDITIONS_BROWSER.js](../TEST_CONDITIONS_BROWSER.js)
+- **Verificar campos faltando?** → [MISSING_FIELDS_CHECK.md](./MISSING_FIELDS_CHECK.md)
+- **Comparar DEV vs PROD?** → [MISSING_FIELDS_CHECK.md](./MISSING_FIELDS_CHECK.md)
 
 ---
 

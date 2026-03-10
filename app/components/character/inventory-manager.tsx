@@ -156,6 +156,7 @@ export function InventoryManager({
         onOpenChange={setIsItemDialogOpen}
         onSave={handleSaveItem}
         editingItem={editingItem}
+        characterId={characterId}
       />
     </>
   );

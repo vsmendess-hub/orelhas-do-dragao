@@ -21,17 +21,26 @@ export interface Item {
 
 // Propriedades específicas de armas e armaduras
 export interface ItemProperties {
+  // Referências ao item do PHB (se for um item pré-definido)
+  itemSourceId?: string; // ID do item no PHB (ex: 'longsword', 'chain-mail')
+  itemSourceType?: 'weapon' | 'armor' | 'equipment' | 'custom'; // Tipo de origem
+
   // Armas
   damage?: string; // Ex: "1d8"
   damageType?: string; // Ex: "slashing", "piercing", "bludgeoning"
   range?: string; // Ex: "5 pés", "20/60 pés"
   weaponProperties?: string[]; // Ex: ["versatile", "light", "finesse"]
+  versatileDamage?: string; // Dano versátil (2 mãos)
+  calculatedAttackBonus?: number; // Bônus de ataque calculado ao equipar
+  calculatedDamage?: string; // Dano calculado com modificador
 
   // Armaduras
-  armorClass?: number; // AC base da armadura
+  armorClass?: number | string; // AC base da armadura (pode ser número ou string como "12 + DEX")
   armorType?: 'light' | 'medium' | 'heavy' | 'shield'; // Tipo de armadura
+  maxDexBonus?: number; // Bônus máximo de DEX (armaduras médias)
   stealthDisadvantage?: boolean; // Desvantagem em Furtividade
   strengthRequirement?: number; // STR mínima necessária
+  calculatedAC?: number; // CA final calculada ao equipar
 }
 
 // Sistema de moedas D&D 5e
@@ -143,7 +152,16 @@ export function calculateArmorClass(
 
   if (equippedArmor && equippedArmor.properties?.armorClass) {
     const armorType = equippedArmor.properties.armorType;
-    const baseAC = equippedArmor.properties.armorClass;
+    const armorClass = equippedArmor.properties.armorClass;
+
+    // Converter armorClass para número se for string
+    let baseAC: number;
+    if (typeof armorClass === 'string') {
+      // Se for string como "12 + DEX", extrair o número base
+      baseAC = parseInt(armorClass.split('+')[0].trim());
+    } else {
+      baseAC = armorClass;
+    }
 
     switch (armorType) {
       case 'light':

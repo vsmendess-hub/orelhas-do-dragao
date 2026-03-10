@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Target, BookOpen } from 'lucide-react';
+import { Target, BookOpen, Sparkles, Swords } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface CharacterSkill {
@@ -11,9 +11,17 @@ interface CharacterSkill {
   expertise: boolean;
 }
 
+export interface CharacterFeature {
+  name: string;
+  description: string;
+  source: string;
+  page: number;
+  category: 'race' | 'class';
+}
+
 interface SkillsFeaturesTabsProps {
   skills: CharacterSkill[];
-  features: string[];
+  features: CharacterFeature[];
   modifiers: Record<string, number>;
   proficiencyBonus: number;
   abilityAbbreviations: Record<string, string>;
@@ -87,7 +95,11 @@ export function SkillsFeaturesTabs({
                       <div>
                         <p className="text-sm font-medium text-white">{skill.name}</p>
                         <p className="text-xs text-gray-400">
-                          {abilityAbbreviations[skill.attribute as keyof typeof abilityAbbreviations]}
+                          {
+                            abilityAbbreviations[
+                              skill.attribute as keyof typeof abilityAbbreviations
+                            ]
+                          }
                         </p>
                       </div>
                     </div>
@@ -102,13 +114,71 @@ export function SkillsFeaturesTabs({
         {activeTab === 'features' && (
           <div className="space-y-3">
             {features && features.length > 0 ? (
-              features.map((feature: string, index: number) => (
-                <div key={index} className="glass-card-light rounded-lg p-3 text-sm text-gray-300">
-                  {feature}
-                </div>
-              ))
+              <>
+                {/* Características de Raça */}
+                {features.some((f) => f.category === 'race') && (
+                  <div className="space-y-2">
+                    <h4 className="text-sm font-semibold text-purple-300 flex items-center gap-2">
+                      <Sparkles className="h-4 w-4" />
+                      Características de Raça
+                    </h4>
+                    {features
+                      .filter((f) => f.category === 'race')
+                      .map((feature, index) => (
+                        <div
+                          key={`race-${index}`}
+                          className="glass-card-light rounded-lg p-4 border-l-4 border-purple-500/50 hover:border-purple-500 transition-all"
+                        >
+                          <div className="flex items-start justify-between gap-2 mb-2">
+                            <h5 className="font-semibold text-white">{feature.name}</h5>
+                            <span className="text-xs text-gray-400 whitespace-nowrap">
+                              {feature.source} p.{feature.page}
+                            </span>
+                          </div>
+                          <p className="text-sm text-gray-300 leading-relaxed">
+                            {feature.description}
+                          </p>
+                        </div>
+                      ))}
+                  </div>
+                )}
+
+                {/* Características de Classe */}
+                {features.some((f) => f.category === 'class') && (
+                  <div className="space-y-2 mt-6">
+                    <h4 className="text-sm font-semibold text-blue-300 flex items-center gap-2">
+                      <Swords className="h-4 w-4" />
+                      Características de Classe
+                    </h4>
+                    {features
+                      .filter((f) => f.category === 'class')
+                      .map((feature, index) => (
+                        <div
+                          key={`class-${index}`}
+                          className="glass-card-light rounded-lg p-4 border-l-4 border-blue-500/50 hover:border-blue-500 transition-all"
+                        >
+                          <div className="flex items-start justify-between gap-2 mb-2">
+                            <h5 className="font-semibold text-white">{feature.name}</h5>
+                            <span className="text-xs text-gray-400 whitespace-nowrap">
+                              {feature.source} p.{feature.page}
+                            </span>
+                          </div>
+                          <p className="text-sm text-gray-300 leading-relaxed">
+                            {feature.description}
+                          </p>
+                        </div>
+                      ))}
+                  </div>
+                )}
+              </>
             ) : (
-              <p className="text-center text-gray-400 py-8">Nenhuma característica especial</p>
+              <div className="text-center py-12">
+                <BookOpen className="mx-auto h-12 w-12 text-gray-400 mb-3" />
+                <p className="text-gray-400">Nenhuma característica especial</p>
+                <p className="text-xs text-gray-500 mt-2">
+                  As características serão preenchidas automaticamente
+                </p>
+              </div>
             )}
           </div>
         )}
