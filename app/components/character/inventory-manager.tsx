@@ -45,13 +45,18 @@ export function InventoryManager({
   attributes,
 }: InventoryManagerProps) {
   const [items, setItems] = useState<Item[]>(initialItems);
-  const [currency] = useState<Currency>(initialCurrency);
+  const [currency, setCurrency] = useState<Currency>(initialCurrency);
   const [isItemDialogOpen, setIsItemDialogOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<Item | null>(null);
 
   // Calcular modificadores de atributos
   const strModifier = calculateModifier(attributes.str);
   const dexMod = calculateModifier(attributes.dex);
+
+  // Função para atualizar moedas (será passada ao CurrencyManager)
+  const handleCurrencyUpdate = (newCurrency: Currency) => {
+    setCurrency(newCurrency);
+  };
 
   // Salvar itens no Supabase
   const saveItems = async (newItems: Item[]) => {
@@ -271,7 +276,11 @@ export function InventoryManager({
         </TabsContent>
 
         <TabsContent value="currency" className="space-y-4">
-          <CurrencyManager characterId={characterId} currency={currency} />
+          <CurrencyManager
+            characterId={characterId}
+            currency={currency}
+            onCurrencyUpdate={handleCurrencyUpdate}
+          />
         </TabsContent>
       </Tabs>
 

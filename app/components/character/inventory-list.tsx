@@ -11,6 +11,7 @@ import {
   calculateInventoryWeight,
   calculateCarryingCapacity,
   getEncumbranceStatus,
+  calculateCurrencyWeight,
   type Currency,
 } from '@/lib/data/items';
 
@@ -38,7 +39,9 @@ export function InventoryList({
   const [sortBy, setSortBy] = useState<'name' | 'weight' | 'value'>('name');
 
   // Calcular peso e capacidade
-  const totalWeight = calculateInventoryWeight(items, currency);
+  const itemsWeight = items.reduce((total, item) => total + item.weight * item.quantity, 0);
+  const currencyWeight = calculateCurrencyWeight(currency); // Peso apenas das moedas
+  const totalWeight = itemsWeight + currencyWeight;
   const capacity = calculateCarryingCapacity(strengthScore);
   const encumbrance = getEncumbranceStatus(totalWeight, capacity);
   const weightPercentage = (totalWeight / capacity) * 100;
@@ -99,7 +102,10 @@ export function InventoryList({
               Inventário
             </h3>
             <p className="text-sm text-gray-400 mt-1">
-              {items.length} itens • {totalWeight.toFixed(1)} lb
+              {items.length} itens • {itemsWeight.toFixed(1)} lb
+              {currencyWeight > 0 && (
+                <span className="text-yellow-400"> + {currencyWeight.toFixed(1)} lb (moedas)</span>
+              )}
             </p>
           </div>
           <Button onClick={onAddItem} size="sm" className="tab-purple">
@@ -131,6 +137,25 @@ export function InventoryList({
               style={{ width: `${Math.min(100, weightPercentage)}%` }}
             />
           </div>
+
+          {/* Breakdown do peso */}
+          <div className="rounded-lg bg-white/5 p-2 text-xs text-gray-400">
+            <div className="flex items-center justify-between">
+              <span>Equipamento:</span>
+              <span>{itemsWeight.toFixed(1)} lb</span>
+            </div>
+            {currencyWeight > 0 && (
+              <div className="flex items-center justify-between">
+                <span>Moedas:</span>
+                <span className="text-yellow-400">+{currencyWeight.toFixed(1)} lb</span>
+              </div>
+            )}
+            <div className="mt-1 flex items-center justify-between border-t border-white/10 pt-1 font-medium text-white">
+              <span>Total:</span>
+              <span>{totalWeight.toFixed(1)} lb</span>
+            </div>
+          </div>
+
           {encumbrance === 'encumbered' && (
             <p className="text-xs text-orange-400">
               ⚠️ Sobrecarregado: Velocidade reduzida em 10 pés
@@ -247,9 +272,7 @@ export function InventoryList({
                             </span>
                           )}
                         </h4>
-                        <p className="text-xs text-gray-400">
-                          {CATEGORY_NAMES[item.category]}
-                        </p>
+                        <p className="text-xs text-gray-400">{CATEGORY_NAMES[item.category]}</p>
                       </div>
                     </div>
                     {item.description && (

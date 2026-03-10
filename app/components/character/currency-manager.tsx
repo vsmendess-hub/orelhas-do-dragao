@@ -15,11 +15,16 @@ import {
 interface CurrencyManagerProps {
   characterId: string;
   currency: Currency;
+  onCurrencyUpdate?: (currency: Currency) => void;
 }
 
 type CurrencyType = keyof Currency;
 
-export function CurrencyManager({ characterId, currency: initialCurrency }: CurrencyManagerProps) {
+export function CurrencyManager({
+  characterId,
+  currency: initialCurrency,
+  onCurrencyUpdate,
+}: CurrencyManagerProps) {
   const [currency, setCurrency] = useState<Currency>(initialCurrency);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -43,6 +48,11 @@ export function CurrencyManager({ characterId, currency: initialCurrency }: Curr
       if (updateError) throw updateError;
 
       setCurrency(newCurrency);
+
+      // Notificar o componente pai sobre a atualização
+      if (onCurrencyUpdate) {
+        onCurrencyUpdate(newCurrency);
+      }
     } catch (err) {
       console.error('Erro ao salvar moedas:', err);
       setError('Erro ao salvar alterações');
@@ -138,25 +148,32 @@ export function CurrencyManager({ characterId, currency: initialCurrency }: Curr
 
         {/* Totais */}
         <div className="rounded-lg glass-card-light p-4">
-          <div className="grid gap-2 text-sm md:grid-cols-2">
-            <div className="flex items-center justify-between">
-              <span className="text-gray-400">Valor total em ouro:</span>
-              <span className="font-bold text-yellow-400">
-                {totalGold.toFixed(2)} po
-              </span>
+          <div className="space-y-3">
+            <div className="grid gap-2 text-sm md:grid-cols-2">
+              <div className="flex items-center justify-between">
+                <span className="text-gray-400">Valor total em ouro:</span>
+                <span className="font-bold text-yellow-400">{totalGold.toFixed(2)} po</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-gray-400">Peso das moedas:</span>
+                <span className="font-medium text-white">{totalWeight.toFixed(2)} lb</span>
+              </div>
             </div>
-            <div className="flex items-center justify-between">
-              <span className="text-gray-400">Peso das moedas:</span>
-              <span className="font-medium text-white">{totalWeight.toFixed(2)} lb</span>
+
+            <div className="border-t border-white/10 pt-2">
+              <p className="text-xs text-gray-400">
+                💡 Dica: 50 moedas pesam 1 libra. O peso das moedas é somado ao peso do equipamento
+                para calcular a capacidade de carga total.
+              </p>
             </div>
           </div>
-
-          <p className="mt-2 text-xs text-gray-400">💡 Dica: 50 moedas pesam 1 libra</p>
         </div>
 
         {/* Conversão rápida */}
         <details className="rounded-lg border border-white/10 glass-card-light p-3">
-          <summary className="cursor-pointer text-sm font-medium text-white">📊 Tabela de Conversão</summary>
+          <summary className="cursor-pointer text-sm font-medium text-white">
+            📊 Tabela de Conversão
+          </summary>
           <div className="mt-3 space-y-1 text-xs text-gray-400">
             <p>• 1 pl = 10 po</p>
             <p>• 1 po = 1 po (base)</p>
