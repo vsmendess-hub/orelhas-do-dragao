@@ -68,32 +68,32 @@ export function SavingThrows({
         {savingThrows.map((save) => (
           <div
             key={save.attr}
-            className={`rounded-xl p-4 transition-all ${
+            className={`rounded-xl p-3 transition-all ${
               save.isProficient
                 ? 'bg-gradient-to-br from-blue-500/20 to-purple-500/20 border-2 border-blue-500/50 shadow-lg shadow-blue-500/20'
                 : 'glass-card-light border border-white/10'
             }`}
           >
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
+            <div className="flex items-start justify-between gap-2">
+              <div className="flex items-center gap-2 min-w-0">
                 {save.isProficient && (
-                  <div className="flex h-5 w-5 items-center justify-center rounded-full bg-blue-500 text-xs font-bold text-white">
+                  <div className="flex-shrink-0 flex h-5 w-5 items-center justify-center rounded-full bg-blue-500 text-xs font-bold text-white">
                     ✓
                   </div>
                 )}
-                <div>
+                <div className="min-w-0">
                   <p
-                    className={`text-xs font-medium uppercase tracking-wide ${
+                    className={`text-xs font-medium uppercase tracking-wide whitespace-nowrap ${
                       save.isProficient ? 'text-blue-300' : 'text-gray-400'
                     }`}
                   >
                     {save.abbreviation}
                   </p>
-                  <p className="text-xs text-gray-500">{save.name}</p>
+                  <p className="text-xs text-gray-500 truncate">{save.name}</p>
                 </div>
               </div>
               <p
-                className={`text-2xl font-bold ${
+                className={`text-2xl font-bold flex-shrink-0 ${
                   save.isProficient ? 'text-blue-300' : 'text-white'
                 }`}
               >
@@ -102,7 +102,7 @@ export function SavingThrows({
             </div>
 
             {save.isProficient && (
-              <div className="mt-2 text-xs text-blue-400">
+              <div className="mt-2 text-xs text-blue-400 whitespace-nowrap">
                 {formatModifier(save.modifier)} + {proficiencyBonus} (prof)
               </div>
             )}
