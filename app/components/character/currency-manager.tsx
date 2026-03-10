@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { Coins, Loader2 } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { Coins, Loader2, Save, Check } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -26,12 +26,46 @@ export function CurrencyManager({
   onCurrencyUpdate,
 }: CurrencyManagerProps) {
   const [currency, setCurrency] = useState<Currency>(initialCurrency);
+  const [pendingCurrency, setPendingCurrency] = useState<Currency>(initialCurrency);
   const [isSaving, setIsSaving] = useState(false);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [justSaved, setJustSaved] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Calcular totais
-  const totalGold = calculateTotalGold(currency);
-  const totalWeight = calculateCurrencyWeight(currency);
+  // Calcular totais (usar pendingCurrency para mostrar valores em tempo real)
+  const totalGold = calculateTotalGold(pendingCurrency);
+  const totalWeight = calculateCurrencyWeight(pendingCurrency);
+
+  // Limpar timeout anterior quando componente desmontar
+  useEffect(() => {
+    return () => {
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  // Auto-save com debounce (2 segundos após parar de digitar)
+  useEffect(() => {
+    if (!hasUnsavedChanges) return;
+
+    // Limpar timeout anterior
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current);
+    }
+
+    // Criar novo timeout
+    saveTimeoutRef.current = setTimeout(() => {
+      saveCurrency(pendingCurrency);
+    }, 2000); // 2 segundos
+
+    return () => {
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current);
+      }
+    };
+  }, [pendingCurrency, hasUnsavedChanges]);
 
   // Salvar moedas no Supabase
   const saveCurrency = async (newCurrency: Currency) => {
@@ -48,6 +82,11 @@ export function CurrencyManager({
       if (updateError) throw updateError;
 
       setCurrency(newCurrency);
+      setHasUnsavedChanges(false);
+      setJustSaved(true);
+
+      // Limpar indicador de "salvo" após 2 segundos
+      setTimeout(() => setJustSaved(false), 2000);
 
       // Notificar o componente pai sobre a atualização
       if (onCurrencyUpdate) {
@@ -61,18 +100,28 @@ export function CurrencyManager({
     }
   };
 
-  // Atualizar quantidade de uma moeda
+  // Atualizar quantidade de uma moeda (local, não salva ainda)
   const updateCurrency = (type: CurrencyType, value: number) => {
     const newValue = Math.max(0, value); // Não permitir valores negativos
-    const newCurrency = { ...currency, [type]: newValue };
+    const newCurrency = { ...pendingCurrency, [type]: newValue };
+    setPendingCurrency(newCurrency);
+    setHasUnsavedChanges(true);
+    setJustSaved(false);
+  };
+
+  // Ajuste rápido (+/-) - salva imediatamente
+  const adjustCurrency = (type: CurrencyType, delta: number) => {
+    const newValue = Math.max(0, pendingCurrency[type] + delta);
+    const newCurrency = { ...pendingCurrency, [type]: newValue };
+    setPendingCurrency(newCurrency);
     saveCurrency(newCurrency);
   };
 
-  // Ajuste rápido (+/-)
-  const adjustCurrency = (type: CurrencyType, delta: number) => {
-    const newValue = Math.max(0, currency[type] + delta);
-    const newCurrency = { ...currency, [type]: newValue };
-    saveCurrency(newCurrency);
+  // Salvar manualmente
+  const handleManualSave = () => {
+    if (hasUnsavedChanges) {
+      saveCurrency(pendingCurrency);
+    }
   };
 
   return (
@@ -84,9 +133,24 @@ export function CurrencyManager({
               <Coins className="h-5 w-5 text-yellow-500" />
               Moedas
             </h3>
-            <p className="text-sm text-gray-400 mt-1">Gerencie suas moedas (po, pp, pe, pc, pl)</p>
+            <p className="text-sm text-gray-400 mt-1">
+              Gerencie suas moedas (po, pp, pe, pc, pl)
+              {hasUnsavedChanges && (
+                <span className="ml-2 text-orange-400">• Alterações não salvas</span>
+              )}
+              {justSaved && <span className="ml-2 text-green-400">• ✓ Salvo</span>}
+            </p>
           </div>
-          {isSaving && <Loader2 className="h-4 w-4 animate-spin text-purple-400" />}
+          <div className="flex items-center gap-2">
+            {isSaving && <Loader2 className="h-4 w-4 animate-spin text-purple-400" />}
+            {justSaved && !isSaving && <Check className="h-4 w-4 text-green-400" />}
+            {hasUnsavedChanges && !isSaving && (
+              <Button onClick={handleManualSave} size="sm" className="tab-purple">
+                <Save className="mr-2 h-4 w-4" />
+                Salvar Agora
+              </Button>
+            )}
+          </div>
         </div>
       </div>
       <div className="space-y-6">
@@ -94,7 +158,7 @@ export function CurrencyManager({
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {(Object.keys(CURRENCY_NAMES) as CurrencyType[]).map((type) => {
             const info = CURRENCY_NAMES[type];
-            const value = currency[type];
+            const value = pendingCurrency[type];
 
             // Cores por tipo de moeda
             const colors = {
@@ -130,6 +194,7 @@ export function CurrencyManager({
                     onChange={(e) => updateCurrency(type, parseInt(e.target.value) || 0)}
                     disabled={isSaving}
                     className="text-center"
+                    placeholder="0"
                   />
 
                   <Button
@@ -160,10 +225,14 @@ export function CurrencyManager({
               </div>
             </div>
 
-            <div className="border-t border-white/10 pt-2">
+            <div className="border-t border-white/10 pt-2 space-y-1">
               <p className="text-xs text-gray-400">
                 💡 Dica: 50 moedas pesam 1 libra. O peso das moedas é somado ao peso do equipamento
                 para calcular a capacidade de carga total.
+              </p>
+              <p className="text-xs text-blue-400">
+                💾 As alterações são salvas automaticamente após 2 segundos. Use os botões +/- para
+                salvar instantaneamente.
               </p>
             </div>
           </div>
