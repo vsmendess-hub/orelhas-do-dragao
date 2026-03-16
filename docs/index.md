@@ -1,7 +1,7 @@
 # 📚 Índice de Documentação - Orelhas do Dragão
 
-**Versão:** 2.0.0
-**Última Atualização:** 9 de Março de 2026
+**Versão:** 2.1.0
+**Última Atualização:** 16 de Março de 2026
 
 ---
 
@@ -157,6 +157,19 @@ Migrações principais em `supabase/migrations/`:
 - `20260307000001_add_background_data.sql` - Dados de background
 - `20260309000000_add_rest_system_fields.sql` - Campos do sistema de descanso
 - `20260309000001_add_character_gameplay_fields.sql` - Campos de gameplay persistente
+- **`20260310000001_add_optional_features.sql`** - ⭐ **NEW v2.1.0** - Optional Features
+- **`20260310000002_add_spell_favorites.sql`** - ⭐ **NEW v2.1.0** - Spell Favorites
+
+### Migrações v2.1.0
+
+- **[MIGRATION_ADD_OPTIONAL_FEATURES.md](../MIGRATION_ADD_OPTIONAL_FEATURES.md)** - Guia de migração de Optional Features
+  - Como aplicar migration
+  - Estrutura de dados
+  - Verificação de sucesso
+- **[MIGRATION_SPELL_FAVORITES.md](../MIGRATION_SPELL_FAVORITES.md)** - Guia de migração de Spell Favorites
+  - Como aplicar migration
+  - Estrutura JSONB
+  - Comandos SQL
 
 ---
 
@@ -164,8 +177,9 @@ Migrações principais em `supabase/migrations/`:
 
 ```
 orelhas-do-dragao/
-├── docs/                          # Documentação técnica (NOVA)
+├── docs/                          # Documentação técnica
 │   ├── index.md                   # Este arquivo
+│   ├── CHANGELOG.md               # ⭐ NEW v2.1.0 - Log de mudanças
 │   ├── ARCHITECTURE.md            # Arquitetura do sistema
 │   ├── DATABASE.md                # Database e schema
 │   ├── COMPONENTS.md              # Componentes React
@@ -261,6 +275,42 @@ Para diagramas e fluxos detalhados, consulte:
 ---
 
 ## 🆕 Últimas Atualizações
+
+### 16 de Março de 2026 - v2.1.0 🎉
+
+#### ✨ Sistema de Magias Completo
+
+- ✅ Banco de dados com 35+ magias (cantrips até 9º círculo)
+- ✅ Diálogo de adicionar magias mobile-first
+- ✅ Sistema de favoritos de magias
+- ✅ Descrições completas e referências do PHB
+- ✅ Remoção de magias
+- ✅ Interface simplificada de spell slots
+
+#### ⚔️ Optional Features
+
+- ✅ Cálculo automático de bônus (Fighting Styles, Feats)
+- ✅ Integração com equipamentos
+- ✅ Recálculo automático ao equipar/desequipar
+- ✅ 2 novas migrations aplicadas
+
+#### 📏 Sistema Métrico
+
+- ✅ Conversão completa de pés para metros
+- ✅ Conversão completa de libras para kg
+- ✅ 32 arquivos atualizados
+
+#### 🎨 Editor de Atributos
+
+- ✅ Editor inline de atributos
+- ✅ Recálculo automático de stats
+- ✅ 3 novos componentes
+
+#### 📝 Documentação
+
+- ✅ [CHANGELOG.md](./CHANGELOG.md) - **NOVO** - Log completo de mudanças
+- ✅ Documentação técnica atualizada (v2.1.0)
+- ✅ Guias de migração criados
 
 ### 9 de Março de 2026 (Atualização 2)
 

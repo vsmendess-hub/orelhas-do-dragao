@@ -1,7 +1,7 @@
 # 🏗️ Arquitetura do Sistema - Orelhas do Dragão
 
-**Versão:** 2.0.0
-**Última Atualização:** 9 de Março de 2026
+**Versão:** 2.1.0
+**Última Atualização:** 16 de Março de 2026
 
 ---
 
@@ -154,8 +154,11 @@ App Router (Next.js 15)
 ```
 orelhas-do-dragao/
 ├── app/                    # Next.js App Router
+│   ├── actions/            # Server Actions (NEW v2.1.0)
+│   │   ├── recalculate-character-stats.ts
+│   │   └── recalculate-equipment-with-features.ts
 │   ├── api/                # API Routes
-│   ├── components/         # React Components
+│   ├── components/         # React Components (50 character components)
 │   ├── personagens/        # Character Routes
 │   ├── party/              # Party Management
 │   ├── library/            # Community Library
@@ -167,7 +170,9 @@ orelhas-do-dragao/
 │   ├── page.tsx            # Dashboard
 │   └── globals.css         # Global Styles
 ├── lib/                    # Shared Libraries
-│   ├── data/               # D&D 5e Data (36 files)
+│   ├── data/               # D&D 5e Data (38 files - NEW v2.1.0)
+│   │   ├── all-spells.ts   # (NEW) 35+ magias completas
+│   │   └── optional-features-effects.ts  # (NEW) Lógica de bônus
 │   ├── hooks/              # React Hooks
 │   ├── supabase/           # Database Integration
 │   └── utils.ts            # Utilities

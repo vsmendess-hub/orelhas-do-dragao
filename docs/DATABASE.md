@@ -1,8 +1,8 @@
 # 🗄️ Documentação de Database - Orelhas do Dragão
 
-**Versão:** 2.0.0
+**Versão:** 2.1.0
 **Database:** PostgreSQL (Supabase)
-**Última Atualização:** 9 de Março de 2026
+**Última Atualização:** 16 de Março de 2026
 
 ---
 
@@ -82,7 +82,9 @@ CREATE TABLE characters (
   proficiencies JSONB NOT NULL,       -- Proficiências
   equipment JSONB NOT NULL,           -- Equipamento/Inventário
   spells JSONB,                       -- Magias (nullable)
+  spell_favorites JSONB DEFAULT '[]', -- Magias favoritas (v2.1.0+)
   features JSONB NOT NULL,            -- Features de raça/classe
+  optional_features JSONB DEFAULT '[]', -- Optional Features (v2.1.0+)
 
   -- Estatísticas de Combate
   hit_points JSONB NOT NULL,          -- {current, max, temporary}
@@ -243,6 +245,44 @@ CREATE TABLE characters (
   "skin": "Morena",
   "distinguishingMarks": "Cicatriz no rosto"
 }
+```
+
+##### `optional_features` (JSONB Array - v2.1.0+)
+
+```json
+[
+  {
+    "id": "archery",
+    "name": "Archery",
+    "category": "Fighting Style",
+    "description": "+2 bônus em rolagens de ataque com armas de longo alcance",
+    "source": "Fighter"
+  },
+  {
+    "id": "great-weapon-master",
+    "name": "Great Weapon Master",
+    "category": "Feat",
+    "description": "Quando acerta, pode trocar -5 ataque por +10 dano",
+    "source": "Feat"
+  }
+]
+```
+
+##### `spell_favorites` (JSONB Array - v2.1.0+)
+
+```json
+[
+  {
+    "spellId": "fireball",
+    "spellName": "Bola de Fogo",
+    "spellLevel": 3
+  },
+  {
+    "spellId": "magic-missile",
+    "spellName": "Mísseis Mágicos",
+    "spellLevel": 1
+  }
+]
 ```
 
 ##### `background_data` (JSONB - v2.0+)
