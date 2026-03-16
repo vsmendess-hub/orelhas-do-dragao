@@ -78,7 +78,7 @@ export const COMPANION_TEMPLATES: Record<string, Partial<Companion>> = {
     ac: 12,
     speed: 10,
     abilities: { str: 2, dex: 14, con: 8, int: 2, wis: 12, cha: 6 },
-    features: ['Voo 50 pés', 'Mímica'],
+    features: ['Voo 15 metros', 'Mímica'],
   },
   cat: {
     name: 'Gato',
@@ -98,7 +98,7 @@ export const COMPANION_TEMPLATES: Record<string, Partial<Companion>> = {
     ac: 11,
     speed: 5,
     abilities: { str: 3, dex: 13, con: 8, int: 2, wis: 12, cha: 7 },
-    features: ['Voo 60 pés', 'Visão no Escuro', 'Sentidos Aguçados'],
+    features: ['Voo 18 metros', 'Visão no Escuro', 'Sentidos Aguçados'],
   },
 
   // Bestas
@@ -132,7 +132,7 @@ export const COMPANION_TEMPLATES: Record<string, Partial<Companion>> = {
     ac: 13,
     speed: 10,
     abilities: { str: 5, dex: 16, con: 8, int: 2, wis: 14, cha: 6 },
-    features: ['Voo 60 pés', 'Sentidos Aguçados', 'Garras +5 (1)'],
+    features: ['Voo 18 metros', 'Sentidos Aguçados', 'Garras +5 (1)'],
   },
 };
 

@@ -46,7 +46,7 @@ Biblioteca completa de características de raças e sub-raças.
 ```typescript
 {
   name: 'Visão no Escuro',
-  description: 'Você pode enxergar na penumbra a até 60 pés como se fosse luz plena, e no escuro como se fosse penumbra.',
+  description: 'Você pode enxergar na penumbra a até 18 metros como se fosse luz plena, e no escuro como se fosse penumbra.',
   source: 'PHB',
   page: 23,
 }
@@ -117,7 +117,7 @@ Componente atualizado para exibir características de forma organizada.
 ┌─────────────────────────────────────────────────┐
 │ 🟣 Visão no Escuro              PHB p.23       │
 │                                                  │
-│ Você pode enxergar na penumbra a até 60 pés    │
+│ Você pode enxergar na penumbra a até 18 metros    │
 │ como se fosse luz plena...                      │
 └─────────────────────────────────────────────────┘
 ```

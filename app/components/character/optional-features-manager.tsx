@@ -31,6 +31,7 @@ import {
   getFeatureById,
   CATEGORY_LABELS,
 } from '@/lib/data/optional-features';
+import { recalculateEquipmentWithFeatures } from '@/app/actions/recalculate-equipment-with-features';
 
 interface OptionalFeaturesManagerProps {
   characterId: string;
@@ -70,12 +71,25 @@ export function OptionalFeaturesManager({
         .update({ optional_features: newFeatures })
         .eq('id', characterId);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase error:', error);
+        throw error;
+      }
 
       setFeatures(newFeatures);
+
+      // Recalcular equipamento com os novos bônus de features
+      const featureIds = newFeatures.map((f) => f.featureId);
+      await recalculateEquipmentWithFeatures({
+        characterId,
+        activeFeatureIds: featureIds,
+      });
     } catch (err) {
       console.error('Erro ao salvar optional features:', err);
-      alert('Erro ao salvar. Tente novamente.');
+      const errorMessage = err instanceof Error ? err.message : 'Erro desconhecido';
+      alert(
+        `Erro ao salvar: ${errorMessage}\n\nO campo 'optional_features' precisa ser adicionado ao banco de dados. Veja o arquivo MIGRATION_ADD_OPTIONAL_FEATURES.md`
+      );
     } finally {
       setIsSaving(false);
     }
@@ -143,196 +157,195 @@ export function OptionalFeaturesManager({
 
       {/* Features do Personagem */}
       {features.length > 0 ? (
-          <div className="space-y-4">
-            {Object.entries(featuresByCategory).map(([category, categoryFeatures]) => (
-              <div key={category}>
-                <Label className="text-sm font-semibold text-white">
-                  {CATEGORY_LABELS[category as FeatureCategory]}
-                </Label>
-                <div className="mt-2 space-y-2">
-                  {categoryFeatures.map((feature) => {
-                    const featureDetails = getFeatureById(feature.featureId);
-                    if (!featureDetails) return null;
+        <div className="space-y-4">
+          {Object.entries(featuresByCategory).map(([category, categoryFeatures]) => (
+            <div key={category}>
+              <Label className="text-sm font-semibold text-white">
+                {CATEGORY_LABELS[category as FeatureCategory]}
+              </Label>
+              <div className="mt-2 space-y-2">
+                {categoryFeatures.map((feature) => {
+                  const featureDetails = getFeatureById(feature.featureId);
+                  if (!featureDetails) return null;
 
-                    return (
-                      <div key={feature.featureId} className="glass-card rounded-xl p-4 border-2 border-white/10">
-                        <div className="flex items-start justify-between gap-2">
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2 flex-wrap">
-                              <p className="font-semibold text-white">{feature.featureName}</p>
-                              <Badge variant="outline" className="text-xs">
-                                Nível {feature.level}
-                              </Badge>
-                              <Badge variant="outline" className="text-xs">
-                                {featureDetails.source}
-                              </Badge>
-                            </div>
-                            {featureDetails.prerequisites && (
-                              <p className="mt-1 text-xs text-gray-400">
-                                Pré-requisito: {featureDetails.prerequisites}
-                              </p>
-                            )}
-                            <p className="mt-1 text-sm text-gray-400">
-                              {featureDetails.description}
+                  return (
+                    <div
+                      key={feature.featureId}
+                      className="glass-card rounded-xl p-4 border-2 border-white/10"
+                    >
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <p className="font-semibold text-white">{feature.featureName}</p>
+                            <Badge variant="outline" className="text-xs">
+                              Nível {feature.level}
+                            </Badge>
+                            <Badge variant="outline" className="text-xs">
+                              {featureDetails.source}
+                            </Badge>
+                          </div>
+                          {featureDetails.prerequisites && (
+                            <p className="mt-1 text-xs text-gray-400">
+                              Pré-requisito: {featureDetails.prerequisites}
                             </p>
-                          </div>
-                          <div className="flex gap-1">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => setViewingFeature(featureDetails)}
-                            >
-                              <Info className="h-4 w-4" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => handleRemoveFeature(feature.featureId)}
-                              disabled={isSaving}
-                              className="text-destructive hover:text-destructive"
-                            >
-                              <X className="h-4 w-4" />
-                            </Button>
-                          </div>
+                          )}
+                          <p className="mt-1 text-sm text-gray-400">{featureDetails.description}</p>
+                        </div>
+                        <div className="flex gap-1">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setViewingFeature(featureDetails)}
+                          >
+                            <Info className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleRemoveFeature(feature.featureId)}
+                            disabled={isSaving}
+                            className="text-destructive hover:text-destructive"
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
                         </div>
                       </div>
-                    );
-                  })}
-                </div>
+                    </div>
+                  );
+                })}
               </div>
-            ))}
-          </div>
-        ) : (
-          <div className="glass-card-light rounded-lg border border-dashed border-purple-500/50 p-8 text-center">
-            <Sparkles className="mx-auto h-12 w-12 text-gray-400" />
-            <p className="mt-2 text-sm font-medium text-white">Nenhuma optional feature ainda</p>
-            <p className="text-xs text-gray-400">
-              Adicione Fighting Styles, Invocações e outras features
-            </p>
-          </div>
-        )}
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="glass-card-light rounded-lg border border-dashed border-purple-500/50 p-8 text-center">
+          <Sparkles className="mx-auto h-12 w-12 text-gray-400" />
+          <p className="mt-2 text-sm font-medium text-white">Nenhuma optional feature ainda</p>
+          <p className="text-xs text-gray-400">
+            Adicione Fighting Styles, Invocações e outras features
+          </p>
+        </div>
+      )}
 
-        {/* Info */}
-        {availableFeatures.length === 0 && (
-          <div className="glass-card-light rounded-lg border border-white/10 p-3 text-sm text-gray-400">
-            Sua classe ({characterClass}) não tem optional features disponíveis neste sistema.
-          </div>
-        )}
+      {/* Info */}
+      {availableFeatures.length === 0 && (
+        <div className="glass-card-light rounded-lg border border-white/10 p-3 text-sm text-gray-400">
+          Sua classe ({characterClass}) não tem optional features disponíveis neste sistema.
+        </div>
+      )}
 
-        {/* Botão Adicionar */}
-        {availableFeatures.length > 0 && (
-          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-            <DialogTrigger asChild>
-              <Button className="w-full tab-purple" disabled={isSaving}>
-                <Plus className="mr-2 h-4 w-4" />
-                Adicionar Optional Feature
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
-              <DialogHeader>
-                <DialogTitle>Adicionar Optional Feature</DialogTitle>
-                <DialogDescription>
-                  Escolha uma feature opcional disponível para {characterClass}
-                </DialogDescription>
-              </DialogHeader>
+      {/* Botão Adicionar */}
+      {availableFeatures.length > 0 && (
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <DialogTrigger asChild>
+            <Button className="w-full tab-purple" disabled={isSaving}>
+              <Plus className="mr-2 h-4 w-4" />
+              Adicionar Optional Feature
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Adicionar Optional Feature</DialogTitle>
+              <DialogDescription>
+                Escolha uma feature opcional disponível para {characterClass}
+              </DialogDescription>
+            </DialogHeader>
 
-              <div className="space-y-4">
-                {/* Filtro */}
-                <div className="space-y-2">
-                  <Label htmlFor="filter">Filtrar por Categoria</Label>
-                  <Select
-                    value={filterCategory}
-                    onValueChange={(v) => setFilterCategory(v as FeatureCategory | 'all')}
-                  >
-                    <SelectTrigger id="filter">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">Todas</SelectItem>
-                      {Object.entries(CATEGORY_LABELS).map(([key, label]) => (
-                        <SelectItem key={key} value={key}>
-                          {label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+            <div className="space-y-4">
+              {/* Filtro */}
+              <div className="space-y-2">
+                <Label htmlFor="filter">Filtrar por Categoria</Label>
+                <Select
+                  value={filterCategory}
+                  onValueChange={(v) => setFilterCategory(v as FeatureCategory | 'all')}
+                >
+                  <SelectTrigger id="filter">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Todas</SelectItem>
+                    {Object.entries(CATEGORY_LABELS).map(([key, label]) => (
+                      <SelectItem key={key} value={key}>
+                        {label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
 
-                {/* Lista de Features */}
-                <div className="space-y-2">
-                  <Label>Features Disponíveis</Label>
-                  <div className="max-h-[400px] space-y-2 overflow-y-auto rounded-md border p-2">
-                    {availableFeaturesFiltered.length > 0 ? (
-                      availableFeaturesFiltered.map((feature) => {
-                        const alreadyTaken = takenFeatureIds.includes(feature.id);
-                        const check = meetsPrerequisites(feature, characterLevel);
+              {/* Lista de Features */}
+              <div className="space-y-2">
+                <Label>Features Disponíveis</Label>
+                <div className="max-h-[400px] space-y-2 overflow-y-auto rounded-md border p-2">
+                  {availableFeaturesFiltered.length > 0 ? (
+                    availableFeaturesFiltered.map((feature) => {
+                      const alreadyTaken = takenFeatureIds.includes(feature.id);
+                      const check = meetsPrerequisites(feature, characterLevel);
 
-                        return (
-                          <div
-                            key={feature.id}
-                            className={`cursor-pointer rounded-md border-2 p-3 transition-all ${
-                              alreadyTaken
-                                ? 'opacity-50 cursor-not-allowed'
-                                : selectedFeatureId === feature.id
-                                  ? 'border-2 border-purple-500 bg-purple-500/10'
-                                  : 'border-white/10 hover:border-purple-500/50 hover:scale-[1.01]'
-                            }`}
-                            onClick={() => !alreadyTaken && setSelectedFeatureId(feature.id)}
-                          >
-                            <div className="flex items-start justify-between">
-                              <div className="flex-1">
-                                <div className="flex items-center gap-2 flex-wrap">
-                                  <p className="font-semibold text-white">{feature.name}</p>
-                                  <Badge variant="outline" className="text-xs">
-                                    {CATEGORY_LABELS[feature.category]}
+                      return (
+                        <div
+                          key={feature.id}
+                          className={`cursor-pointer rounded-md border-2 p-3 transition-all ${
+                            alreadyTaken
+                              ? 'opacity-50 cursor-not-allowed'
+                              : selectedFeatureId === feature.id
+                                ? 'border-2 border-purple-500 bg-purple-500/10'
+                                : 'border-white/10 hover:border-purple-500/50 hover:scale-[1.01]'
+                          }`}
+                          onClick={() => !alreadyTaken && setSelectedFeatureId(feature.id)}
+                        >
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2 flex-wrap">
+                                <p className="font-semibold text-white">{feature.name}</p>
+                                <Badge variant="outline" className="text-xs">
+                                  {CATEGORY_LABELS[feature.category]}
+                                </Badge>
+                                <Badge variant="outline" className="text-xs">
+                                  Nv. {feature.level}+
+                                </Badge>
+                                {alreadyTaken && (
+                                  <Badge variant="outline" className="bg-green-500/10 text-xs">
+                                    Já possui
                                   </Badge>
-                                  <Badge variant="outline" className="text-xs">
-                                    Nv. {feature.level}+
-                                  </Badge>
-                                  {alreadyTaken && (
-                                    <Badge variant="outline" className="bg-green-500/10 text-xs">
-                                      Já possui
-                                    </Badge>
-                                  )}
-                                </div>
-                                {feature.prerequisites && (
-                                  <p className="mt-1 text-xs text-gray-400">
-                                    Pré-requisito: {feature.prerequisites}
-                                  </p>
-                                )}
-                                <p className="mt-1 text-sm text-gray-400">
-                                  {feature.description}
-                                </p>
-                                {!check.meets && (
-                                  <p className="mt-1 text-xs text-red-400">{check.reason}</p>
                                 )}
                               </div>
-                              <Badge variant="outline" className="ml-2 text-xs">
-                                {feature.source}
-                              </Badge>
+                              {feature.prerequisites && (
+                                <p className="mt-1 text-xs text-gray-400">
+                                  Pré-requisito: {feature.prerequisites}
+                                </p>
+                              )}
+                              <p className="mt-1 text-sm text-gray-400">{feature.description}</p>
+                              {!check.meets && (
+                                <p className="mt-1 text-xs text-red-400">{check.reason}</p>
+                              )}
                             </div>
+                            <Badge variant="outline" className="ml-2 text-xs">
+                              {feature.source}
+                            </Badge>
                           </div>
-                        );
-                      })
-                    ) : (
-                      <p className="py-8 text-center text-sm text-gray-400">
-                        Nenhuma feature encontrada nesta categoria
-                      </p>
-                    )}
-                  </div>
+                        </div>
+                      );
+                    })
+                  ) : (
+                    <p className="py-8 text-center text-sm text-gray-400">
+                      Nenhuma feature encontrada nesta categoria
+                    </p>
+                  )}
                 </div>
-
-                <Button
-                  onClick={handleAddFeature}
-                  disabled={!selectedFeatureId || isSaving}
-                  className="w-full tab-purple"
-                >
-                  {isSaving ? 'Salvando...' : 'Adicionar Feature'}
-                </Button>
               </div>
-            </DialogContent>
-          </Dialog>
-        )}
+
+              <Button
+                onClick={handleAddFeature}
+                disabled={!selectedFeatureId || isSaving}
+                className="w-full tab-purple"
+              >
+                {isSaving ? 'Salvando...' : 'Adicionar Feature'}
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
 
       {/* Dialog de Visualização */}
       {viewingFeature && (

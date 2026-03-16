@@ -20,7 +20,7 @@ export const EMPTY_CLASS_RESOURCES: ClassResource[] = [];
  * Recursos padrão por classe e nível
  */
 export const CLASS_RESOURCE_TEMPLATES: Record<string, (level: number) => ClassResource[]> = {
-  Monk: (level: number) => [
+  Monge: (level: number) => [
     {
       id: 'ki',
       name: 'Pontos de Ki',
@@ -30,7 +30,7 @@ export const CLASS_RESOURCE_TEMPLATES: Record<string, (level: number) => ClassRe
       description: 'Usados para habilidades de monge',
     },
   ],
-  Barbarian: (level: number) => [
+  Bárbaro: (level: number) => [
     {
       id: 'rage',
       name: 'Fúria',
@@ -41,7 +41,7 @@ export const CLASS_RESOURCE_TEMPLATES: Record<string, (level: number) => ClassRe
       description: 'Ativa fúria bárbara',
     },
   ],
-  Sorcerer: (level: number) => [
+  Feiticeiro: (level: number) => [
     {
       id: 'sorcery_points',
       name: 'Pontos de Feitiçaria',
@@ -51,7 +51,7 @@ export const CLASS_RESOURCE_TEMPLATES: Record<string, (level: number) => ClassRe
       description: 'Metamagia e conversão de spell slots',
     },
   ],
-  Warlock: (level: number) => {
+  Bruxo: (level: number) => {
     const slots = level < 2 ? 1 : level < 11 ? 2 : level < 17 ? 3 : 4;
     const slotLevel = level < 3 ? 1 : level < 5 ? 2 : level < 7 ? 3 : level < 9 ? 4 : 5;
 
@@ -66,7 +66,7 @@ export const CLASS_RESOURCE_TEMPLATES: Record<string, (level: number) => ClassRe
       },
     ];
   },
-  Cleric: (level: number) => [
+  Clérigo: (level: number) => [
     {
       id: 'channel_divinity',
       name: 'Canalizar Divindade',
@@ -76,7 +76,7 @@ export const CLASS_RESOURCE_TEMPLATES: Record<string, (level: number) => ClassRe
       description: 'Habilidades de canal divino',
     },
   ],
-  Druid: (level: number) => [
+  Druida: (level: number) => [
     {
       id: 'wild_shape',
       name: 'Forma Selvagem',
@@ -86,7 +86,7 @@ export const CLASS_RESOURCE_TEMPLATES: Record<string, (level: number) => ClassRe
       description: 'Transformação em animais',
     },
   ],
-  Fighter: (level: number) => {
+  Guerreiro: (level: number) => {
     const resources: ClassResource[] = [];
 
     if (level >= 2) {
@@ -113,7 +113,7 @@ export const CLASS_RESOURCE_TEMPLATES: Record<string, (level: number) => ClassRe
 
     return resources;
   },
-  Bard: (level: number) => [
+  Bardo: (level: number) => [
     {
       id: 'bardic_inspiration',
       name: 'Inspiração Bárdica',
@@ -123,7 +123,7 @@ export const CLASS_RESOURCE_TEMPLATES: Record<string, (level: number) => ClassRe
       description: 'Concede bônus a aliados',
     },
   ],
-  Paladin: (level: number) => [
+  Paladino: (level: number) => [
     {
       id: 'lay_on_hands',
       name: 'Cura pelas Mãos',
@@ -133,13 +133,13 @@ export const CLASS_RESOURCE_TEMPLATES: Record<string, (level: number) => ClassRe
       description: 'Pool de cura (HP total)',
     },
   ],
-  Ranger: () => {
+  Patrulheiro: () => {
     // Ranger não tem recursos padrão nas regras base
     // Mas algumas subclasses podem ter
     return [];
   },
-  Rogue: () => [],
-  Wizard: (level: number) => {
+  Ladino: () => [],
+  Mago: (level: number) => {
     if (level >= 18) {
       return [
         {

@@ -1,7 +1,18 @@
 'use client';
 
-import { useState } from 'react';
-import { Heart, Plus, Minus, Loader2, Moon, Sun, Dices, Sparkles, TrendingUp, AlertCircle } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import {
+  Heart,
+  Plus,
+  Minus,
+  Loader2,
+  Moon,
+  Sun,
+  Dices,
+  Sparkles,
+  TrendingUp,
+  AlertCircle,
+} from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -68,6 +79,11 @@ export function HPManager({
   const [hitDiceToSpend, setHitDiceToSpend] = useState('1');
   const [isProcessing, setIsProcessing] = useState(false);
   const [restResult, setRestResult] = useState<RestResult | null>(null);
+
+  // Sincronizar estado local quando props mudarem (ex: após editar atributos)
+  useEffect(() => {
+    setHitPoints(initialHitPoints);
+  }, [initialHitPoints]);
 
   const availableHitDice = calculateAvailableHitDice(characterLevel, hitDiceUsed);
   const shortRestCheck = canTakeShortRest(hitPoints.current);
@@ -262,7 +278,9 @@ export function HPManager({
       }, 3000);
     } catch (err) {
       console.error('Erro ao processar short rest:', err);
-      setError(`Erro ao processar descanso curto: ${err instanceof Error ? err.message : 'Erro desconhecido'}`);
+      setError(
+        `Erro ao processar descanso curto: ${err instanceof Error ? err.message : 'Erro desconhecido'}`
+      );
     } finally {
       setIsProcessing(false);
     }
@@ -342,7 +360,9 @@ export function HPManager({
       }, 3000);
     } catch (err) {
       console.error('Erro ao processar long rest:', err);
-      setError(`Erro ao processar descanso longo: ${err instanceof Error ? err.message : 'Erro desconhecido'}`);
+      setError(
+        `Erro ao processar descanso longo: ${err instanceof Error ? err.message : 'Erro desconhecido'}`
+      );
     } finally {
       setIsProcessing(false);
     }
@@ -593,9 +613,7 @@ export function HPManager({
                   <div className="space-y-4">
                     {/* Benefits */}
                     <div className="rounded-lg glass-card-light border border-blue-500/30 p-4">
-                      <p className="font-medium text-white">
-                        Benefícios do Descanso Longo:
-                      </p>
+                      <p className="font-medium text-white">Benefícios do Descanso Longo:</p>
                       <ul className="mt-2 space-y-1 text-sm text-gray-300">
                         <li className="flex items-center gap-2">
                           <Heart className="h-4 w-4" />
@@ -622,7 +640,11 @@ export function HPManager({
                       </ul>
                     </div>
 
-                    <Button onClick={handleLongRest} disabled={isProcessing} className="w-full tab-purple">
+                    <Button
+                      onClick={handleLongRest}
+                      disabled={isProcessing}
+                      className="w-full tab-purple"
+                    >
                       {isProcessing ? 'Descansando...' : 'Fazer Descanso Longo'}
                     </Button>
                   </div>

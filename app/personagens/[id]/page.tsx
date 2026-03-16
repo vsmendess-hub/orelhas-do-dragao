@@ -10,7 +10,6 @@ import {
   Wand2,
   Users,
   AlertCircle,
-  Swords,
   BookOpen,
 } from 'lucide-react';
 import { ThemeToggle } from '@/app/components/theme-toggle';
@@ -46,6 +45,7 @@ import { getAllCharacterFeatures } from '@/lib/data/character-features';
 import { getAllProficiencies } from '@/lib/data/proficiencies';
 import { SavingThrows } from '@/app/components/character/saving-throws';
 import { PassivePerception } from '@/app/components/character/passive-perception';
+import { AttributesSection } from '@/app/components/character/attributes-section';
 
 const ABILITY_ABBREVIATIONS = {
   str: 'FOR',
@@ -206,28 +206,6 @@ export default async function CharacterPage({ params }: PageProps) {
               variant="ghost"
               size="icon"
               className="text-white hover:bg-white/10"
-              title="Combate"
-            >
-              <Link href={`/personagens/${id}/combate`}>
-                <Swords className="h-5 w-5" />
-              </Link>
-            </Button>
-            <Button
-              asChild
-              variant="ghost"
-              size="icon"
-              className="text-white hover:bg-white/10"
-              title="Dados"
-            >
-              <Link href={`/personagens/${id}/dados`}>
-                <Dices className="h-5 w-5" />
-              </Link>
-            </Button>
-            <Button
-              asChild
-              variant="ghost"
-              size="icon"
-              className="text-white hover:bg-white/10"
               title="Magias"
             >
               <Link href={`/personagens/${id}/magias`}>
@@ -335,24 +313,17 @@ export default async function CharacterPage({ params }: PageProps) {
               </div>
 
               {/* Attributes Section */}
-              <div className="space-y-3">
-                <h3 className="text-lg font-semibold text-white">Atributos</h3>
-                <div className="grid grid-cols-2 gap-4">
-                  {(['str', 'dex', 'con', 'int', 'wis', 'cha'] as const).map((attr) => (
-                    <div key={attr} className="attribute-card">
-                      <p className="text-xs font-medium text-gray-400 uppercase tracking-wide">
-                        {ABILITY_ABBREVIATIONS[attr]}
-                      </p>
-                      <p className="mt-2 text-3xl font-bold text-white">
-                        {character.attributes[attr]}
-                      </p>
-                      <p className="text-sm text-purple-300 font-semibold">
-                        {formatModifier(modifiers[attr])}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              </div>
+              <AttributesSection
+                characterId={id}
+                attributes={character.attributes}
+                modifiers={modifiers}
+                currentHP={character.hit_points}
+                characterLevel={character.level}
+                proficiencyBonus={character.proficiency_bonus}
+                weaponProficiencies={characterProficiencies.weapons}
+                armorProficiencies={characterProficiencies.armor}
+                feats={characterFeats}
+              />
 
               {/* Proficiência e Deslocamento */}
               <div className="space-y-3 mt-6">
@@ -564,7 +535,12 @@ export default async function CharacterPage({ params }: PageProps) {
             )}
 
             {/* Class Resources */}
-            <ClassResourcesManager characterId={id} initialResources={classResources} />
+            <ClassResourcesManager
+              characterId={id}
+              initialResources={classResources}
+              characterClass={character.class}
+              characterLevel={character.level}
+            />
 
             {/* Multiclass */}
             <MulticlassManager
@@ -645,6 +621,7 @@ export default async function CharacterPage({ params }: PageProps) {
             weaponProficiencies={characterProficiencies.weapons}
             armorProficiencies={characterProficiencies.armor}
             attributes={character.attributes}
+            optionalFeatures={optionalFeatures}
           />
         </div>
       </main>

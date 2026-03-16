@@ -50,7 +50,6 @@ export function FeatsManager({
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [selectedFeatId, setSelectedFeatId] = useState('');
-  const [selectedLevel, setSelectedLevel] = useState(currentLevel.toString());
   const [searchQuery, setSearchQuery] = useState('');
   const [viewingFeat, setViewingFeat] = useState<Feat | null>(null);
 
@@ -94,7 +93,7 @@ export function FeatsManager({
     const newFeat: CharacterFeat = {
       featId: feat.id,
       featName: feat.name,
-      level: parseInt(selectedLevel),
+      level: currentLevel, // Usar o nível atual do personagem
     };
 
     const updatedFeats = [...feats, newFeat];
@@ -139,12 +138,7 @@ export function FeatsManager({
                 >
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex-1">
-                      <div className="flex items-center gap-2">
-                        <h4 className="text-base font-semibold text-white">{feat.featName}</h4>
-                        <Badge variant="outline" className="text-xs">
-                          Nível {feat.level}
-                        </Badge>
-                      </div>
+                      <h4 className="text-base font-semibold text-white">{feat.featName}</h4>
                       {featDetails.prerequisites && (
                         <p className="mt-1 text-xs text-gray-400">
                           Pré-requisito: {featDetails.prerequisites}
@@ -227,23 +221,6 @@ export function FeatsManager({
                     className="pl-9"
                   />
                 </div>
-              </div>
-
-              {/* Nível */}
-              <div className="space-y-2">
-                <Label htmlFor="level">Nível Obtido</Label>
-                <Select value={selectedLevel} onValueChange={setSelectedLevel}>
-                  <SelectTrigger id="level">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {availableLevels.map((lvl) => (
-                      <SelectItem key={lvl} value={lvl.toString()}>
-                        Nível {lvl}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
               </div>
 
               {/* Lista de Feats */}

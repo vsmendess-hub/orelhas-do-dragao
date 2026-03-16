@@ -158,12 +158,12 @@ export function InventoryList({
 
           {encumbrance === 'encumbered' && (
             <p className="text-xs text-orange-400">
-              ⚠️ Sobrecarregado: Velocidade reduzida em 10 pés
+              ⚠️ Sobrecarregado: Velocidade reduzida em 3 metros
             </p>
           )}
           {encumbrance === 'heavily_encumbered' && (
             <p className="text-xs text-red-400">
-              ⚠️ Muito sobrecarregado: Velocidade reduzida em 20 pés + desvantagem em testes de
+              ⚠️ Muito sobrecarregado: Velocidade reduzida em 6 metros + desvantagem em testes de
               atributo, ataques e salvaguardas usando FOR, DES e CON
             </p>
           )}

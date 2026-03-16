@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { CurrencyManager } from './currency-manager';
@@ -13,6 +13,11 @@ import { getWeaponById, calculateAttackBonus, formatWeaponDamage } from '@/lib/d
 import { getArmorById } from '@/lib/data/armors';
 import { calculateModifier } from '@/lib/data/point-buy';
 import { revalidateCharacterPage } from '@/app/actions/revalidate-character';
+import {
+  calculateFeatureAttackBonus,
+  calculateFeatureDamageBonus,
+  calculateFeatureACBonus,
+} from '@/lib/data/optional-features-effects';
 
 interface InventoryManagerProps {
   characterId: string;
@@ -31,6 +36,7 @@ interface InventoryManagerProps {
     wis: number;
     cha: number;
   };
+  optionalFeatures?: Array<{ featureId: string; featureName: string }>;
 }
 
 export function InventoryManager({
@@ -43,11 +49,22 @@ export function InventoryManager({
   weaponProficiencies,
   armorProficiencies,
   attributes,
+  optionalFeatures = [],
 }: InventoryManagerProps) {
   const [items, setItems] = useState<Item[]>(initialItems);
   const [currency, setCurrency] = useState<Currency>(initialCurrency);
   const [isItemDialogOpen, setIsItemDialogOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<Item | null>(null);
+
+  // Sincronizar itens quando props mudarem (ex: após editar atributos que recalculam armas)
+  useEffect(() => {
+    setItems(initialItems);
+  }, [initialItems]);
+
+  // Sincronizar moedas quando props mudarem
+  useEffect(() => {
+    setCurrency(initialCurrency);
+  }, [initialCurrency]);
 
   // Calcular modificadores de atributos
   const strModifier = calculateModifier(attributes.str);
@@ -114,8 +131,8 @@ export function InventoryManager({
             (prof === 'Armas Marciais' && weaponData.category.includes('Marcial'))
         );
 
-        // Calcular bônus de ataque
-        const { bonus, attribute } = calculateAttackBonus(
+        // Calcular bônus de ataque base
+        const { bonus: baseAttackBonus, attribute } = calculateAttackBonus(
           weaponData,
           strModifier,
           dexMod,
@@ -123,14 +140,37 @@ export function InventoryManager({
           isProficient
         );
 
-        // Calcular dano com modificador
-        const damageStr = formatWeaponDamage(weaponData, strModifier, dexMod);
+        // Calcular dano com modificador base
+        const baseDamageStr = formatWeaponDamage(weaponData, strModifier, dexMod);
+
+        // Adicionar bônus de optional features
+        const featureIds = optionalFeatures.map((f) => f.featureId);
+        const featureAttackBonus = calculateFeatureAttackBonus(weaponData, featureIds);
+        const featureDamageBonus = calculateFeatureDamageBonus(weaponData, featureIds);
+
+        const totalAttackBonus = baseAttackBonus + featureAttackBonus;
+
+        // Adicionar bônus de dano ao string
+        let finalDamage = baseDamageStr;
+        if (featureDamageBonus > 0) {
+          const damageMatch = baseDamageStr.match(/^(.+?)([+-]\d+)?$/);
+          if (damageMatch) {
+            const dice = damageMatch[1];
+            const currentBonus = parseInt(damageMatch[2] || '0');
+            const newBonus = currentBonus + featureDamageBonus;
+            finalDamage = `${dice}${newBonus >= 0 ? '+' : ''}${newBonus}`;
+          }
+        }
 
         // Atualizar properties
         updatedItem.properties = {
           ...updatedItem.properties,
-          calculatedAttackBonus: bonus,
-          calculatedDamage: damageStr,
+          calculatedAttackBonus: totalAttackBonus,
+          calculatedDamage: finalDamage,
+          featureBonuses: {
+            attack: featureAttackBonus,
+            damage: featureDamageBonus,
+          },
         };
       }
     }
@@ -159,9 +199,17 @@ export function InventoryManager({
           }
         }
 
+        // Adicionar bônus de optional features
+        const featureIds = optionalFeatures.map((f) => f.featureId);
+        const featureACBonus = calculateFeatureACBonus(armorData, featureIds);
+        const finalAC = calculatedAC + featureACBonus;
+
         updatedItem.properties = {
           ...updatedItem.properties,
-          calculatedAC,
+          calculatedAC: finalAC,
+          featureBonuses: {
+            ac: featureACBonus,
+          },
         };
       }
     }

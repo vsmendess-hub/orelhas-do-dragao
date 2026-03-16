@@ -38,7 +38,7 @@ export const VARIANT_RULES: Record<VariantRuleId, Omit<VariantRule, 'enabled'>> 
     description: 'Atacantes ganham vantagem quando flanqueiam um inimigo',
     details: [
       'Quando você e um aliado estão em lados opostos de um inimigo',
-      'Ambos ameaçam o inimigo (within 5 feet)',
+      'Ambos ameaçam o inimigo (a até 1,5m)',
       'Você ganha vantagem em ataques corpo a corpo contra esse inimigo',
     ],
     source: 'DMG p.251',
@@ -76,8 +76,8 @@ export const VARIANT_RULES: Record<VariantRuleId, Omit<VariantRule, 'enabled'>> 
     description: 'Regras detalhadas de capacidade de carga',
     details: [
       'Carga = Força × 5 lbs (leve)',
-      'Carga = Força × 10 lbs (média, -10 pés movimento)',
-      'Carga = Força × 15 lbs (pesada, -20 pés, desvantagem)',
+      'Carga = Força × 10 lbs (média, -3 metros movimento)',
+      'Carga = Força × 15 lbs (pesada, -6 metros, desvantagem)',
       'Mais realista mas mais complexo',
     ],
     source: 'PHB p.176',
@@ -102,7 +102,7 @@ export const VARIANT_RULES: Record<VariantRuleId, Omit<VariantRule, 'enabled'>> 
     description: 'Após matar inimigo, ataque criatura adjacente',
     details: [
       'Quando reduz criatura a 0 HP com ataque corpo a corpo',
-      'Pode fazer outro ataque corpo a corpo contra criatura within 5 feet',
+      'Pode fazer outro ataque corpo a corpo contra criatura a até 1,5m',
       'Usa o mesmo ataque (sem nova rolagem)',
       'Excesso de dano é aplicado na segunda criatura',
     ],
@@ -112,11 +112,11 @@ export const VARIANT_RULES: Record<VariantRuleId, Omit<VariantRule, 'enabled'>> 
     id: 'diagonal-movement',
     name: 'Movimento Diagonal (Variante)',
     category: 'combat',
-    description: 'Movimentos diagonais custam alternadamente 5 e 10 pés',
+    description: 'Movimentos diagonais custam alternadamente 5 e 3 metros',
     details: [
-      'Primeiro diagonal = 5 pés',
-      'Segundo diagonal = 10 pés',
-      'Terceiro diagonal = 5 pés (repete)',
+      'Primeiro diagonal = 1,5 metro',
+      'Segundo diagonal = 3 metros',
+      'Terceiro diagonal = 1,5 metro (repete)',
       'Mais realista para medição de distância',
     ],
     source: 'DMG p.252',
@@ -183,9 +183,7 @@ export const DEFAULT_VARIANT_RULES: VariantRulesState = {
 /**
  * Cria estado de variant rules com regras habilitadas
  */
-export function createVariantRulesState(
-  enabledRules: VariantRuleId[] = []
-): VariantRulesState {
+export function createVariantRulesState(enabledRules: VariantRuleId[] = []): VariantRulesState {
   const rules = { ...DEFAULT_VARIANT_RULES.rules };
   enabledRules.forEach((ruleId) => {
     rules[ruleId] = true;

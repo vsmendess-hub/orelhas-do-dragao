@@ -31,7 +31,7 @@ export interface Weapon {
   versatileDamage?: string; // Para armas versáteis (2 mãos)
   range?: string; // Para armas à distância. Ex: "30/120"
   cost: { gold: number };
-  weight: number; // em libras
+  weight: number; // em kg
   description?: string;
   source: string;
   page: number;
@@ -308,7 +308,7 @@ export const MARTIAL_MELEE_WEAPONS: Weapon[] = [
     properties: ['Alcance', 'Especial'],
     cost: { gold: 10 },
     weight: 6,
-    description: 'Desvantagem quando usado contra alvos a 5 pés ou menos.',
+    description: 'Desvantagem quando usado contra alvos a 1,5 metro ou menos.',
     source: 'PHB',
     page: 149,
   },

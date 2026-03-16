@@ -129,7 +129,7 @@ export function EquipmentSlots({ items, dexModifier, onUnequip }: EquipmentSlots
                         </div>
                         {weapon.properties?.range && (
                           <p className="text-xs text-cyan-400 mt-1">
-                            Alcance: {weapon.properties.range} pés
+                            Alcance: {weapon.properties.range} metros
                           </p>
                         )}
                         {weapon.properties?.weaponProperties &&

@@ -97,7 +97,9 @@ export function PredefinedItemSelector({
                           </div>
                         )}
                         {weapon.range && (
-                          <p className="mt-1 text-xs text-cyan-400">Alcance: {weapon.range} pés</p>
+                          <p className="mt-1 text-xs text-cyan-400">
+                            Alcance: {weapon.range} metros
+                          </p>
                         )}
                       </div>
                       <div className="text-right">

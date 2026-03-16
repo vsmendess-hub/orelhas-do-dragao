@@ -12,7 +12,7 @@ export interface Item {
   name: string;
   description?: string;
   quantity: number;
-  weight: number; // em libras
+  weight: number; // em kg
   value: number; // em peças de ouro
   category: ItemCategory;
   equipped: boolean;
@@ -28,7 +28,7 @@ export interface ItemProperties {
   // Armas
   damage?: string; // Ex: "1d8"
   damageType?: string; // Ex: "slashing", "piercing", "bludgeoning"
-  range?: string; // Ex: "5 pés", "20/60 pés"
+  range?: string; // Ex: "1,5 metro", "20/18 metros"
   weaponProperties?: string[]; // Ex: ["versatile", "light", "finesse"]
   versatileDamage?: string; // Dano versátil (2 mãos)
   calculatedAttackBonus?: number; // Bônus de ataque calculado ao equipar
@@ -41,6 +41,13 @@ export interface ItemProperties {
   stealthDisadvantage?: boolean; // Desvantagem em Furtividade
   strengthRequirement?: number; // STR mínima necessária
   calculatedAC?: number; // CA final calculada ao equipar
+
+  // Bônus de Optional Features
+  featureBonuses?: {
+    attack?: number; // Bônus de ataque de features (ex: Archery +2)
+    damage?: number; // Bônus de dano de features (ex: Dueling +2)
+    ac?: number; // Bônus de CA de features (ex: Defense +1)
+  };
 }
 
 // Sistema de moedas D&D 5e
@@ -61,8 +68,8 @@ export const CURRENCY_TO_GOLD = {
   platinum: 10, // 1 pl = 10 po
 } as const;
 
-// Peso das moedas (50 moedas = 1 libra)
-export const COINS_PER_POUND = 50;
+// Peso das moedas (110 moedas = 1 kg)
+export const COINS_PER_KG = 110;
 
 // Nomes das moedas em português
 export const CURRENCY_NAMES = {
@@ -97,12 +104,12 @@ export function calculateTotalGold(currency: Currency): number {
 }
 
 /**
- * Calcula o peso total das moedas em libras
+ * Calcula o peso total das moedas em kg
  */
 export function calculateCurrencyWeight(currency: Currency): number {
   const totalCoins =
     currency.copper + currency.silver + currency.electrum + currency.gold + currency.platinum;
-  return totalCoins / COINS_PER_POUND;
+  return totalCoins / COINS_PER_KG;
 }
 
 /**
@@ -116,10 +123,10 @@ export function calculateInventoryWeight(items: Item[], currency: Currency): num
 
 /**
  * Calcula a capacidade de carga do personagem
- * Regra D&D 5e: STR × 15 libras
+ * Regra D&D 5e: STR × 7 kg
  */
 export function calculateCarryingCapacity(strengthScore: number): number {
-  return strengthScore * 15;
+  return strengthScore * 7;
 }
 
 /**

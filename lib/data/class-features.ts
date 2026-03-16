@@ -395,7 +395,7 @@ export const CLASS_FEATURES: ClassFeatures[] = [
       {
         name: 'Sentido Cego',
         description:
-          'Você ganha a habilidade de sentir criaturas ocultas ou invisíveis a até 10 pés de você, desde que seja capaz de ouvir.',
+          'Você ganha a habilidade de sentir criaturas ocultas ou invisíveis a até 3 metros de você, desde que seja capaz de ouvir.',
         source: 'PHB',
         page: 96,
         level: 14,
@@ -494,7 +494,7 @@ export const CLASS_FEATURES: ClassFeatures[] = [
       {
         name: 'Movimentação Rápida',
         description:
-          'Seu deslocamento aumenta em 10 pés enquanto você não estiver vestindo armadura pesada.',
+          'Seu deslocamento aumenta em 3 metros enquanto você não estiver vestindo armadura pesada.',
         source: 'PHB',
         page: 49,
         level: 5,
@@ -645,7 +645,7 @@ export const CLASS_FEATURES: ClassFeatures[] = [
       {
         name: 'Contrafeitiço',
         description:
-          'Você ganha a habilidade de usar notas musicais ou palavras de poder para interromper efeitos de influência mental. Quando uma criatura que você pode ver a até 60 pés fizer um teste de resistência contra encantamento ou medo, você pode usar sua reação para gastar uma Inspiração de Bardo e adicionar o resultado ao teste de resistência da criatura.',
+          'Você ganha a habilidade de usar notas musicais ou palavras de poder para interromper efeitos de influência mental. Quando uma criatura que você pode ver a até 18 metros fizer um teste de resistência contra encantamento ou medo, você pode usar sua reação para gastar uma Inspiração de Bardo e adicionar o resultado ao teste de resistência da criatura.',
         source: 'PHB',
         page: 54,
         level: 6,
@@ -1054,7 +1054,7 @@ export const CLASS_FEATURES: ClassFeatures[] = [
       {
         name: 'Movimento sem Armadura',
         description:
-          'Seu deslocamento aumenta em 10 pés enquanto você não estiver vestindo armadura ou empunhando um escudo. Este bônus aumenta quando você alcança certos níveis de monge.',
+          'Seu deslocamento aumenta em 3 metros enquanto você não estiver vestindo armadura ou empunhando um escudo. Este bônus aumenta quando você alcança certos níveis de monge.',
         source: 'PHB',
         page: 78,
         level: 2,
@@ -1198,7 +1198,7 @@ export const CLASS_FEATURES: ClassFeatures[] = [
       {
         name: 'Sentido Divino',
         description:
-          'A presença de mal forte registra em seus sentidos como um odor nocivo, e o bem poderoso soa como música celestial em seus ouvidos. Como uma ação, você pode abrir sua consciência para detectar tais forças. Até o final de seu próximo turno, você conhece a localização de qualquer celestial, corruptor ou morto-vivo a até 60 pés de você que não esteja com cobertura total. Utilizável um número de vezes igual a 1 + seu modificador de Carisma. Você recupera todos os usos gastos após terminar um descanso longo.',
+          'A presença de mal forte registra em seus sentidos como um odor nocivo, e o bem poderoso soa como música celestial em seus ouvidos. Como uma ação, você pode abrir sua consciência para detectar tais forças. Até o final de seu próximo turno, você conhece a localização de qualquer celestial, corruptor ou morto-vivo a até 18 metros de você que não esteja com cobertura total. Utilizável um número de vezes igual a 1 + seu modificador de Carisma. Você recupera todos os usos gastos após terminar um descanso longo.',
         source: 'PHB',
         page: 84,
         level: 1,
@@ -1275,7 +1275,7 @@ export const CLASS_FEATURES: ClassFeatures[] = [
       {
         name: 'Aura de Proteção',
         description:
-          'Sempre que você ou uma criatura amigável a até 10 pés de você fizer um teste de resistência, a criatura ganha um bônus no teste de resistência igual ao seu modificador de Carisma (mínimo de +1). Você deve estar consciente para conceder este bônus. No 18º nível, o alcance desta aura aumenta para 30 pés.',
+          'Sempre que você ou uma criatura amigável a até 3 metros de você fizer um teste de resistência, a criatura ganha um bônus no teste de resistência igual ao seu modificador de Carisma (mínimo de +1). Você deve estar consciente para conceder este bônus. No 18º nível, o alcance desta aura aumenta para 9 metros.',
         source: 'PHB',
         page: 85,
         level: 6,
@@ -1433,7 +1433,7 @@ export const CLASS_FEATURES: ClassFeatures[] = [
       {
         name: 'Sentidos Selvagens',
         description:
-          'Você ganha sentidos preternaturais que o ajudam a lutar contra criaturas que você não pode ver. Quando você ataca uma criatura que você não pode ver, sua incapacidade de vê-la não impõe desvantagem em suas jogadas de ataque contra ela. Você também está ciente da localização de qualquer criatura invisível a até 30 pés de você, desde que essa criatura não esteja escondida de você e você não esteja cego ou surdo.',
+          'Você ganha sentidos preternaturais que o ajudam a lutar contra criaturas que você não pode ver. Quando você ataca uma criatura que você não pode ver, sua incapacidade de vê-la não impõe desvantagem em suas jogadas de ataque contra ela. Você também está ciente da localização de qualquer criatura invisível a até 9 metros de você, desde que essa criatura não esteja escondida de você e você não esteja cego ou surdo.',
         source: 'PHB',
         page: 92,
         level: 18,

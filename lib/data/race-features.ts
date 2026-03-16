@@ -45,7 +45,7 @@ export const RACE_FEATURES: RaceFeatures[] = [
       {
         name: 'Visão no Escuro',
         description:
-          'Você pode enxergar na penumbra a até 60 pés como se fosse luz plena, e no escuro como se fosse penumbra. Você não pode discernir cores no escuro, apenas tons de cinza.',
+          'Você pode enxergar na penumbra a até 18 metros como se fosse luz plena, e no escuro como se fosse penumbra. Você não pode discernir cores no escuro, apenas tons de cinza.',
         source: 'PHB',
         page: 23,
       },
@@ -116,7 +116,7 @@ export const RACE_FEATURES: RaceFeatures[] = [
       },
       {
         name: 'Pés Ligeiros',
-        description: 'Seu deslocamento base de caminhada aumenta para 35 pés.',
+        description: 'Seu deslocamento base de caminhada aumenta para 31,5 metro.',
         source: 'PHB',
         page: 24,
       },
@@ -135,7 +135,7 @@ export const RACE_FEATURES: RaceFeatures[] = [
     features: [
       {
         name: 'Visão no Escuro Superior',
-        description: 'Sua visão no escuro tem alcance de 120 pés.',
+        description: 'Sua visão no escuro tem alcance de 36 metros.',
         source: 'PHB',
         page: 24,
       },
@@ -169,7 +169,7 @@ export const RACE_FEATURES: RaceFeatures[] = [
       {
         name: 'Visão no Escuro',
         description:
-          'Você pode enxergar na penumbra a até 60 pés como se fosse luz plena, e no escuro como se fosse penumbra.',
+          'Você pode enxergar na penumbra a até 18 metros como se fosse luz plena, e no escuro como se fosse penumbra.',
         source: 'PHB',
         page: 20,
       },
@@ -333,7 +333,7 @@ export const RACE_FEATURES: RaceFeatures[] = [
     features: [
       {
         name: 'Visão no Escuro',
-        description: 'Você pode enxergar na penumbra a até 60 pés como se fosse luz plena.',
+        description: 'Você pode enxergar na penumbra a até 18 metros como se fosse luz plena.',
         source: 'PHB',
         page: 37,
       },
@@ -399,7 +399,7 @@ export const RACE_FEATURES: RaceFeatures[] = [
     features: [
       {
         name: 'Visão no Escuro',
-        description: 'Você pode enxergar na penumbra a até 60 pés como se fosse luz plena.',
+        description: 'Você pode enxergar na penumbra a até 18 metros como se fosse luz plena.',
         source: 'PHB',
         page: 39,
       },
@@ -432,7 +432,7 @@ export const RACE_FEATURES: RaceFeatures[] = [
     features: [
       {
         name: 'Visão no Escuro',
-        description: 'Você pode enxergar na penumbra a até 60 pés como se fosse luz plena.',
+        description: 'Você pode enxergar na penumbra a até 18 metros como se fosse luz plena.',
         source: 'PHB',
         page: 41,
       },
@@ -471,7 +471,7 @@ export const RACE_FEATURES: RaceFeatures[] = [
     features: [
       {
         name: 'Visão no Escuro',
-        description: 'Você pode enxergar na penumbra a até 60 pés como se fosse luz plena.',
+        description: 'Você pode enxergar na penumbra a até 18 metros como se fosse luz plena.',
         source: 'PHB',
         page: 43,
       },

@@ -8,7 +8,7 @@ export type UpcastScaling =
   | 'targets-per-level' // +N alvos por nível acima
   | 'duration-per-level' // +X tempo por nível acima
   | 'healing-per-level' // +XdY cura por nível acima
-  | 'range-per-level' // +X pés alcance por nível acima
+  | 'range-per-level' // +X metros alcance por nível acima
   | 'special'; // Efeito especial por nível
 
 export interface UpcastRule {
@@ -116,7 +116,7 @@ export function applyUpcastRules(
         if (match) {
           const rangePerLevel = parseInt(match[1]);
           const totalRange = rangePerLevel * levelsAbove;
-          effectDescription = `+${totalRange} pés de alcance`;
+          effectDescription = `+${totalRange} metros de alcance`;
         }
         break;
       }
@@ -174,7 +174,7 @@ export const UPCAST_DATABASE: Record<string, SpellUpcastInfo> = {
       },
     ],
   },
-  'fireball': {
+  fireball: {
     spellId: 'fireball',
     baseLevel: 3,
     maxLevel: 9,
@@ -210,7 +210,7 @@ export const UPCAST_DATABASE: Record<string, SpellUpcastInfo> = {
       },
     ],
   },
-  'aid': {
+  aid: {
     spellId: 'aid',
     baseLevel: 2,
     maxLevel: 9,
@@ -302,10 +302,7 @@ export function generateUpcastDescription(
 /**
  * Calcula dano médio de upcast (útil para sugestões)
  */
-export function calculateAverageDamageIncrease(
-  rules: UpcastRule[],
-  levelsAbove: number
-): number {
+export function calculateAverageDamageIncrease(rules: UpcastRule[], levelsAbove: number): number {
   let totalAverage = 0;
 
   for (const rule of rules) {

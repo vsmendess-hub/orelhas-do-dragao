@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Sparkles, Plus, Minus, RotateCcw, Moon, Coffee } from 'lucide-react';
+import { Sparkles, Plus, Minus, RotateCcw, RefreshCw } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -9,12 +9,14 @@ import {
   type ClassResource,
   spendResource,
   recoverResource,
-  recoverResourcesAfterRest,
+  generateClassResources,
 } from '@/lib/data/class-resources';
 
 interface ClassResourcesManagerProps {
   characterId: string;
   initialResources: ClassResource[];
+  characterClass: string;
+  characterLevel: number;
 }
 
 const RECOVERY_LABELS: Record<string, string> = {
@@ -34,6 +36,8 @@ const RECOVERY_COLORS: Record<string, string> = {
 export function ClassResourcesManager({
   characterId,
   initialResources,
+  characterClass,
+  characterLevel,
 }: ClassResourcesManagerProps) {
   const [resources, setResources] = useState<ClassResource[]>(initialResources);
   const [isSaving, setIsSaving] = useState(false);
@@ -76,25 +80,31 @@ export function ClassResourcesManager({
     saveResources(newResources);
   };
 
-  // Descanso curto
-  const handleShortRest = () => {
-    const newResources = recoverResourcesAfterRest(resources, 'short');
-    saveResources(newResources);
-  };
-
-  // Descanso longo
-  const handleLongRest = () => {
-    const newResources = recoverResourcesAfterRest(resources, 'long');
-    saveResources(newResources);
+  // Gerar recursos da classe
+  const handleGenerateResources = () => {
+    const generatedResources = generateClassResources(characterClass, characterLevel);
+    if (generatedResources.length > 0) {
+      saveResources(generatedResources);
+    } else {
+      alert(
+        `A classe ${characterClass} não possui recursos rastreáveis no nível ${characterLevel}.`
+      );
+    }
   };
 
   if (resources.length === 0) {
     return (
       <div className="glass-card rounded-2xl border-dashed p-6">
-        <div className="py-8 text-center">
+        <div className="py-8 text-center space-y-4">
           <Sparkles className="mx-auto mb-2 h-8 w-8 text-gray-400/50" />
-          <p className="text-sm text-gray-400">
-            Esta classe não possui recursos rastreáveis
+          <p className="text-sm text-gray-400">Nenhum recurso de classe encontrado</p>
+          <Button onClick={handleGenerateResources} disabled={isSaving} className="tab-purple">
+            <RefreshCw className="mr-2 h-4 w-4" />
+            {isSaving ? 'Gerando...' : 'Gerar Recursos de Classe'}
+          </Button>
+          <p className="text-xs text-gray-500">
+            Clique para inicializar os recursos baseados em sua classe ({characterClass}) e nível (
+            {characterLevel})
           </p>
         </div>
       </div>
@@ -104,32 +114,13 @@ export function ClassResourcesManager({
   return (
     <div className="glass-card rounded-2xl p-6">
       <div className="mb-6">
-        <div className="flex items-center justify-between">
-          <h3 className="flex items-center gap-2 text-lg font-semibold text-white">
-            <Sparkles className="h-5 w-5" />
-            Recursos de Classe
-          </h3>
-          <div className="flex gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleShortRest}
-              disabled={isSaving}
-              title="Descanso Curto"
-            >
-              <Coffee className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleLongRest}
-              disabled={isSaving}
-              title="Descanso Longo"
-            >
-              <Moon className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
+        <h3 className="flex items-center gap-2 text-lg font-semibold text-white">
+          <Sparkles className="h-5 w-5" />
+          Recursos de Classe
+        </h3>
+        <p className="text-sm text-gray-400 mt-1">
+          💤 Use os botões de descanso em &quot;Pontos de Vida&quot; para recuperar recursos
+        </p>
       </div>
       <div className="space-y-4">
         {resources.map((resource) => {
@@ -185,11 +176,7 @@ export function ClassResourcesManager({
                   <div className="flex min-w-[120px] items-center justify-center gap-1">
                     <span
                       className={`text-3xl font-bold transition-colors ${
-                        isEmpty
-                          ? 'text-red-400'
-                          : isLow
-                            ? 'text-amber-400'
-                            : 'text-white'
+                        isEmpty ? 'text-red-400' : isLow ? 'text-amber-400' : 'text-white'
                       }`}
                     >
                       {resource.current}
@@ -223,19 +210,14 @@ export function ClassResourcesManager({
           );
         })}
 
-        {/* Legenda de Descansos */}
+        {/* Dica sobre recuperação */}
         <div className="rounded-lg glass-card-light p-3 text-xs text-gray-400">
-          <p className="mb-2 font-medium text-white">💤 Recuperação:</p>
-          <div className="space-y-1">
-            <div className="flex items-center gap-2">
-              <Coffee className="h-3 w-3" />
-              <span>Descanso Curto (1 hora) - recupera recursos de curto descanso</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Moon className="h-3 w-3" />
-              <span>Descanso Longo (8 horas) - recupera todos os recursos</span>
-            </div>
-          </div>
+          <p className="mb-2 font-medium text-white">💡 Dica:</p>
+          <p>
+            Para recuperar recursos durante descansos curtos ou longos, use os botões de descanso no
+            card &quot;Pontos de Vida&quot; acima. Eles recuperam automaticamente HP, recursos de
+            classe, spell slots e dados de vida.
+          </p>
         </div>
       </div>
     </div>

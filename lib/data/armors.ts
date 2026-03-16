@@ -14,7 +14,7 @@ export interface Armor {
   strengthRequired?: number; // Força mínima necessária
   stealthDisadvantage: boolean;
   cost: { gold: number };
-  weight: number; // em libras
+  weight: number; // em kg
   description?: string;
   source: string;
   page: number;

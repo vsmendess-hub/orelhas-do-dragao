@@ -72,8 +72,8 @@ export default function EditCharacterPage({ params }: PageProps) {
           return;
         }
 
-        // Converter pés para metros (1 pé = 0.3048 metros, arredondando)
-        const speedInMeters = Math.round((character.speed * 0.3048) * 10) / 10;
+        // Velocidade em metros
+        const speedInMeters = character.speed;
 
         const data = {
           name: character.name,
@@ -142,7 +142,7 @@ export default function EditCharacterPage({ params }: PageProps) {
       // Calcular novo bônus de proficiência
       const newProficiencyBonus = calculateProficiencyBonus(formData.level);
 
-      // Converter metros de volta para pés para salvar no banco (1 metro = 3.28084 pés)
+      // Converter metros de volta para metros para salvar no banco (1 metro = 3.28084 metros)
       const speedInFeet = Math.round(formData.speed * 3.28084);
 
       // Atualizar personagem
@@ -247,7 +247,9 @@ export default function EditCharacterPage({ params }: PageProps) {
           {/* Nome */}
           <div className="glass-card rounded-2xl p-6">
             <h3 className="text-lg font-semibold text-white mb-2">Nome do Personagem</h3>
-            <p className="text-sm text-gray-400 mb-4">O nome pelo qual seu personagem é conhecido</p>
+            <p className="text-sm text-gray-400 mb-4">
+              O nome pelo qual seu personagem é conhecido
+            </p>
             <div>
               <Input
                 type="text"
@@ -315,7 +317,9 @@ export default function EditCharacterPage({ params }: PageProps) {
           {/* Deslocamento */}
           <div className="glass-card rounded-2xl p-6">
             <h3 className="text-lg font-semibold text-white mb-2">Deslocamento</h3>
-            <p className="text-sm text-gray-400 mb-4">Velocidade de movimento do personagem em metros</p>
+            <p className="text-sm text-gray-400 mb-4">
+              Velocidade de movimento do personagem em metros
+            </p>
             <div>
               <div className="flex items-center gap-4">
                 <Input

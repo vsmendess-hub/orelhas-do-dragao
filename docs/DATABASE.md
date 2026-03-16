@@ -198,7 +198,7 @@ CREATE TABLE characters (
   {
     "name": "Visão no Escuro",
     "source": "race",
-    "description": "Você enxerga 60 pés no escuro"
+    "description": "Você enxerga 18 metros no escuro"
   },
   {
     "name": "Action Surge",

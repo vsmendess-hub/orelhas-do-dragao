@@ -21,7 +21,7 @@ export interface Equipment {
   name: string;
   category: EquipmentCategory;
   cost: { gold: number; silver?: number; copper?: number };
-  weight: number; // em libras
+  weight: number; // em kg
   description?: string;
   source: string;
   page: number;
@@ -35,7 +35,7 @@ export const ADVENTURING_GEAR: Equipment[] = [
     category: 'Equipamento de Aventura',
     cost: { gold: 2 },
     weight: 5,
-    description: 'Capacidade de 1 pé cúbico / 30 libras de equipamento.',
+    description: 'Capacidade de 30 litros / 14 kg de equipamento.',
     source: 'PHB',
     page: 150,
   },
@@ -50,7 +50,7 @@ export const ADVENTURING_GEAR: Equipment[] = [
   },
   {
     id: 'rope-hempen-50',
-    name: 'Corda de Cânhamo (50 pés)',
+    name: 'Corda de Cânhamo (15 metros)',
     category: 'Equipamento de Aventura',
     cost: { gold: 1 },
     weight: 10,
@@ -60,7 +60,7 @@ export const ADVENTURING_GEAR: Equipment[] = [
   },
   {
     id: 'rope-silk-50',
-    name: 'Corda de Seda (50 pés)',
+    name: 'Corda de Seda (15 metros)',
     category: 'Equipamento de Aventura',
     cost: { gold: 10 },
     weight: 5,
@@ -74,7 +74,7 @@ export const ADVENTURING_GEAR: Equipment[] = [
     category: 'Equipamento de Aventura',
     cost: { gold: 0, copper: 1 },
     weight: 1,
-    description: 'Ilumina 20 pés de raio de luz plena e mais 20 pés de penumbra por 1 hora.',
+    description: 'Ilumina 6 metros de raio de luz plena e mais 6 metros de penumbra por 1 hora.',
     source: 'PHB',
     page: 150,
   },
@@ -163,7 +163,7 @@ export const ADVENTURING_GEAR: Equipment[] = [
     cost: { gold: 5 },
     weight: 2,
     description:
-      'Ilumina 30 pés de raio de luz plena e mais 30 pés de penumbra. Queima por 6 horas com 1 frasco (1 pint) de óleo.',
+      'Ilumina 9 metros de raio de luz plena e mais 9 metros de penumbra. Queima por 6 horas com 1 frasco (1 pint) de óleo.',
     source: 'PHB',
     page: 150,
   },
@@ -174,7 +174,7 @@ export const ADVENTURING_GEAR: Equipment[] = [
     cost: { gold: 10 },
     weight: 3,
     description:
-      'Ilumina um cone de 60 pés de luz plena e mais 60 pés de penumbra. Queima por 6 horas com 1 frasco de óleo.',
+      'Ilumina um cone de 18 metros de luz plena e mais 18 metros de penumbra. Queima por 6 horas com 1 frasco de óleo.',
     source: 'PHB',
     page: 150,
   },
@@ -185,7 +185,7 @@ export const ADVENTURING_GEAR: Equipment[] = [
     cost: { gold: 0, silver: 1 },
     weight: 1,
     description:
-      'Pode ser usado como arma improvisada. Ação para arremessar até 20 pés, estilhaça no impacto. Faz teste de ataque à distância contra criatura ou objeto, tratando o óleo como arma improvisada.',
+      'Pode ser usado como arma improvisada. Ação para arremessar até 6 metros, estilhaça no impacto. Faz teste de ataque à distância contra criatura ou objeto, tratando o óleo como arma improvisada.',
     source: 'PHB',
     page: 152,
   },

@@ -227,7 +227,7 @@ export function CurrencyManager({
 
             <div className="border-t border-white/10 pt-2 space-y-1">
               <p className="text-xs text-gray-400">
-                💡 Dica: 50 moedas pesam 1 libra. O peso das moedas é somado ao peso do equipamento
+                💡 Dica: 110 moedas pesam 1 kg. O peso das moedas é somado ao peso do equipamento
                 para calcular a capacidade de carga total.
               </p>
               <p className="text-xs text-blue-400">

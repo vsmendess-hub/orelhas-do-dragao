@@ -84,7 +84,7 @@ export const CONDITION_DETAILS: Record<ConditionType, ConditionInfo> = {
   paralyzed: {
     name: 'Paralisado',
     description:
-      'Incapacitado, não pode se mover ou falar. Falha automaticamente em testes de Força e Destreza. Ataques contra você têm vantagem. Acertos a 5 pés são críticos.',
+      'Incapacitado, não pode se mover ou falar. Falha automaticamente em testes de Força e Destreza. Ataques contra você têm vantagem. Acertos a 1,5 metro são críticos.',
     icon: '⚡',
     color: 'bg-purple-500',
   },
@@ -104,7 +104,7 @@ export const CONDITION_DETAILS: Record<ConditionType, ConditionInfo> = {
   prone: {
     name: 'Caído',
     description:
-      'Só pode se rastejar ou se levantar (gasta metade do movimento). Desvantagem em ataques. Ataques a 5 pés têm vantagem, ataques à distância têm desvantagem.',
+      'Só pode se rastejar ou se levantar (gasta metade do movimento). Desvantagem em ataques. Ataques a 1,5 metro têm vantagem, ataques à distância têm desvantagem.',
     icon: '⬇️',
     color: 'bg-amber-500',
   },
@@ -125,7 +125,7 @@ export const CONDITION_DETAILS: Record<ConditionType, ConditionInfo> = {
   unconscious: {
     name: 'Inconsciente',
     description:
-      'Incapacitado, não pode se mover ou falar, sem consciência do ambiente. Solta o que está segurando e cai. Falha automaticamente em testes de Força e Destreza. Ataques têm vantagem. Acertos a 5 pés são críticos.',
+      'Incapacitado, não pode se mover ou falar, sem consciência do ambiente. Solta o que está segurando e cai. Falha automaticamente em testes de Força e Destreza. Ataques têm vantagem. Acertos a 1,5 metro são críticos.',
     icon: '😴',
     color: 'bg-gray-700',
   },
