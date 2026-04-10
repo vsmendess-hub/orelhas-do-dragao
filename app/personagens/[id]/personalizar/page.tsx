@@ -1,7 +1,6 @@
-import { notFound, redirect } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Eye } from 'lucide-react';
-import { createClient } from '@/lib/supabase/server';
+import { requireCharacterOwnership } from '@/lib/supabase/server';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ThemeToggle } from '@/app/components/theme-toggle';
@@ -24,33 +23,7 @@ interface PageProps {
 
 export default async function PersonalizationPage({ params }: PageProps) {
   const { id } = await params;
-  const supabase = await createClient();
-
-  // Verificar autenticação
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    redirect('/login');
-  }
-
-  // Buscar personagem
-  const { data: character, error } = await supabase
-    .from('characters')
-    .select('*')
-    .eq('id', id)
-    .single();
-
-  // Se não encontrou ou erro, retornar 404
-  if (error || !character) {
-    notFound();
-  }
-
-  // Verificar ownership
-  if (character.user_id !== user.id) {
-    notFound();
-  }
+  const { character } = await requireCharacterOwnership(id);
 
   // Garantir que os campos de personalização existam
   const appearance: Appearance = character.appearance || EMPTY_APPEARANCE;

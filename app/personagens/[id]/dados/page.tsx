@@ -1,7 +1,6 @@
-import { notFound, redirect } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Dices } from 'lucide-react';
-import { createClient } from '@/lib/supabase/server';
+import { requireCharacterOwnership } from '@/lib/supabase/server';
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/app/components/theme-toggle';
 import { DiceManager } from '@/app/components/dice/dice-manager';
@@ -13,33 +12,7 @@ interface PageProps {
 
 export default async function DicePage({ params }: PageProps) {
   const { id } = await params;
-  const supabase = await createClient();
-
-  // Verificar autenticação
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    redirect('/login');
-  }
-
-  // Buscar personagem
-  const { data: character, error } = await supabase
-    .from('characters')
-    .select('*')
-    .eq('id', id)
-    .single();
-
-  // Se não encontrou ou erro, retornar 404
-  if (error || !character) {
-    notFound();
-  }
-
-  // Verificar ownership
-  if (character.user_id !== user.id) {
-    notFound();
-  }
+  const { character } = await requireCharacterOwnership(id);
 
   // Calcular modificadores
   const modifiers = {

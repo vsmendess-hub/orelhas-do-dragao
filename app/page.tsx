@@ -1,23 +1,14 @@
-import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { createClient } from '@/lib/supabase/server';
+import { createClient, requireAuth } from '@/lib/supabase/server';
 import { Button } from '@/components/ui/button';
 import { Users, Library, Wand2 } from 'lucide-react';
 import { CharacterList } from './components/character-list';
 import { ThemeToggle } from './components/theme-toggle';
 
 export default async function Home() {
+  const user = await requireAuth();
   const supabase = await createClient();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  // Se não estiver autenticado, redirecionar para login
-  if (!user) {
-    redirect('/login');
-  }
 
   // Buscar personagens do usuário
   const { data: characters, error } = await supabase
@@ -95,7 +86,12 @@ export default async function Home() {
             <ThemeToggle />
             <span className="text-sm text-gray-300">{user.email}</span>
             <form action="/auth/logout" method="POST">
-              <Button type="submit" variant="ghost" size="sm" className="text-white hover:bg-white/10">
+              <Button
+                type="submit"
+                variant="ghost"
+                size="sm"
+                className="text-white hover:bg-white/10"
+              >
                 Sair
               </Button>
             </form>

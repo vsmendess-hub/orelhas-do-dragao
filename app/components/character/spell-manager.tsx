@@ -28,7 +28,7 @@ import {
 } from '@/lib/data/spell-favorites';
 import { createClient } from '@/lib/supabase/client';
 import { AddSpellDialog } from './add-spell-dialog';
-import type { Spell } from '@/lib/data/all-spells';
+import type { Spell } from '@/lib/data/spells';
 
 interface SpellManagerProps {
   characterId: string;
