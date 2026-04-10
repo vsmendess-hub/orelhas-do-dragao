@@ -40,7 +40,7 @@ export const COMMON_FEATS: Feat[] = [
     prerequisites: 'Força ou Destreza 13+',
     benefits: [
       '+1 em Força ou Destreza (máx 20)',
-      'Levantar-se de estar caído custa apenas 5 pés de movimento',
+      'Levantar-se de estar caído custa apenas 1,5 metro de movimento',
       'Escalar não custa movimento extra',
       'Saltos com corrida percorrem distância extra igual ao seu modificador de Força',
     ],
@@ -96,7 +96,7 @@ export const COMMON_FEATS: Feat[] = [
     name: 'Móvel',
     description: 'Você é excepcionalmente veloz e ágil.',
     benefits: [
-      'Seu deslocamento aumenta em 10 pés',
+      'Seu deslocamento aumenta em 3 metros',
       'Quando usa a ação Disparada, terreno difícil não custa movimento extra',
       'Quando faz ataque corpo a corpo contra criatura, ela não pode fazer ataque de oportunidade até o fim do turno',
     ],
@@ -132,7 +132,7 @@ export const COMMON_FEATS: Feat[] = [
     benefits: [
       'Quando acerta ataque de oportunidade, o alvo tem deslocamento 0 até o fim do turno',
       'Pode fazer ataque de oportunidade mesmo se inimigo usar Disengage',
-      'Quando criatura a 5 pés ataca alguém além de você, pode usar reação para fazer ataque corpo a corpo contra ela',
+      'Quando criatura a 1,5 metro ataca alguém além de você, pode usar reação para fazer ataque corpo a corpo contra ela',
     ],
     source: 'PHB',
   },
@@ -151,7 +151,9 @@ export const COMMON_FEATS: Feat[] = [
     id: 'tough',
     name: 'Robusto',
     description: 'Seu HP máximo aumenta.',
-    benefits: ['Seu HP máximo aumenta em 2 × seu nível atual e aumenta em 2 cada vez que subir de nível'],
+    benefits: [
+      'Seu HP máximo aumenta em 2 × seu nível atual e aumenta em 2 cada vez que subir de nível',
+    ],
     source: 'PHB',
   },
   {

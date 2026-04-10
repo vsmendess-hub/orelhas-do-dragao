@@ -12,7 +12,7 @@ export interface Item {
   name: string;
   description?: string;
   quantity: number;
-  weight: number; // em libras
+  weight: number; // em kg
   value: number; // em peças de ouro
   category: ItemCategory;
   equipped: boolean;
@@ -21,17 +21,33 @@ export interface Item {
 
 // Propriedades específicas de armas e armaduras
 export interface ItemProperties {
+  // Referências ao item do PHB (se for um item pré-definido)
+  itemSourceId?: string; // ID do item no PHB (ex: 'longsword', 'chain-mail')
+  itemSourceType?: 'weapon' | 'armor' | 'equipment' | 'custom'; // Tipo de origem
+
   // Armas
   damage?: string; // Ex: "1d8"
   damageType?: string; // Ex: "slashing", "piercing", "bludgeoning"
-  range?: string; // Ex: "5 pés", "20/60 pés"
+  range?: string; // Ex: "1,5 metro", "20/18 metros"
   weaponProperties?: string[]; // Ex: ["versatile", "light", "finesse"]
+  versatileDamage?: string; // Dano versátil (2 mãos)
+  calculatedAttackBonus?: number; // Bônus de ataque calculado ao equipar
+  calculatedDamage?: string; // Dano calculado com modificador
 
   // Armaduras
-  armorClass?: number; // AC base da armadura
+  armorClass?: number | string; // AC base da armadura (pode ser número ou string como "12 + DEX")
   armorType?: 'light' | 'medium' | 'heavy' | 'shield'; // Tipo de armadura
+  maxDexBonus?: number; // Bônus máximo de DEX (armaduras médias)
   stealthDisadvantage?: boolean; // Desvantagem em Furtividade
   strengthRequirement?: number; // STR mínima necessária
+  calculatedAC?: number; // CA final calculada ao equipar
+
+  // Bônus de Optional Features
+  featureBonuses?: {
+    attack?: number; // Bônus de ataque de features (ex: Archery +2)
+    damage?: number; // Bônus de dano de features (ex: Dueling +2)
+    ac?: number; // Bônus de CA de features (ex: Defense +1)
+  };
 }
 
 // Sistema de moedas D&D 5e
@@ -52,8 +68,8 @@ export const CURRENCY_TO_GOLD = {
   platinum: 10, // 1 pl = 10 po
 } as const;
 
-// Peso das moedas (50 moedas = 1 libra)
-export const COINS_PER_POUND = 50;
+// Peso das moedas (110 moedas = 1 kg)
+export const COINS_PER_KG = 110;
 
 // Nomes das moedas em português
 export const CURRENCY_NAMES = {
@@ -88,12 +104,12 @@ export function calculateTotalGold(currency: Currency): number {
 }
 
 /**
- * Calcula o peso total das moedas em libras
+ * Calcula o peso total das moedas em kg
  */
 export function calculateCurrencyWeight(currency: Currency): number {
   const totalCoins =
     currency.copper + currency.silver + currency.electrum + currency.gold + currency.platinum;
-  return totalCoins / COINS_PER_POUND;
+  return totalCoins / COINS_PER_KG;
 }
 
 /**
@@ -107,10 +123,10 @@ export function calculateInventoryWeight(items: Item[], currency: Currency): num
 
 /**
  * Calcula a capacidade de carga do personagem
- * Regra D&D 5e: STR × 15 libras
+ * Regra D&D 5e: STR × 7 kg
  */
 export function calculateCarryingCapacity(strengthScore: number): number {
-  return strengthScore * 15;
+  return strengthScore * 7;
 }
 
 /**
@@ -143,7 +159,16 @@ export function calculateArmorClass(
 
   if (equippedArmor && equippedArmor.properties?.armorClass) {
     const armorType = equippedArmor.properties.armorType;
-    const baseAC = equippedArmor.properties.armorClass;
+    const armorClass = equippedArmor.properties.armorClass;
+
+    // Converter armorClass para número se for string
+    let baseAC: number;
+    if (typeof armorClass === 'string') {
+      // Se for string como "12 + DEX", extrair o número base
+      baseAC = parseInt(armorClass.split('+')[0].trim());
+    } else {
+      baseAC = armorClass;
+    }
 
     switch (armorType) {
       case 'light':

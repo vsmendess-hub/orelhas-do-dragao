@@ -1,7 +1,7 @@
 # 📚 Índice de Documentação - Orelhas do Dragão
 
-**Versão:** 2.0.0
-**Última Atualização:** 9 de Março de 2026
+**Versão:** 2.1.0
+**Última Atualização:** 16 de Março de 2026
 
 ---
 
@@ -35,6 +35,13 @@
   - Storage buckets
   - Queries comuns
   - Migrações
+
+- **[MISSING_FIELDS_CHECK.md](./MISSING_FIELDS_CHECK.md)** - Verificação de campos DEV vs PROD
+  - Campos que faltavam no DEV
+  - Checklist de aplicação
+  - Comparação de versões
+  - Erros conhecidos
+  - Auditoria completa
 
 ### Componentes
 
@@ -80,6 +87,32 @@
 
 - **[IMAGENS_DND.md](../IMAGENS_DND.md)** - Recursos e referências de imagens D&D
 
+### Sistema de Características
+
+- **[FEATURES_AUTO_FILL.md](../FEATURES_AUTO_FILL.md)** - Sistema de preenchimento automático de características
+  - Características de raças e sub-raças
+  - Características de classes por nível
+  - Referências de livros (PHB) e páginas
+  - Implementação e expansões futuras
+
+### Sistema de Proficiências
+
+- **[PROFICIENCIES_AUTO_FILL.md](../PROFICIENCIES_AUTO_FILL.md)** - Sistema de preenchimento automático de proficiências
+  - Proficiências por raça e sub-raça
+  - Proficiências por classe (12 classes)
+  - Proficiências por domínio (Clérigos)
+  - Proficiências por background (13 backgrounds)
+  - Armas, armaduras, ferramentas, idiomas, testes de resistência e perícias
+
+### Testes de Resistência e Percepção Passiva
+
+- **[SAVING_THROWS_PASSIVE_PERCEPTION.md](../SAVING_THROWS_PASSIVE_PERCEPTION.md)** - Cálculo automático de salvaguardas e percepção
+  - 6 testes de resistência calculados automaticamente
+  - Proficiências por classe destacadas visualmente
+  - Percepção passiva com breakdown do cálculo
+  - Baseado no PHB (fórmulas oficiais)
+  - Explicações de quando e como usar
+
 ### Sprints Anteriores
 
 - **[SPRINT-8-FEATURES.md](../SPRINT-8-FEATURES.md)** - Features implementadas na Sprint 8
@@ -124,6 +157,19 @@ Migrações principais em `supabase/migrations/`:
 - `20260307000001_add_background_data.sql` - Dados de background
 - `20260309000000_add_rest_system_fields.sql` - Campos do sistema de descanso
 - `20260309000001_add_character_gameplay_fields.sql` - Campos de gameplay persistente
+- **`20260310000001_add_optional_features.sql`** - ⭐ **NEW v2.1.0** - Optional Features
+- **`20260310000002_add_spell_favorites.sql`** - ⭐ **NEW v2.1.0** - Spell Favorites
+
+### Migrações v2.1.0
+
+- **[MIGRATION_ADD_OPTIONAL_FEATURES.md](../MIGRATION_ADD_OPTIONAL_FEATURES.md)** - Guia de migração de Optional Features
+  - Como aplicar migration
+  - Estrutura de dados
+  - Verificação de sucesso
+- **[MIGRATION_SPELL_FAVORITES.md](../MIGRATION_SPELL_FAVORITES.md)** - Guia de migração de Spell Favorites
+  - Como aplicar migration
+  - Estrutura JSONB
+  - Comandos SQL
 
 ---
 
@@ -131,11 +177,13 @@ Migrações principais em `supabase/migrations/`:
 
 ```
 orelhas-do-dragao/
-├── docs/                          # Documentação técnica (NOVA)
+├── docs/                          # Documentação técnica
 │   ├── index.md                   # Este arquivo
+│   ├── CHANGELOG.md               # ⭐ NEW v2.1.0 - Log de mudanças
 │   ├── ARCHITECTURE.md            # Arquitetura do sistema
 │   ├── DATABASE.md                # Database e schema
-│   └── COMPONENTS.md              # Componentes React
+│   ├── COMPONENTS.md              # Componentes React
+│   └── MISSING_FIELDS_CHECK.md    # Verificação DEV vs PROD
 │
 ├── Raiz do Projeto               # Documentação de features e deploy
 │   ├── README.md                  # Quick start
@@ -178,9 +226,10 @@ orelhas-do-dragao/
 ### Para Trabalhar com Database
 
 1. [DATABASE.md](./DATABASE.md) - Schema completo
-2. Arquivos em `supabase/migrations/` - Migrações aplicadas
-3. [SUPABASE_STORAGE_SETUP.md](../SUPABASE_STORAGE_SETUP.md) - Storage
-4. `MIGRATION_*.sql` na raiz - Migrações adicionais
+2. [MISSING_FIELDS_CHECK.md](./MISSING_FIELDS_CHECK.md) - Verificação de campos
+3. Arquivos em `supabase/migrations/` - Migrações aplicadas
+4. [SUPABASE_STORAGE_SETUP.md](../SUPABASE_STORAGE_SETUP.md) - Storage
+5. `MIGRATION_*.sql` na raiz - Migrações adicionais
 
 ### Para Desenvolver Features
 
@@ -212,6 +261,8 @@ orelhas-do-dragao/
 - **Debugar produção?** → [DEBUG_CONDITIONS_PROD.md](../DEBUG_CONDITIONS_PROD.md)
 - **Setup ambiente DEV?** → [COMPLETE_DEV_SETUP.sql](../COMPLETE_DEV_SETUP.sql)
 - **Testar condições?** → [TEST_CONDITIONS_BROWSER.js](../TEST_CONDITIONS_BROWSER.js)
+- **Verificar campos faltando?** → [MISSING_FIELDS_CHECK.md](./MISSING_FIELDS_CHECK.md)
+- **Comparar DEV vs PROD?** → [MISSING_FIELDS_CHECK.md](./MISSING_FIELDS_CHECK.md)
 
 ---
 
@@ -224,6 +275,42 @@ Para diagramas e fluxos detalhados, consulte:
 ---
 
 ## 🆕 Últimas Atualizações
+
+### 16 de Março de 2026 - v2.1.0 🎉
+
+#### ✨ Sistema de Magias Completo
+
+- ✅ Banco de dados com 35+ magias (cantrips até 9º círculo)
+- ✅ Diálogo de adicionar magias mobile-first
+- ✅ Sistema de favoritos de magias
+- ✅ Descrições completas e referências do PHB
+- ✅ Remoção de magias
+- ✅ Interface simplificada de spell slots
+
+#### ⚔️ Optional Features
+
+- ✅ Cálculo automático de bônus (Fighting Styles, Feats)
+- ✅ Integração com equipamentos
+- ✅ Recálculo automático ao equipar/desequipar
+- ✅ 2 novas migrations aplicadas
+
+#### 📏 Sistema Métrico
+
+- ✅ Conversão completa de pés para metros
+- ✅ Conversão completa de libras para kg
+- ✅ 32 arquivos atualizados
+
+#### 🎨 Editor de Atributos
+
+- ✅ Editor inline de atributos
+- ✅ Recálculo automático de stats
+- ✅ 3 novos componentes
+
+#### 📝 Documentação
+
+- ✅ [CHANGELOG.md](./CHANGELOG.md) - **NOVO** - Log completo de mudanças
+- ✅ Documentação técnica atualizada (v2.1.0)
+- ✅ Guias de migração criados
 
 ### 9 de Março de 2026 (Atualização 2)
 

@@ -14,7 +14,7 @@ export type SpellSchool =
 
 export type CastingTime = 'Ação' | 'Ação Bônus' | 'Reação' | '1 Minuto' | '10 Minutos' | '1 Hora';
 
-export type SpellRange = string; // "Pessoal", "Toque", "30 pés", etc.
+export type SpellRange = string; // "Pessoal", "Toque", "9 metros", etc.
 
 export type SpellDuration = string; // "Instantâneo", "Concentração, até 1 minuto", etc.
 
@@ -39,6 +39,8 @@ export interface Spell {
   description: string;
   atHigherLevels?: string;
   classes: string[]; // Classes que podem aprender
+  source?: string; // Livro de origem (ex: "PHB", "XGE")
+  page?: number; // Página no livro
 }
 
 export interface CharacterSpell {
@@ -129,7 +131,7 @@ export function getSpellcastingAbility(characterClass: string): 'int' | 'wis' | 
     Bardo: 'cha',
     Clérigo: 'wis',
     Druida: 'wis',
-    Ranger: 'wis',
+    Patrulheiro: 'wis',
     Paladino: 'cha',
     Artificer: 'int',
   };

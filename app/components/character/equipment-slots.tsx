@@ -43,12 +43,19 @@ export function EquipmentSlots({ items, dexModifier, onUnequip }: EquipmentSlots
                 <Shield className="h-5 w-5 text-deep-purple" />
                 <div>
                   <p className="font-medium">{equippedArmor.name}</p>
-                  {equippedArmor.properties?.armorClass && (
+                  {equippedArmor.properties?.calculatedAC ? (
+                    <p className="text-xs text-cyan-400">
+                      CA calculada: {equippedArmor.properties.calculatedAC}
+                    </p>
+                  ) : equippedArmor.properties?.armorClass ? (
                     <p className="text-xs text-gray-400">
                       CA {equippedArmor.properties.armorClass}
                       {equippedArmor.properties.armorType === 'light' && ' + DEX'}
                       {equippedArmor.properties.armorType === 'medium' && ' + DEX (máx +2)'}
                     </p>
+                  ) : null}
+                  {equippedArmor.properties?.stealthDisadvantage && (
+                    <p className="text-xs text-red-400">⚠ Desvantagem em Furtividade</p>
                   )}
                 </div>
               </div>
@@ -88,9 +95,7 @@ export function EquipmentSlots({ items, dexModifier, onUnequip }: EquipmentSlots
 
         {/* Slots de Armas */}
         <div className="space-y-2">
-          <h4 className="text-sm font-medium text-gray-400">
-            Armas ({equippedWeapons.length}/2)
-          </h4>
+          <h4 className="text-sm font-medium text-gray-400">Armas ({equippedWeapons.length}/2)</h4>
           {equippedWeapons.length > 0 ? (
             <div className="space-y-2">
               {equippedWeapons.map((weapon) => (
@@ -98,15 +103,42 @@ export function EquipmentSlots({ items, dexModifier, onUnequip }: EquipmentSlots
                   key={weapon.id}
                   className="flex items-center justify-between rounded-lg border border-purple-500/30 glass-card-light p-3"
                 >
-                  <div className="flex items-center gap-3">
-                    <Sword className="h-5 w-5 text-deep-purple" />
-                    <div>
-                      <p className="font-medium">{weapon.name}</p>
-                      {weapon.properties?.damage && (
-                        <p className="text-xs text-gray-400">
-                          {weapon.properties.damage} {weapon.properties.damageType}
-                        </p>
-                      )}
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3">
+                      <Sword className="h-5 w-5 text-deep-purple" />
+                      <div className="flex-1">
+                        <p className="font-medium">{weapon.name}</p>
+                        <div className="mt-1 flex flex-wrap gap-2 text-xs">
+                          {weapon.properties?.calculatedAttackBonus !== undefined && (
+                            <span className="text-green-400">
+                              Ataque: {weapon.properties.calculatedAttackBonus >= 0 ? '+' : ''}
+                              {weapon.properties.calculatedAttackBonus}
+                            </span>
+                          )}
+                          {weapon.properties?.calculatedDamage && (
+                            <span className="text-red-400">
+                              Dano: {weapon.properties.calculatedDamage}{' '}
+                              {weapon.properties.damageType}
+                            </span>
+                          )}
+                          {!weapon.properties?.calculatedDamage && weapon.properties?.damage && (
+                            <span className="text-gray-400">
+                              {weapon.properties.damage} {weapon.properties.damageType}
+                            </span>
+                          )}
+                        </div>
+                        {weapon.properties?.range && (
+                          <p className="text-xs text-cyan-400 mt-1">
+                            Alcance: {weapon.properties.range} metros
+                          </p>
+                        )}
+                        {weapon.properties?.weaponProperties &&
+                          weapon.properties.weaponProperties.length > 0 && (
+                            <p className="text-xs text-gray-500 mt-1">
+                              {weapon.properties.weaponProperties.join(', ')}
+                            </p>
+                          )}
+                      </div>
                     </div>
                   </div>
                   <Button variant="ghost" size="sm" onClick={() => onUnequip(weapon.id)}>

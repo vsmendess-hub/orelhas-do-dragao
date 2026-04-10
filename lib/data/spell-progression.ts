@@ -103,7 +103,7 @@ export const CASTER_TYPE: Record<string, string> = {
   Druida: 'full-caster',
   Bardo: 'full-caster',
   Paladino: 'half-caster',
-  Ranger: 'half-caster',
+  Patrulheiro: 'half-caster',
   Bruxo: 'warlock',
   // Subclasses
   'Guerreiro (Eldritch Knight)': 'third-caster',
@@ -181,7 +181,7 @@ export const SPELLS_KNOWN: Record<string, Record<number, number>> = {
     19: 15,
     20: 15,
   },
-  Ranger: {
+  Patrulheiro: {
     2: 2,
     3: 3,
     4: 3,

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Loader2, Plus, Save } from 'lucide-react';
+import { Loader2, Plus, Save, BookOpen, Edit3 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -20,16 +20,23 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { type Item, type ItemCategory, CATEGORY_NAMES, generateItemId } from '@/lib/data/items';
+import { PredefinedItemSelector } from './predefined-item-selector';
+import { type Weapon } from '@/lib/data/weapons';
+import { type Armor } from '@/lib/data/armors';
+import { type Equipment } from '@/lib/data/equipment';
 
 interface ItemDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSave: (item: Item) => void;
   editingItem?: Item | null;
+  characterId?: string;
 }
 
 export function ItemDialog({ open, onOpenChange, onSave, editingItem }: ItemDialogProps) {
+  const [activeTab, setActiveTab] = useState<'manual' | 'phb'>('phb');
   const [formData, setFormData] = useState<Partial<Item>>({
     name: '',
     description: '',
@@ -46,6 +53,7 @@ export function ItemDialog({ open, onOpenChange, onSave, editingItem }: ItemDial
   useEffect(() => {
     if (editingItem) {
       setFormData(editingItem);
+      setActiveTab('manual'); // Se está editando, vai direto para o manual
     } else {
       setFormData({
         name: '',
@@ -56,9 +64,88 @@ export function ItemDialog({ open, onOpenChange, onSave, editingItem }: ItemDial
         category: 'misc',
         equipped: false,
       });
+      setActiveTab('phb'); // Se está adicionando, começa nos itens do livro
     }
     setError(null);
   }, [editingItem, open]);
+
+  // Converter Weapon para Item
+  const handleSelectWeapon = (weapon: Weapon) => {
+    const item: Item = {
+      id: generateItemId(),
+      name: weapon.name,
+      description: `${weapon.damage} ${weapon.damageType}. ${weapon.properties.join(', ')}. ${weapon.description || ''}`,
+      quantity: 1,
+      weight: weapon.weight,
+      value: weapon.cost.gold,
+      category: 'weapon',
+      equipped: false,
+      properties: {
+        itemSourceId: weapon.id,
+        itemSourceType: 'weapon',
+        damage: weapon.damage,
+        damageType: weapon.damageType,
+        weaponProperties: weapon.properties,
+        range: weapon.range,
+        versatileDamage: weapon.versatileDamage,
+      },
+    };
+    onSave(item);
+    onOpenChange(false);
+  };
+
+  // Converter Armor para Item
+  const handleSelectArmor = (armor: Armor) => {
+    // Mapear categoria de armadura
+    const armorTypeMap: Record<string, 'light' | 'medium' | 'heavy' | 'shield'> = {
+      Leve: 'light',
+      Média: 'medium',
+      Pesada: 'heavy',
+      Escudo: 'shield',
+    };
+
+    const item: Item = {
+      id: generateItemId(),
+      name: armor.name,
+      description: `CA ${armor.baseAC}. ${armor.stealthDisadvantage ? 'Desvantagem em Furtividade. ' : ''}${armor.description || ''}`,
+      quantity: 1,
+      weight: armor.weight,
+      value: armor.cost.gold,
+      category: 'armor',
+      equipped: false,
+      properties: {
+        itemSourceId: armor.id,
+        itemSourceType: 'armor',
+        armorClass: armor.baseAC,
+        armorType: armorTypeMap[armor.category] || 'light',
+        maxDexBonus: armor.maxDexBonus,
+        stealthDisadvantage: armor.stealthDisadvantage,
+        strengthRequirement: armor.strengthRequired,
+      },
+    };
+    onSave(item);
+    onOpenChange(false);
+  };
+
+  // Converter Equipment para Item
+  const handleSelectEquipment = (equipment: Equipment) => {
+    const item: Item = {
+      id: generateItemId(),
+      name: equipment.name,
+      description: equipment.description || '',
+      quantity: 1,
+      weight: equipment.weight,
+      value: equipment.cost.gold || 0,
+      category: 'misc',
+      equipped: false,
+      properties: {
+        itemSourceId: equipment.id,
+        itemSourceType: 'equipment',
+      },
+    };
+    onSave(item);
+    onOpenChange(false);
+  };
 
   // Validar e salvar
   const handleSave = async () => {
@@ -112,196 +199,245 @@ export function ItemDialog({ open, onOpenChange, onSave, editingItem }: ItemDial
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl">
+      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{editingItem ? 'Editar Item' : 'Adicionar Item'}</DialogTitle>
           <DialogDescription>
             {editingItem
               ? 'Atualize as informações do item'
-              : 'Adicione um novo item ao seu inventário'}
+              : 'Selecione um item do livro ou adicione manualmente'}
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-4">
-          {/* Nome */}
-          <div className="space-y-2">
-            <label htmlFor="name" className="text-sm font-medium">
-              Nome do Item <span className="text-red-500">*</span>
-            </label>
-            <Input
-              id="name"
-              placeholder="Ex: Espada Longa"
-              value={formData.name || ''}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              disabled={isSaving}
-              maxLength={100}
-            />
-          </div>
+        {!editingItem && (
+          <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'manual' | 'phb')}>
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="phb">
+                <BookOpen className="mr-2 h-4 w-4" />
+                Itens do Livro
+              </TabsTrigger>
+              <TabsTrigger value="manual">
+                <Edit3 className="mr-2 h-4 w-4" />
+                Inserção Manual
+              </TabsTrigger>
+            </TabsList>
 
-          {/* Descrição */}
-          <div className="space-y-2">
-            <label htmlFor="description" className="text-sm font-medium">
-              Descrição
-            </label>
-            <Textarea
-              id="description"
-              placeholder="Descrição do item (opcional)"
-              value={formData.description || ''}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              disabled={isSaving}
-              rows={3}
-              maxLength={500}
-            />
-            <p className="text-xs text-gray-400">
-              {formData.description?.length || 0} / 500 caracteres
-            </p>
-          </div>
-
-          {/* Grid: Categoria, Quantidade, Peso, Valor */}
-          <div className="grid gap-4 md:grid-cols-2">
-            {/* Categoria */}
-            <div className="space-y-2">
-              <label htmlFor="category" className="text-sm font-medium">
-                Categoria <span className="text-red-500">*</span>
-              </label>
-              <Select
-                value={formData.category || 'misc'}
-                onValueChange={(value) =>
-                  setFormData({ ...formData, category: value as ItemCategory })
-                }
-                disabled={isSaving}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {(Object.keys(CATEGORY_NAMES) as ItemCategory[]).map((category) => (
-                    <SelectItem key={category} value={category}>
-                      {CATEGORY_NAMES[category]}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Quantidade */}
-            <div className="space-y-2">
-              <label htmlFor="quantity" className="text-sm font-medium">
-                Quantidade
-              </label>
-              <Input
-                id="quantity"
-                type="number"
-                min="1"
-                value={formData.quantity ?? 1}
-                onChange={(e) =>
-                  setFormData({ ...formData, quantity: parseInt(e.target.value) || 1 })
-                }
-                disabled={isSaving}
+            {/* Tab: Itens do Livro */}
+            <TabsContent value="phb" className="space-y-4">
+              <PredefinedItemSelector
+                onSelectWeapon={handleSelectWeapon}
+                onSelectArmor={handleSelectArmor}
+                onSelectEquipment={handleSelectEquipment}
               />
-            </div>
+            </TabsContent>
 
-            {/* Peso */}
-            <div className="space-y-2">
-              <label htmlFor="weight" className="text-sm font-medium">
-                Peso (lb)
-              </label>
-              <Input
-                id="weight"
-                type="number"
-                min="0"
-                step="0.1"
-                value={formData.weight ?? 0}
-                onChange={(e) =>
-                  setFormData({ ...formData, weight: parseFloat(e.target.value) || 0 })
-                }
-                disabled={isSaving}
+            {/* Tab: Inserção Manual */}
+            <TabsContent value="manual" className="space-y-4">
+              <ManualItemForm
+                formData={formData}
+                setFormData={setFormData}
+                isSaving={isSaving}
+                error={error}
               />
-            </div>
+            </TabsContent>
+          </Tabs>
+        )}
 
-            {/* Valor */}
-            <div className="space-y-2">
-              <label htmlFor="value" className="text-sm font-medium">
-                Valor (po)
-              </label>
-              <Input
-                id="value"
-                type="number"
-                min="0"
-                step="0.01"
-                value={formData.value ?? 0}
-                onChange={(e) =>
-                  setFormData({ ...formData, value: parseFloat(e.target.value) || 0 })
-                }
-                disabled={isSaving}
-              />
-            </div>
-          </div>
+        {editingItem && (
+          <ManualItemForm
+            formData={formData}
+            setFormData={setFormData}
+            isSaving={isSaving}
+            error={error}
+          />
+        )}
 
-          {/* Equipar (só para armas/armaduras) */}
-          {(formData.category === 'weapon' || formData.category === 'armor') && (
-            <div className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                id="equipped"
-                checked={formData.equipped ?? false}
-                onChange={(e) => setFormData({ ...formData, equipped: e.target.checked })}
-                disabled={isSaving}
-                className="h-4 w-4 rounded border-gray-300 text-purple-500 focus:ring-purple-500"
-              />
-              <label htmlFor="equipped" className="text-sm font-medium">
-                Equipar automaticamente
-              </label>
-            </div>
-          )}
-
-          {/* Info sobre peso e valor total */}
-          {formData.quantity && formData.quantity > 1 && (
-            <div className="rounded-lg glass-card-light p-3 text-sm">
-              <p className="font-medium text-white">Totais:</p>
-              <div className="mt-1 grid grid-cols-2 gap-2 text-xs text-gray-400">
-                <span>
-                  Peso total: {((formData.weight ?? 0) * (formData.quantity ?? 1)).toFixed(1)} lb
-                </span>
-                <span>
-                  Valor total: {((formData.value ?? 0) * (formData.quantity ?? 1)).toFixed(2)} po
-                </span>
-              </div>
-            </div>
-          )}
-
-          {/* Erro */}
-          {error && (
-            <div className="rounded-md glass-card-light border border-red-400/50 p-3 text-sm text-red-300">
-              ⚠️ {error}
-            </div>
-          )}
-        </div>
-
-        <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isSaving}>
-            Cancelar
-          </Button>
-          <Button onClick={handleSave} disabled={isSaving}>
-            {isSaving ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Salvando...
-              </>
-            ) : editingItem ? (
-              <>
-                <Save className="mr-2 h-4 w-4" />
-                Salvar Alterações
-              </>
-            ) : (
-              <>
-                <Plus className="mr-2 h-4 w-4" />
-                Adicionar Item
-              </>
-            )}
-          </Button>
-        </DialogFooter>
+        {(activeTab === 'manual' || editingItem) && (
+          <DialogFooter>
+            <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isSaving}>
+              Cancelar
+            </Button>
+            <Button onClick={handleSave} disabled={isSaving}>
+              {isSaving ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Salvando...
+                </>
+              ) : editingItem ? (
+                <>
+                  <Save className="mr-2 h-4 w-4" />
+                  Salvar Alterações
+                </>
+              ) : (
+                <>
+                  <Plus className="mr-2 h-4 w-4" />
+                  Adicionar Item
+                </>
+              )}
+            </Button>
+          </DialogFooter>
+        )}
       </DialogContent>
     </Dialog>
+  );
+}
+
+// Componente separado para o formulário manual
+interface ManualItemFormProps {
+  formData: Partial<Item>;
+  setFormData: (data: Partial<Item>) => void;
+  isSaving: boolean;
+  error: string | null;
+}
+
+function ManualItemForm({ formData, setFormData, isSaving, error }: ManualItemFormProps) {
+  return (
+    <div className="space-y-4">
+      {/* Nome */}
+      <div className="space-y-2">
+        <label htmlFor="name" className="text-sm font-medium">
+          Nome do Item <span className="text-red-500">*</span>
+        </label>
+        <Input
+          id="name"
+          placeholder="Ex: Espada Longa"
+          value={formData.name || ''}
+          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+          disabled={isSaving}
+          maxLength={100}
+        />
+      </div>
+
+      {/* Descrição */}
+      <div className="space-y-2">
+        <label htmlFor="description" className="text-sm font-medium">
+          Descrição
+        </label>
+        <Textarea
+          id="description"
+          placeholder="Descrição do item (opcional)"
+          value={formData.description || ''}
+          onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+          disabled={isSaving}
+          rows={3}
+          maxLength={500}
+        />
+        <p className="text-xs text-gray-400">
+          {formData.description?.length || 0} / 500 caracteres
+        </p>
+      </div>
+
+      {/* Grid: Categoria, Quantidade, Peso, Valor */}
+      <div className="grid gap-4 md:grid-cols-2">
+        {/* Categoria */}
+        <div className="space-y-2">
+          <label htmlFor="category" className="text-sm font-medium">
+            Categoria <span className="text-red-500">*</span>
+          </label>
+          <Select
+            value={formData.category || 'misc'}
+            onValueChange={(value) => setFormData({ ...formData, category: value as ItemCategory })}
+            disabled={isSaving}
+          >
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {(Object.keys(CATEGORY_NAMES) as ItemCategory[]).map((category) => (
+                <SelectItem key={category} value={category}>
+                  {CATEGORY_NAMES[category]}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Quantidade */}
+        <div className="space-y-2">
+          <label htmlFor="quantity" className="text-sm font-medium">
+            Quantidade
+          </label>
+          <Input
+            id="quantity"
+            type="number"
+            min="1"
+            value={formData.quantity ?? 1}
+            onChange={(e) => setFormData({ ...formData, quantity: parseInt(e.target.value) || 1 })}
+            disabled={isSaving}
+          />
+        </div>
+
+        {/* Peso */}
+        <div className="space-y-2">
+          <label htmlFor="weight" className="text-sm font-medium">
+            Peso (lb)
+          </label>
+          <Input
+            id="weight"
+            type="number"
+            min="0"
+            step="0.1"
+            value={formData.weight ?? 0}
+            onChange={(e) => setFormData({ ...formData, weight: parseFloat(e.target.value) || 0 })}
+            disabled={isSaving}
+          />
+        </div>
+
+        {/* Valor */}
+        <div className="space-y-2">
+          <label htmlFor="value" className="text-sm font-medium">
+            Valor (po)
+          </label>
+          <Input
+            id="value"
+            type="number"
+            min="0"
+            step="0.01"
+            value={formData.value ?? 0}
+            onChange={(e) => setFormData({ ...formData, value: parseFloat(e.target.value) || 0 })}
+            disabled={isSaving}
+          />
+        </div>
+      </div>
+
+      {/* Equipar (só para armas/armaduras) */}
+      {(formData.category === 'weapon' || formData.category === 'armor') && (
+        <div className="flex items-center gap-2">
+          <input
+            type="checkbox"
+            id="equipped"
+            checked={formData.equipped ?? false}
+            onChange={(e) => setFormData({ ...formData, equipped: e.target.checked })}
+            disabled={isSaving}
+            className="h-4 w-4 rounded border-gray-300 text-purple-500 focus:ring-purple-500"
+          />
+          <label htmlFor="equipped" className="text-sm font-medium">
+            Equipar automaticamente
+          </label>
+        </div>
+      )}
+
+      {/* Info sobre peso e valor total */}
+      {formData.quantity && formData.quantity > 1 && (
+        <div className="rounded-lg glass-card-light p-3 text-sm">
+          <p className="font-medium text-white">Totais:</p>
+          <div className="mt-1 grid grid-cols-2 gap-2 text-xs text-gray-400">
+            <span>
+              Peso total: {((formData.weight ?? 0) * (formData.quantity ?? 1)).toFixed(1)} lb
+            </span>
+            <span>
+              Valor total: {((formData.value ?? 0) * (formData.quantity ?? 1)).toFixed(2)} po
+            </span>
+          </div>
+        </div>
+      )}
+
+      {/* Erro */}
+      {error && (
+        <div className="rounded-md glass-card-light border border-red-400/50 p-3 text-sm text-red-300">
+          ⚠️ {error}
+        </div>
+      )}
+    </div>
   );
 }

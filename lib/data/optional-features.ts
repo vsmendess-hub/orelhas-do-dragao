@@ -3,7 +3,7 @@
  * Features opcionais principalmente de Tasha's Cauldron of Everything
  */
 
-export type FeatureCategory = 
+export type FeatureCategory =
   | 'fighting-style'
   | 'invocation'
   | 'maneuver'
@@ -39,7 +39,7 @@ export const FIGHTING_STYLES: OptionalFeature[] = [
     id: 'archery',
     name: 'Archery',
     category: 'fighting-style',
-    className: 'Fighter,Ranger,Paladin',
+    className: 'Guerreiro,Patrulheiro,Paladino',
     description: '+2 de bônus em rolagens de ataque com armas de longo alcance',
     level: 1,
     source: 'PHB',
@@ -48,7 +48,7 @@ export const FIGHTING_STYLES: OptionalFeature[] = [
     id: 'defense',
     name: 'Defense',
     category: 'fighting-style',
-    className: 'Fighter,Ranger,Paladin',
+    className: 'Guerreiro,Patrulheiro,Paladino',
     description: '+1 de CA enquanto usar armadura',
     level: 1,
     source: 'PHB',
@@ -57,7 +57,7 @@ export const FIGHTING_STYLES: OptionalFeature[] = [
     id: 'dueling',
     name: 'Dueling',
     category: 'fighting-style',
-    className: 'Fighter,Ranger,Paladin',
+    className: 'Guerreiro,Patrulheiro,Paladino',
     description: '+2 de dano quando empunhar arma corpo a corpo em uma mão',
     level: 1,
     source: 'PHB',
@@ -66,7 +66,7 @@ export const FIGHTING_STYLES: OptionalFeature[] = [
     id: 'great-weapon-fighting',
     name: 'Great Weapon Fighting',
     category: 'fighting-style',
-    className: 'Fighter,Paladin',
+    className: 'Guerreiro,Paladino',
     description: 'Pode rerollar 1 ou 2 nos dados de dano de armas corpo a corpo de duas mãos',
     level: 1,
     source: 'PHB',
@@ -75,7 +75,7 @@ export const FIGHTING_STYLES: OptionalFeature[] = [
     id: 'protection',
     name: 'Protection',
     category: 'fighting-style',
-    className: 'Fighter,Paladin',
+    className: 'Guerreiro,Paladino',
     description: 'Quando criatura atacar aliado adjacente, pode impor desvantagem (requer escudo)',
     level: 1,
     source: 'PHB',
@@ -84,7 +84,7 @@ export const FIGHTING_STYLES: OptionalFeature[] = [
     id: 'two-weapon-fighting',
     name: 'Two-Weapon Fighting',
     category: 'fighting-style',
-    className: 'Fighter,Ranger',
+    className: 'Guerreiro,Patrulheiro',
     description: 'Adiciona modificador de habilidade ao dano do ataque off-hand',
     level: 1,
     source: 'PHB',
@@ -93,8 +93,8 @@ export const FIGHTING_STYLES: OptionalFeature[] = [
     id: 'blind-fighting',
     name: 'Blind Fighting',
     category: 'fighting-style',
-    className: 'Fighter,Ranger,Paladin',
-    description: 'Visão cega de 10 pés. Pode detectar criaturas invisíveis',
+    className: 'Guerreiro,Patrulheiro,Paladino',
+    description: 'Visão cega de 3 metros. Pode detectar criaturas invisíveis',
     level: 1,
     source: "Tasha's",
   },
@@ -102,7 +102,7 @@ export const FIGHTING_STYLES: OptionalFeature[] = [
     id: 'unarmed-fighting',
     name: 'Unarmed Fighting',
     category: 'fighting-style',
-    className: 'Fighter',
+    className: 'Guerreiro',
     description: 'Ataques desarmados causam 1d6 dano (1d8 se duas mãos livres)',
     level: 1,
     source: "Tasha's",
@@ -135,7 +135,7 @@ export const ELDRITCH_INVOCATIONS: OptionalFeature[] = [
     name: "Devil's Sight",
     category: 'eldritch-invocation',
     className: 'Bruxo',
-    description: 'Pode ver normalmente na escuridão (mágica ou não) até 120 pés',
+    description: 'Pode ver normalmente na escuridão (mágica ou não) até 36 metros',
     level: 2,
     source: 'PHB',
   },
@@ -162,7 +162,7 @@ export const ELDRITCH_INVOCATIONS: OptionalFeature[] = [
     name: 'Repelling Blast',
     category: 'eldritch-invocation',
     className: 'Bruxo',
-    description: 'Quando acerta criatura com Eldritch Blast, empurra 10 pés para longe',
+    description: 'Quando acerta criatura com Eldritch Blast, empurra 3 metros para longe',
     level: 2,
     prerequisites: 'Eldritch Blast cantrip',
     source: 'PHB',
@@ -196,7 +196,8 @@ export const BATTLE_MANEUVERS: OptionalFeature[] = [
     name: 'Disarming Attack',
     category: 'maneuver',
     className: 'Guerreiro',
-    description: 'Adiciona dado de superioridade ao dano e força TR de Força ou criatura solta item',
+    description:
+      'Adiciona dado de superioridade ao dano e força TR de Força ou criatura solta item',
     level: 3,
     source: 'PHB',
   },
@@ -245,7 +246,8 @@ export const METAMAGIC_OPTIONS: OptionalFeature[] = [
     name: 'Careful Spell',
     category: 'metamagic',
     className: 'Feiticeiro',
-    description: 'Gasta 1 ponto de feitiçaria: escolha criaturas até Cha mod para sucesso automático no TR',
+    description:
+      'Gasta 1 ponto de feitiçaria: escolha criaturas até Cha mod para sucesso automático no TR',
     level: 3,
     source: 'PHB',
   },
@@ -254,7 +256,7 @@ export const METAMAGIC_OPTIONS: OptionalFeature[] = [
     name: 'Distant Spell',
     category: 'metamagic',
     className: 'Feiticeiro',
-    description: 'Gasta 1 ponto: dobra alcance da magia (touch vira 30 pés)',
+    description: 'Gasta 1 ponto: dobra alcance da magia (touch vira 9 metros)',
     level: 3,
     source: 'PHB',
   },
@@ -347,15 +349,15 @@ export function meetsPrerequisites(
  */
 export const CATEGORY_LABELS: Record<FeatureCategory, string> = {
   'fighting-style': 'Fighting Style',
-  'invocation': 'Invocação',
-  'maneuver': 'Manobra',
-  'metamagic': 'Metamagia',
-  'infusion': 'Infusão',
+  invocation: 'Invocação',
+  maneuver: 'Manobra',
+  metamagic: 'Metamagia',
+  infusion: 'Infusão',
   'wild-shape': 'Forma Selvagem',
   'channel-divinity': 'Canalizar Divindade',
-  'ki': 'Técnica de Ki',
+  ki: 'Técnica de Ki',
   'eldritch-invocation': 'Invocação Mística',
-  'other': 'Outra',
+  other: 'Outra',
 };
 
 /**

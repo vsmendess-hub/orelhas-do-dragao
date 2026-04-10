@@ -1,7 +1,7 @@
 # 🧩 Documentação de Componentes - Orelhas do Dragão
 
-**Versão:** 2.0.0
-**Última Atualização:** 9 de Março de 2026
+**Versão:** 2.1.0
+**Última Atualização:** 16 de Março de 2026
 
 ---
 
@@ -25,7 +25,7 @@
 
 ```
 app/components/
-├── character/     # 47 componentes - Gestão de personagem
+├── character/     # 50 componentes - Gestão de personagem
 ├── combat/        # 2 componentes - Sistema de combate
 ├── dice/          # 8 componentes - Rolagem de dados
 ├── dm-tools/      # 4 componentes - Ferramentas do mestre
@@ -35,6 +35,12 @@ app/components/
 ├── party/         # 1 componente - Party dashboard
 └── ui/            # 14 componentes - shadcn/ui base
 ```
+
+### 🆕 Novidades v2.1.0
+
+- **add-spell-dialog.tsx**: Diálogo mobile-first para adicionar magias com busca e filtros
+- **attributes-editor.tsx**: Editor inline de atributos com validação
+- **attributes-section.tsx**: Seção de exibição de atributos na ficha
 
 ### Convenções
 

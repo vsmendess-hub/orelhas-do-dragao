@@ -1,6 +1,6 @@
 'use client';
 
-import { Circle, CircleDot, RotateCcw } from 'lucide-react';
+import { RotateCcw, Plus, Minus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { createClient } from '@/lib/supabase/client';
@@ -23,20 +23,23 @@ export function SpellSlotTracker({ characterId, spellSlots, onUpdate }: SpellSlo
     }
   };
 
-  const toggleSlot = (level: number, index: number) => {
+  const spendSlot = (level: number) => {
     const newSlots = spellSlots.map((slot) => {
-      if (slot.level === level) {
-        const currentUsed = slot.used;
-        const targetUsed = index + 1;
-
-        return {
-          ...slot,
-          used: currentUsed === targetUsed ? targetUsed - 1 : targetUsed,
-        };
+      if (slot.level === level && slot.used < slot.total) {
+        return { ...slot, used: slot.used + 1 };
       }
       return slot;
     });
+    saveSpellSlots(newSlots);
+  };
 
+  const recoverSlot = (level: number) => {
+    const newSlots = spellSlots.map((slot) => {
+      if (slot.level === level && slot.used > 0) {
+        return { ...slot, used: slot.used - 1 };
+      }
+      return slot;
+    });
     saveSpellSlots(newSlots);
   };
 
@@ -52,48 +55,67 @@ export function SpellSlotTracker({ characterId, spellSlots, onUpdate }: SpellSlo
   return (
     <Card>
       <CardHeader>
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <CardTitle>Espaços de Magia</CardTitle>
-            <CardDescription>Clique para marcar como usado/disponível</CardDescription>
+            <CardDescription>Gerencie seus espaços de magia disponíveis</CardDescription>
           </div>
           <Button variant="outline" size="sm" onClick={resetAllSlots}>
             <RotateCcw className="mr-2 h-4 w-4" />
-            Resetar Todos
+            Resetar
           </Button>
         </div>
       </CardHeader>
       <CardContent>
-        <div className="space-y-4">
-          {spellSlots.map((slot) => (
-            <div key={slot.level} className="space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium">Círculo {slot.level}º</span>
-                <span className="text-xs text-muted-foreground">
-                  {slot.total - slot.used}/{slot.total} disponíveis
-                </span>
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {spellSlots.map((slot) => {
+            const available = slot.total - slot.used;
+            const isEmpty = available === 0;
+
+            return (
+              <div
+                key={slot.level}
+                className={`rounded-lg border-2 p-4 transition-colors ${
+                  isEmpty ? 'border-red-400/50 bg-red-500/10' : 'border-border'
+                }`}
+              >
+                <div className="mb-3 flex items-center justify-between">
+                  <span className="text-sm font-semibold">Círculo {slot.level}º</span>
+                  <span className="text-xs text-muted-foreground">Total: {slot.total}</span>
+                </div>
+
+                <div className="mb-3 text-center">
+                  <span
+                    className={`text-3xl font-bold ${isEmpty ? 'text-red-500' : 'text-purple-600'}`}
+                  >
+                    {available}
+                  </span>
+                  <p className="text-xs text-muted-foreground mt-1">disponíveis</p>
+                </div>
+
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => spendSlot(slot.level)}
+                    disabled={slot.used >= slot.total}
+                    className="flex-1"
+                  >
+                    <Minus className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => recoverSlot(slot.level)}
+                    disabled={slot.used === 0}
+                    className="flex-1"
+                  >
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
-              <div className="flex flex-wrap gap-2">
-                {Array.from({ length: slot.total }).map((_, index) => {
-                  const isUsed = index < slot.used;
-                  return (
-                    <button
-                      key={index}
-                      onClick={() => toggleSlot(slot.level, index)}
-                      className={`flex h-10 w-10 items-center justify-center rounded-full border-2 transition-all hover:scale-110 ${
-                        isUsed
-                          ? 'border-muted bg-muted text-muted-foreground'
-                          : 'border-purple-600 bg-purple-600 text-white'
-                      }`}
-                      title={isUsed ? 'Usado' : 'Disponível'}
-                    >
-                      {isUsed ? <Circle className="h-5 w-5" /> : <CircleDot className="h-5 w-5" />}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </CardContent>
     </Card>

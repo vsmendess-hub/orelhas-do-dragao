@@ -54,7 +54,7 @@ export const STANDARD_ACTIONS: CombatAction[] = [
     type: 'dash',
     name: 'Disparada',
     description:
-      'Ganhe movimento extra igual à sua velocidade neste turno. Se sua velocidade é 30 pés, você pode mover 60 pés.',
+      'Ganhe movimento extra igual à sua velocidade neste turno. Se sua velocidade é 9 metros, você pode mover 18 metros.',
     icon: '💨',
     category: 'action',
   },
@@ -77,7 +77,7 @@ export const STANDARD_ACTIONS: CombatAction[] = [
     type: 'help',
     name: 'Ajudar',
     description:
-      'Ajude um aliado em uma tarefa ou ataque. O aliado tem vantagem no próximo teste de habilidade ou ataque contra uma criatura a 5 pés de você.',
+      'Ajude um aliado em uma tarefa ou ataque. O aliado tem vantagem no próximo teste de habilidade ou ataque contra uma criatura a 1,5 metro de você.',
     icon: '🤝',
     category: 'action',
   },
