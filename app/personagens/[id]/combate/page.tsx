@@ -1,6 +1,7 @@
+import { notFound, redirect } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Swords } from 'lucide-react';
-import { requireCharacterOwnership } from '@/lib/supabase/server';
+import { createClient } from '@/lib/supabase/server';
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/app/components/theme-toggle';
 import { InitiativeTracker } from '@/app/components/combat/initiative-tracker';
@@ -13,7 +14,33 @@ interface PageProps {
 
 export default async function CombatPage({ params }: PageProps) {
   const { id } = await params;
-  const { character } = await requireCharacterOwnership(id);
+  const supabase = await createClient();
+
+  // Verificar autenticação
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect('/login');
+  }
+
+  // Buscar personagem
+  const { data: character, error } = await supabase
+    .from('characters')
+    .select('*')
+    .eq('id', id)
+    .single();
+
+  // Se não encontrou ou erro, retornar 404
+  if (error || !character) {
+    notFound();
+  }
+
+  // Verificar ownership
+  if (character.user_id !== user.id) {
+    notFound();
+  }
 
   // Calcular iniciativa (DEX modifier)
   const dexModifier = calculateModifier(character.attributes.dex);

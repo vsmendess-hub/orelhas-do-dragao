@@ -20,8 +20,8 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { getSpellsByClass } from '@/lib/data/all-spells';
-import { formatSpellLevel, formatComponents, SPELL_SCHOOLS, type Spell } from '@/lib/data/spells';
+import { getSpellsByClass, type Spell } from '@/lib/data/all-spells';
+import { formatSpellLevel, formatComponents, SPELL_SCHOOLS } from '@/lib/data/spells';
 
 interface AddSpellDialogProps {
   open: boolean;

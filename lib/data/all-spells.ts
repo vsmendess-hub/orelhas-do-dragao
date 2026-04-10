@@ -447,7 +447,7 @@ export const ALL_SPELLS: Spell[] = [
     name: 'Revivificar',
     level: 3,
     school: 'Necromancia',
-    castingTime: 'Ação',
+    castingTime: '1 Ação',
     range: 'Toque',
     components: {
       verbal: true,

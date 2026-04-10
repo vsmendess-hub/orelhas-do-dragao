@@ -1,3 +1,4 @@
+import { notFound, redirect } from 'next/navigation';
 import Link from 'next/link';
 import {
   ArrowLeft,
@@ -12,7 +13,7 @@ import {
   BookOpen,
 } from 'lucide-react';
 import { ThemeToggle } from '@/app/components/theme-toggle';
-import { requireCharacterOwnership } from '@/lib/supabase/server';
+import { createClient } from '@/lib/supabase/server';
 import { Button } from '@/components/ui/button';
 import { calculateModifier, formatModifier } from '@/lib/data/point-buy';
 import { HPManager } from '@/app/components/character/hp-manager';
@@ -61,7 +62,33 @@ interface PageProps {
 
 export default async function CharacterPage({ params }: PageProps) {
   const { id } = await params;
-  const { character, user } = await requireCharacterOwnership(id);
+  const supabase = await createClient();
+
+  // Verificar autenticação
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect('/login');
+  }
+
+  // Buscar personagem
+  const { data: character, error } = await supabase
+    .from('characters')
+    .select('*')
+    .eq('id', id)
+    .single();
+
+  // Se não encontrou ou erro, retornar 404
+  if (error || !character) {
+    notFound();
+  }
+
+  // Verificar ownership
+  if (character.user_id !== user.id) {
+    notFound();
+  }
 
   // Calcular modificadores
   const modifiers = {

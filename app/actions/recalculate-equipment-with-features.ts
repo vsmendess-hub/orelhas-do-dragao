@@ -5,12 +5,7 @@ import { calculateModifier } from '@/lib/data/point-buy';
 import { revalidatePath } from 'next/cache';
 import { getWeaponById, calculateAttackBonus, formatWeaponDamage } from '@/lib/data/weapons';
 import { getArmorById } from '@/lib/data/armors';
-import {
-  getEquippedArmor,
-  getEquippedShield,
-  calculateArmorClass,
-  type Item,
-} from '@/lib/data/items';
+import { getEquippedArmor, getEquippedShield, calculateArmorClass } from '@/lib/data/items';
 import {
   calculateFeatureAttackBonus,
   calculateFeatureDamageBonus,
