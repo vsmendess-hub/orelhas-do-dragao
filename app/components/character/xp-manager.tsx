@@ -120,6 +120,8 @@ export function XPManager({
   // Continuar do resumo para o wizard
   const handleContinueFromSummary = () => {
     setIsLevelUpSummaryOpen(false);
+    // Sempre processa 1 nível por vez
+    // Se levelsToGain > 1, mostra aviso
     setIsLevelUpWizardOpen(true);
   };
 

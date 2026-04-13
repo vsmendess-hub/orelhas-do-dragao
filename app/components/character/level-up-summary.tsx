@@ -164,8 +164,10 @@ export function LevelUpSummary({
                 <>escolher como ganhar HP (rolar ou usar média) e fazer escolhas de ASI/Talento.</>
               ) : (
                 <>
-                  fazer as escolhas necessárias para cada nível (HP, ASI, Talentos). O processo será
-                  feito nível por nível.
+                  fazer as escolhas necessárias.{' '}
+                  <strong className="text-amber-300">O sistema processa 1 nível por vez</strong> -
+                  após completar este nível, você verá novamente a opção de subir o próximo nível
+                  até completar todos os {levelsToGain} níveis.
                 </>
               )}
             </p>

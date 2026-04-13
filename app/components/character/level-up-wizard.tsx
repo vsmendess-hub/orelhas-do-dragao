@@ -412,11 +412,16 @@ export function LevelUpWizard({
                     <Label>Segundo Atributo (Opcional)</Label>
                     <div className="flex gap-2">
                       <Select
-                        value={ability2}
+                        value={ability2 || 'none'}
                         onValueChange={(v) => {
-                          setAbility2(v as keyof AbilityScores);
-                          if (v && ability2Increase === 0) {
-                            setAbility2Increase(2 - ability1Increase);
+                          if (v === 'none') {
+                            setAbility2('');
+                            setAbility2Increase(0);
+                          } else {
+                            setAbility2(v as keyof AbilityScores);
+                            if (ability2Increase === 0) {
+                              setAbility2Increase(2 - ability1Increase);
+                            }
                           }
                         }}
                       >
@@ -424,7 +429,7 @@ export function LevelUpWizard({
                           <SelectValue placeholder="Selecione (opcional)" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="">Nenhum</SelectItem>
+                          <SelectItem value="none">Nenhum</SelectItem>
                           {(Object.keys(ABILITY_NAMES) as Array<keyof typeof ABILITY_NAMES>)
                             .filter((attr) => attr !== ability1)
                             .map((attr) => (
