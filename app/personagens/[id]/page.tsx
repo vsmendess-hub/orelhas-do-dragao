@@ -47,6 +47,7 @@ import { SavingThrows } from '@/app/components/character/saving-throws';
 import { PassivePerception } from '@/app/components/character/passive-perception';
 import { AttributesSection } from '@/app/components/character/attributes-section';
 import { CombatStats } from '@/app/components/character/combat-stats';
+import { CharacterStats } from '@/app/components/character/character-stats';
 
 const ABILITY_ABBREVIATIONS = {
   str: 'FOR',
@@ -304,23 +305,12 @@ export default async function CharacterPage({ params }: PageProps) {
               />
 
               {/* Proficiência e Deslocamento */}
-              <div className="space-y-3 mt-6">
-                <div className="glass-card-light rounded-xl p-4 text-center">
-                  <div className="flex items-center justify-center gap-1 mb-2">
-                    <Dices className="h-4 w-4 text-purple-400" />
-                    <p className="text-xs text-gray-400 uppercase">Proficiência</p>
-                  </div>
-                  <p className="text-2xl font-bold text-white">+{character.proficiency_bonus}</p>
-                </div>
-
-                {/* Speed */}
-                <div className="glass-card-light rounded-xl p-4 text-center">
-                  <p className="text-xs text-gray-400 uppercase mb-2">Deslocamento</p>
-                  <p className="text-2xl font-bold text-white">
-                    {Math.floor(character.speed * 0.3048)} m
-                  </p>
-                  <p className="text-xs text-gray-500">por turno</p>
-                </div>
+              <div className="mt-6">
+                <CharacterStats
+                  characterId={id}
+                  proficiencyBonus={character.proficiency_bonus}
+                  speed={character.speed}
+                />
               </div>
             </GlassCard>
           </div>
