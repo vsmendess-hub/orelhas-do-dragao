@@ -333,11 +333,13 @@ export default async function CharacterPage({ params }: PageProps) {
             {/* Skills & Features with Tabs */}
             <GlassCard variant="default">
               <SkillsFeaturesTabs
+                characterId={id}
                 skills={character.skills}
                 features={characterFeatures}
                 modifiers={modifiers}
                 proficiencyBonus={character.proficiency_bonus}
                 abilityAbbreviations={ABILITY_ABBREVIATIONS}
+                skillOverrides={character.skill_overrides || {}}
               />
             </GlassCard>
           </div>

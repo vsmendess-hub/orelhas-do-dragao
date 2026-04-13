@@ -1,8 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { Target, BookOpen, Sparkles, Swords } from 'lucide-react';
+import { BookOpen, Sparkles, Swords } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { AllSkillsDisplay } from './all-skills-display';
 
 interface CharacterSkill {
   name: string;
@@ -19,25 +20,28 @@ export interface CharacterFeature {
   category: 'race' | 'class';
 }
 
+interface SkillOverride {
+  [skillId: string]: number;
+}
+
 interface SkillsFeaturesTabsProps {
+  characterId: string;
   skills: CharacterSkill[];
   features: CharacterFeature[];
   modifiers: Record<string, number>;
   proficiencyBonus: number;
   abilityAbbreviations: Record<string, string>;
-}
-
-// Format modifier helper
-function formatModifier(modifier: number): string {
-  return modifier >= 0 ? `+${modifier}` : `${modifier}`;
+  skillOverrides?: SkillOverride;
 }
 
 export function SkillsFeaturesTabs({
+  characterId,
   skills,
   features,
   modifiers,
   proficiencyBonus,
   abilityAbbreviations,
+  skillOverrides = {},
 }: SkillsFeaturesTabsProps) {
   const [activeTab, setActiveTab] = useState<'skills' | 'features'>('skills');
 
@@ -54,7 +58,7 @@ export function SkillsFeaturesTabs({
               : 'tab-purple-inactive bg-white/5 backdrop-blur-sm hover:bg-white/10'
           )}
         >
-          <Target className="h-4 w-4" />
+          <BookOpen className="h-4 w-4" />
           Perícias
         </button>
         <button
@@ -66,7 +70,7 @@ export function SkillsFeaturesTabs({
               : 'tab-purple-inactive bg-white/5 backdrop-blur-sm hover:bg-white/10'
           )}
         >
-          <BookOpen className="h-4 w-4" />
+          <Sparkles className="h-4 w-4" />
           Características
         </button>
       </div>
@@ -74,41 +78,14 @@ export function SkillsFeaturesTabs({
       {/* Tab Content */}
       <div className="animate-in fade-in duration-300">
         {activeTab === 'skills' && (
-          <div className="space-y-3">
-            <div className="flex items-center justify-between mb-4">
-              <p className="text-sm text-gray-400">{skills.length} perícias proficientes</p>
-            </div>
-            <div className="grid gap-2 md:grid-cols-2">
-              {skills.map((skill: CharacterSkill, index: number) => {
-                const attrMod = modifiers[skill.attribute as keyof typeof modifiers] || 0;
-                const bonus = attrMod + proficiencyBonus;
-
-                return (
-                  <div
-                    key={index}
-                    className="glass-card-light rounded-lg p-3 flex items-center justify-between hover:scale-105 transition-transform"
-                  >
-                    <div className="flex items-center gap-2">
-                      <div className="flex h-6 w-6 items-center justify-center rounded-full bg-purple-500/20 text-xs font-bold text-purple-300">
-                        ✓
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium text-white">{skill.name}</p>
-                        <p className="text-xs text-gray-400">
-                          {
-                            abilityAbbreviations[
-                              skill.attribute as keyof typeof abilityAbbreviations
-                            ]
-                          }
-                        </p>
-                      </div>
-                    </div>
-                    <p className="text-lg font-bold text-purple-300">{formatModifier(bonus)}</p>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
+          <AllSkillsDisplay
+            characterId={characterId}
+            skills={skills}
+            modifiers={modifiers}
+            proficiencyBonus={proficiencyBonus}
+            abilityAbbreviations={abilityAbbreviations}
+            skillOverrides={skillOverrides}
+          />
         )}
 
         {activeTab === 'features' && (
