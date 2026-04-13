@@ -39,32 +39,64 @@ export function CombatStats({
           {/* Classe de Armadura */}
           <button
             onClick={() => setAcEditorOpen(true)}
-            className="glass-card rounded-xl p-6 text-center border-2 border-purple-500/30 hover:border-purple-500/50 transition-all group cursor-pointer"
+            className="glass-card rounded-xl p-6 text-center border-2 border-purple-500/30 hover:border-purple-500/70 hover:scale-[1.02] transition-all group cursor-pointer relative overflow-hidden"
           >
+            {/* Badge "Editável" no canto */}
+            <div className="absolute top-2 right-2 flex items-center gap-1 bg-purple-500/20 px-2 py-1 rounded-md border border-purple-500/40 group-hover:bg-purple-500/30 transition-colors">
+              <Edit3 className="h-3 w-3 text-purple-300" />
+              <span className="text-[10px] text-purple-300 font-medium uppercase tracking-wide">
+                Editar
+              </span>
+            </div>
+
             <div className="flex items-center justify-center gap-2 mb-3">
-              <Shield className="h-6 w-6 text-purple-400" />
-              <p className="text-sm font-medium text-gray-300 uppercase tracking-wide">
+              <Shield className="h-6 w-6 text-purple-400 group-hover:text-purple-300 transition-colors" />
+              <p className="text-sm font-medium text-gray-300 uppercase tracking-wide group-hover:text-gray-200 transition-colors">
                 Classe de Armadura
               </p>
-              <Edit3 className="h-4 w-4 text-purple-400 opacity-0 group-hover:opacity-100 transition-opacity" />
             </div>
-            <p className="text-4xl font-bold text-white">{armorClass}</p>
+            <p className="text-4xl font-bold text-white group-hover:text-purple-100 transition-colors">
+              {armorClass}
+            </p>
+
+            {/* Texto de ajuda no hover */}
+            <p className="text-xs text-gray-400 mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
+              Clique para editar
+            </p>
           </button>
 
           {/* Iniciativa */}
           <button
             onClick={() => setInitiativeEditorOpen(true)}
-            className="glass-card rounded-xl p-6 text-center border-2 border-purple-500/30 hover:border-purple-500/50 transition-all group cursor-pointer"
+            className="glass-card rounded-xl p-6 text-center border-2 border-purple-500/30 hover:border-purple-500/70 hover:scale-[1.02] transition-all group cursor-pointer relative overflow-hidden"
           >
+            {/* Badge "Editável" no canto */}
+            <div className="absolute top-2 right-2 flex items-center gap-1 bg-purple-500/20 px-2 py-1 rounded-md border border-purple-500/40 group-hover:bg-purple-500/30 transition-colors">
+              <Edit3 className="h-3 w-3 text-purple-300" />
+              <span className="text-[10px] text-purple-300 font-medium uppercase tracking-wide">
+                Editar
+              </span>
+            </div>
+
             <div className="flex items-center justify-center gap-2 mb-3">
-              <Zap className="h-6 w-6 text-purple-400" />
-              <p className="text-sm font-medium text-gray-300 uppercase tracking-wide">
+              <Zap className="h-6 w-6 text-purple-400 group-hover:text-purple-300 transition-colors" />
+              <p className="text-sm font-medium text-gray-300 uppercase tracking-wide group-hover:text-gray-200 transition-colors">
                 Iniciativa
               </p>
-              <Edit3 className="h-4 w-4 text-purple-400 opacity-0 group-hover:opacity-100 transition-opacity" />
             </div>
-            <p className="text-4xl font-bold text-white">{formatModifier(totalInitiative)}</p>
-            {hasAlertFeat && <p className="text-xs text-purple-400 mt-2">+5 Alerta</p>}
+            <p className="text-4xl font-bold text-white group-hover:text-purple-100 transition-colors">
+              {formatModifier(totalInitiative)}
+            </p>
+            {hasAlertFeat && (
+              <p className="text-xs text-purple-400 mt-2 group-hover:text-purple-300 transition-colors">
+                +5 Alerta
+              </p>
+            )}
+
+            {/* Texto de ajuda no hover */}
+            <p className="text-xs text-gray-400 mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
+              Clique para editar
+            </p>
           </button>
         </div>
       </div>
