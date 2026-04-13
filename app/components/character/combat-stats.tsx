@@ -39,16 +39,8 @@ export function CombatStats({
           {/* Classe de Armadura */}
           <button
             onClick={() => setAcEditorOpen(true)}
-            className="glass-card rounded-xl p-6 text-center border-2 border-purple-500/30 hover:border-purple-500/70 hover:scale-[1.02] transition-all group cursor-pointer relative overflow-hidden"
+            className="glass-card rounded-xl p-6 text-center border-2 border-purple-500/30 hover:border-purple-500/70 hover:scale-[1.02] transition-all group cursor-pointer relative"
           >
-            {/* Badge "Editável" no canto */}
-            <div className="absolute top-2 right-2 flex items-center gap-1 bg-purple-500/20 px-2 py-1 rounded-md border border-purple-500/40 group-hover:bg-purple-500/30 transition-colors">
-              <Edit3 className="h-3 w-3 text-purple-300" />
-              <span className="text-[10px] text-purple-300 font-medium uppercase tracking-wide">
-                Editar
-              </span>
-            </div>
-
             <div className="flex items-center justify-center gap-2 mb-3">
               <Shield className="h-6 w-6 text-purple-400 group-hover:text-purple-300 transition-colors" />
               <p className="text-sm font-medium text-gray-300 uppercase tracking-wide group-hover:text-gray-200 transition-colors">
@@ -59,25 +51,18 @@ export function CombatStats({
               {armorClass}
             </p>
 
-            {/* Texto de ajuda no hover */}
-            <p className="text-xs text-gray-400 mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
-              Clique para editar
-            </p>
+            {/* Badge "Editável" embaixo - aparece no hover */}
+            <div className="absolute bottom-2 left-0 right-0 flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+              <Edit3 className="h-3 w-3 text-purple-300" />
+              <span className="text-xs text-purple-300 font-medium">Clique para editar</span>
+            </div>
           </button>
 
           {/* Iniciativa */}
           <button
             onClick={() => setInitiativeEditorOpen(true)}
-            className="glass-card rounded-xl p-6 text-center border-2 border-purple-500/30 hover:border-purple-500/70 hover:scale-[1.02] transition-all group cursor-pointer relative overflow-hidden"
+            className="glass-card rounded-xl p-6 text-center border-2 border-purple-500/30 hover:border-purple-500/70 hover:scale-[1.02] transition-all group cursor-pointer relative"
           >
-            {/* Badge "Editável" no canto */}
-            <div className="absolute top-2 right-2 flex items-center gap-1 bg-purple-500/20 px-2 py-1 rounded-md border border-purple-500/40 group-hover:bg-purple-500/30 transition-colors">
-              <Edit3 className="h-3 w-3 text-purple-300" />
-              <span className="text-[10px] text-purple-300 font-medium uppercase tracking-wide">
-                Editar
-              </span>
-            </div>
-
             <div className="flex items-center justify-center gap-2 mb-3">
               <Zap className="h-6 w-6 text-purple-400 group-hover:text-purple-300 transition-colors" />
               <p className="text-sm font-medium text-gray-300 uppercase tracking-wide group-hover:text-gray-200 transition-colors">
@@ -93,10 +78,11 @@ export function CombatStats({
               </p>
             )}
 
-            {/* Texto de ajuda no hover */}
-            <p className="text-xs text-gray-400 mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
-              Clique para editar
-            </p>
+            {/* Badge "Editável" embaixo - aparece no hover */}
+            <div className="absolute bottom-2 left-0 right-0 flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+              <Edit3 className="h-3 w-3 text-purple-300" />
+              <span className="text-xs text-purple-300 font-medium">Clique para editar</span>
+            </div>
           </button>
         </div>
       </div>
