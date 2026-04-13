@@ -46,6 +46,7 @@ import { getAllProficiencies } from '@/lib/data/proficiencies';
 import { SavingThrows } from '@/app/components/character/saving-throws';
 import { PassivePerception } from '@/app/components/character/passive-perception';
 import { AttributesSection } from '@/app/components/character/attributes-section';
+import { CombatStats } from '@/app/components/character/combat-stats';
 
 const ABILITY_ABBREVIATIONS = {
   str: 'FOR',
@@ -282,35 +283,12 @@ export default async function CharacterPage({ params }: PageProps) {
               </div>
 
               {/* Combat Stats Destacados - Iniciativa e CA */}
-              <div className="space-y-3">
-                <h3 className="text-lg font-semibold text-white">Combate</h3>
-                <div className="grid grid-cols-2 gap-4">
-                  {/* Classe de Armadura */}
-                  <div className="glass-card rounded-xl p-6 text-center border-2 border-purple-500/30 hover:border-purple-500/50 transition-all">
-                    <div className="flex items-center justify-center gap-2 mb-3">
-                      <Shield className="h-6 w-6 text-purple-400" />
-                      <p className="text-sm font-medium text-gray-300 uppercase tracking-wide">
-                        Classe de Armadura
-                      </p>
-                    </div>
-                    <p className="text-4xl font-bold text-white">{character.armor_class}</p>
-                  </div>
-
-                  {/* Iniciativa */}
-                  <div className="glass-card rounded-xl p-6 text-center border-2 border-purple-500/30 hover:border-purple-500/50 transition-all">
-                    <div className="flex items-center justify-center gap-2 mb-3">
-                      <Zap className="h-6 w-6 text-purple-400" />
-                      <p className="text-sm font-medium text-gray-300 uppercase tracking-wide">
-                        Iniciativa
-                      </p>
-                    </div>
-                    <p className="text-4xl font-bold text-white">
-                      {formatModifier(totalInitiative)}
-                    </p>
-                    {hasAlertFeat && <p className="text-xs text-purple-400 mt-2">+5 Alerta</p>}
-                  </div>
-                </div>
-              </div>
+              <CombatStats
+                characterId={id}
+                armorClass={character.armor_class}
+                initiative={character.initiative}
+                hasAlertFeat={hasAlertFeat}
+              />
 
               {/* Attributes Section */}
               <AttributesSection
@@ -389,9 +367,11 @@ export default async function CharacterPage({ params }: PageProps) {
 
             {/* Saving Throws */}
             <SavingThrows
+              characterId={id}
               modifiers={modifiers}
               proficiencyBonus={character.proficiency_bonus}
               savingThrowProficiencies={characterProficiencies.savingThrows || []}
+              savingThrowsOverride={character.saving_throws_override || {}}
             />
 
             {/* Passive Perception */}

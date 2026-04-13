@@ -3,12 +3,28 @@
  * Baseado no PHB - Cada classe tem proficiência em 2 atributos
  */
 
-import { Shield } from 'lucide-react';
+'use client';
+
+import { useState } from 'react';
+import { Shield, Edit3 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { SavingThrowsEditor } from './saving-throws-editor';
+
+interface SavingThrowsOverride {
+  str?: number;
+  dex?: number;
+  con?: number;
+  int?: number;
+  wis?: number;
+  cha?: number;
+}
 
 interface SavingThrowsProps {
+  characterId: string;
   modifiers: Record<string, number>;
   proficiencyBonus: number;
   savingThrowProficiencies: string[]; // Ex: ['Força', 'Constituição']
+  savingThrowsOverride?: SavingThrowsOverride;
 }
 
 const ABILITY_NAMES = {
@@ -34,17 +50,27 @@ function formatModifier(modifier: number): string {
 }
 
 export function SavingThrows({
+  characterId,
   modifiers,
   proficiencyBonus,
   savingThrowProficiencies,
+  savingThrowsOverride = {},
 }: SavingThrowsProps) {
+  const [editorOpen, setEditorOpen] = useState(false);
+
   // Calcular salvaguardas para cada atributo
   const savingThrows = (Object.keys(ABILITY_NAMES) as Array<keyof typeof ABILITY_NAMES>).map(
     (attr) => {
       const abilityName = ABILITY_NAMES[attr];
       const isProficient = savingThrowProficiencies.includes(abilityName);
       const modifier = modifiers[attr] || 0;
-      const bonus = isProficient ? modifier + proficiencyBonus : modifier;
+      const baseBonus = isProficient ? modifier + proficiencyBonus : modifier;
+
+      // Usar override se existir, senão usar valor calculado
+      const bonus =
+        savingThrowsOverride[attr] !== undefined ? savingThrowsOverride[attr]! : baseBonus;
+
+      const isOverridden = savingThrowsOverride[attr] !== undefined;
 
       return {
         attr,
@@ -53,15 +79,27 @@ export function SavingThrows({
         modifier,
         bonus,
         isProficient,
+        isOverridden,
       };
     }
   );
 
   return (
     <div className="glass-card rounded-2xl p-6">
-      <div className="mb-4 flex items-center gap-2">
-        <Shield className="h-5 w-5 text-blue-400" />
-        <h3 className="text-lg font-semibold text-white">Testes de Resistência</h3>
+      <div className="mb-4 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <Shield className="h-5 w-5 text-blue-400" />
+          <h3 className="text-lg font-semibold text-white">Testes de Resistência</h3>
+        </div>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => setEditorOpen(true)}
+          className="text-blue-300 hover:text-blue-200 hover:bg-white/10 -mr-2"
+        >
+          <Edit3 className="h-4 w-4 mr-1.5" />
+          Editar
+        </Button>
       </div>
 
       <div className="grid grid-cols-2 gap-3">
@@ -94,14 +132,21 @@ export function SavingThrows({
               </div>
               <p
                 className={`text-2xl font-bold flex-shrink-0 ${
-                  save.isProficient ? 'text-blue-300' : 'text-white'
+                  save.isOverridden
+                    ? 'text-amber-300'
+                    : save.isProficient
+                      ? 'text-blue-300'
+                      : 'text-white'
                 }`}
               >
                 {formatModifier(save.bonus)}
               </p>
             </div>
 
-            {save.isProficient && (
+            {save.isOverridden && (
+              <div className="mt-2 text-xs text-amber-400 whitespace-nowrap">Manual</div>
+            )}
+            {!save.isOverridden && save.isProficient && (
               <div className="mt-2 text-xs text-blue-400 whitespace-nowrap">
                 {formatModifier(save.modifier)} + {proficiencyBonus} (prof)
               </div>
@@ -114,9 +159,20 @@ export function SavingThrows({
         <p className="font-semibold text-blue-300 mb-1">ℹ️ Como Funciona:</p>
         <p>
           Testes de resistência marcados com <span className="text-blue-300">✓</span> adicionam seu
-          bônus de proficiência (+{proficiencyBonus}) ao modificador do atributo.
+          bônus de proficiência (+{proficiencyBonus}) ao modificador do atributo.{' '}
+          <span className="text-amber-400">Manual</span> indica valores ajustados manualmente.
         </p>
       </div>
+
+      <SavingThrowsEditor
+        characterId={characterId}
+        savingThrowsOverride={savingThrowsOverride}
+        modifiers={modifiers}
+        proficiencyBonus={proficiencyBonus}
+        savingThrowProficiencies={savingThrowProficiencies}
+        open={editorOpen}
+        onOpenChange={setEditorOpen}
+      />
     </div>
   );
 }
