@@ -1,21 +1,10 @@
 import { notFound, redirect } from 'next/navigation';
 import Link from 'next/link';
-import {
-  ArrowLeft,
-  Edit,
-  Shield,
-  Zap,
-  Dices,
-  Sparkles,
-  Wand2,
-  Users,
-  AlertCircle,
-  BookOpen,
-} from 'lucide-react';
+import { ArrowLeft, Edit, Sparkles, Wand2, Users, AlertCircle, BookOpen } from 'lucide-react';
 import { ThemeToggle } from '@/app/components/theme-toggle';
 import { createClient } from '@/lib/supabase/server';
 import { Button } from '@/components/ui/button';
-import { calculateModifier, formatModifier } from '@/lib/data/point-buy';
+import { calculateModifier } from '@/lib/data/point-buy';
 import { HPManager } from '@/app/components/character/hp-manager';
 import { DeleteCharacterDialog } from '@/app/components/character/delete-character-dialog';
 import { InventoryManager } from '@/app/components/character/inventory-manager';
@@ -126,8 +115,6 @@ export default async function CharacterPage({ params }: PageProps) {
 
   // Calcular Iniciativa com bônus de Alerta (+5)
   const hasAlertFeat = characterFeats.some((feat: { featId: string }) => feat.featId === 'alert');
-  const initiativeBonus = hasAlertFeat ? 5 : 0;
-  const totalInitiative = character.initiative + initiativeBonus;
 
   // Goals
   const characterGoals = character.goals || [];
@@ -527,6 +514,8 @@ export default async function CharacterPage({ params }: PageProps) {
               characterClass={character.class}
               currentLevel={character.level}
               initialFeats={characterFeats}
+              dexModifier={modifiers.dex}
+              optionalFeatures={optionalFeatures}
             />
 
             {/* Optional Features */}

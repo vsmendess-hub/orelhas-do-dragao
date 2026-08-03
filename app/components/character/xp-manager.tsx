@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { TrendingUp, Plus, Award, ArrowUp } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -55,6 +55,24 @@ export function XPManager({
   const [isLevelUpSummaryOpen, setIsLevelUpSummaryOpen] = useState(false);
   const [isLevelUpWizardOpen, setIsLevelUpWizardOpen] = useState(false);
   const [levelsToGain, setLevelsToGain] = useState(1);
+  const [pendingLevels, setPendingLevels] = useState(0);
+
+  // Chave do localStorage para rastrear níveis pendentes
+  const pendingLevelsKey = `pending-levels-${characterId}`;
+
+  // Verificar se há níveis pendentes ao montar o componente
+  useEffect(() => {
+    const stored = localStorage.getItem(pendingLevelsKey);
+    if (stored) {
+      const pending = parseInt(stored);
+      if (pending > 0) {
+        setPendingLevels(pending);
+        // Auto-abrir o resumo/wizard para o próximo nível (sempre processa 1 por vez)
+        setLevelsToGain(1);
+        setIsLevelUpSummaryOpen(true);
+      }
+    }
+  }, [characterId, pendingLevelsKey]);
 
   const progress = calculateXPProgress(currentXP, currentLevel);
   const canLevel = canLevelUp(currentXP, currentLevel);
@@ -107,6 +125,9 @@ export function XPManager({
     if (isNaN(levels) || levels <= 0 || currentLevel + levels > 20) return;
 
     setLevelsToGain(levels);
+    // Armazenar no localStorage
+    localStorage.setItem(pendingLevelsKey, levels.toString());
+    setPendingLevels(levels);
     setIsAddLevelDialogOpen(false);
     setIsLevelUpSummaryOpen(true);
   };
@@ -114,15 +135,45 @@ export function XPManager({
   // Iniciar Level Up (do botão "Subir de Nível!")
   const handleStartLevelUp = () => {
     setLevelsToGain(1);
+    // Se não há níveis pendentes, é só 1 nível
+    if (pendingLevels === 0) {
+      localStorage.setItem(pendingLevelsKey, '1');
+      setPendingLevels(1);
+    }
     setIsLevelUpSummaryOpen(true);
   };
 
   // Continuar do resumo para o wizard
   const handleContinueFromSummary = () => {
     setIsLevelUpSummaryOpen(false);
-    // Sempre processa 1 nível por vez
-    // Se levelsToGain > 1, mostra aviso
+    // Sempre processa 1 nível por vez no wizard
+    setLevelsToGain(1);
     setIsLevelUpWizardOpen(true);
+  };
+
+  // Quando completa um nível no wizard
+  const handleLevelComplete = () => {
+    const remaining = pendingLevels - 1;
+
+    if (remaining > 0) {
+      // Atualizar localStorage com níveis restantes
+      localStorage.setItem(pendingLevelsKey, remaining.toString());
+    } else {
+      // Limpar localStorage quando terminar
+      localStorage.removeItem(pendingLevelsKey);
+    }
+
+    // Recarregar página para atualizar dados
+    // O useEffect vai detectar níveis pendentes e reabrir automaticamente
+    window.location.reload();
+  };
+
+  // Cancelar níveis pendentes
+  const handleCancelPendingLevels = () => {
+    localStorage.removeItem(pendingLevelsKey);
+    setPendingLevels(0);
+    setIsLevelUpSummaryOpen(false);
+    setIsLevelUpWizardOpen(false);
   };
 
   const constitutionModifier = calculateModifier(currentAttributes.con);
@@ -346,9 +397,10 @@ export function XPManager({
           characterClass={characterClass}
           currentLevel={currentLevel}
           levelsToGain={levelsToGain}
+          remainingLevels={pendingLevels}
           constitutionModifier={constitutionModifier}
           open={isLevelUpSummaryOpen}
-          onClose={() => setIsLevelUpSummaryOpen(false)}
+          onClose={handleCancelPendingLevels}
           onContinue={handleContinueFromSummary}
         />
 
@@ -361,11 +413,8 @@ export function XPManager({
           currentHP={currentHP}
           currentAttributes={currentAttributes}
           open={isLevelUpWizardOpen}
-          onClose={() => setIsLevelUpWizardOpen(false)}
-          onComplete={() => {
-            setIsLevelUpWizardOpen(false);
-            window.location.reload();
-          }}
+          onClose={handleCancelPendingLevels}
+          onComplete={handleLevelComplete}
         />
       </div>
     </>

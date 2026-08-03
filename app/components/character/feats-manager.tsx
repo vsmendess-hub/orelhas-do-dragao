@@ -16,13 +16,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import {
   type CharacterFeat,
@@ -32,12 +25,15 @@ import {
   getFeatById,
   searchFeats,
 } from '@/lib/data/feats';
+import { recalculateInitiativeOnLevelUp } from '@/lib/data/initiative-calculator';
 
 interface FeatsManagerProps {
   characterId: string;
   characterClass: string;
   currentLevel: number;
   initialFeats: CharacterFeat[];
+  dexModifier?: number;
+  optionalFeatures?: Array<{ featureId: string; featureName: string }>;
 }
 
 export function FeatsManager({
@@ -45,6 +41,8 @@ export function FeatsManager({
   characterClass,
   currentLevel,
   initialFeats,
+  dexModifier,
+  optionalFeatures = [],
 }: FeatsManagerProps) {
   const [feats, setFeats] = useState<CharacterFeat[]>(initialFeats);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -64,10 +62,21 @@ export function FeatsManager({
       setIsSaving(true);
       const supabase = createClient();
 
-      const { error } = await supabase
-        .from('characters')
-        .update({ feats: newFeats })
-        .eq('id', characterId);
+      const updates: Record<string, unknown> = {
+        feats: newFeats,
+      };
+
+      // Se tem dexModifier, recalcular iniciativa
+      if (dexModifier !== undefined) {
+        const newInitiative = recalculateInitiativeOnLevelUp(
+          dexModifier,
+          newFeats,
+          optionalFeatures
+        );
+        updates.initiative = newInitiative;
+      }
+
+      const { error } = await supabase.from('characters').update(updates).eq('id', characterId);
 
       if (error) throw error;
 

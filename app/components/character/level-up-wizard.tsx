@@ -33,6 +33,8 @@ import {
   type AbilityScores,
 } from '@/lib/data/level-up';
 import { calculateModifier, formatModifier } from '@/lib/data/point-buy';
+import { recalculateACOnLevelUp } from '@/lib/data/armor-calculator';
+import { recalculateInitiativeOnLevelUp } from '@/lib/data/initiative-calculator';
 
 const ABILITY_NAMES = {
   str: 'Força',
@@ -206,14 +208,51 @@ export function LevelUpWizard({
 
       if (grantsASI) {
         updates.attributes = newAttributes;
+
+        // Recalcular CA e Iniciativa baseado nos novos atributos
+        const oldDexModifier = calculateModifier(currentAttributes.dex);
+        const newDexModifier = calculateModifier(newAttributes.dex);
+
+        // Buscar equipamento, feats e optional features do personagem
+        const { data: characterData } = await supabase
+          .from('characters')
+          .select('equipment, armor_class, feats, optional_features')
+          .eq('id', characterId)
+          .single();
+
+        if (characterData) {
+          // Recalcular CA considerando armadura equipada
+          const newAC = recalculateACOnLevelUp(
+            characterData.equipment || [],
+            oldDexModifier,
+            newDexModifier,
+            characterData.armor_class
+          );
+
+          updates.armor_class = newAC;
+
+          // Recalcular Iniciativa considerando feats (ex: Alert +5)
+          const newInitiative = recalculateInitiativeOnLevelUp(
+            newDexModifier,
+            characterData.feats || [],
+            characterData.optional_features || []
+          );
+
+          updates.initiative = newInitiative;
+        } else {
+          // Fallback: valores sem equipamento/feats
+          updates.armor_class = 10 + newDexModifier;
+          updates.initiative = newDexModifier;
+        }
       }
 
       const { error } = await supabase.from('characters').update(updates).eq('id', characterId);
 
       if (error) throw error;
 
+      // Apenas onComplete - não chamar onClose pois onComplete já faz reload
+      // e onClose limparia o localStorage antes do reload
       onComplete();
-      onClose();
     } catch (err) {
       console.error('Erro ao fazer level up:', err);
     } finally {
